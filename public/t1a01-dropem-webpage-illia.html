@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>A Well-Structured Webpage</title>
-     <style>
-       body {font-family: 'Inter', sans-serif;}
-     </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Well-Structured Webpage</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      text-align: center; /* aligns all content inside body */
+    }
+  </style>
   <script>
-    alert(hi)
-    //document.getElementybuId('myDiva01').innerHTML = 'Hi'
+    alert("hi");
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('myDiv01').innerHTML = 'Hi';
+    });
   </script>
 </head>
-  <body>
-    <h1 align=centre>t1a01-proper-webpage-illia.html</h1>
-    text goes here<br>
-    <img width=400 src="https://i.ytimg.com/vi/SQJrYw1QvSQ/hq720.jpg">
-    <div id="myDiv01"> not hello </div>
-  </body>
-  </html>
+<body>
+  <h1>t1a01-proper-webpage-illia.html</h1>
+  text goes here<br/>
+  <img width="400" src="https://i.ytimg.com/vi/SQJrYw1QvSQ/hq720.jpg" alt="Thumbnail" />
+  <div id="myDiv01"> not hello </div>
+</body>
+</html>

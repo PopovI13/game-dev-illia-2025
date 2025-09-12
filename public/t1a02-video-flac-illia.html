@@ -1,19 +1,29 @@
 <script>
   function mySquareFunction() {
+    // 1. Get user input and convert it to a number
     let myIn1 = parseFloat(document.getElementById('myNum01').value);
-    let myAnswer = myIn1 * myIn1;
-    let message = '';
 
-    // Decision logic
-    if (myIn1 > 0) {
-      message = myIn1 + ' is positive. ' + myIn1 + ' squared = ' + myAnswer;
-    } else if (myIn1 < 0) {
-      message = myIn1 + ' is negative. ' + myIn1 + ' squared = ' + myAnswer;
+    // 2. Create an object to hold all related data
+    let numberInfo = {
+      input: myIn1,
+      squared: myIn1 * myIn1,
+      message: ''
+    };
+
+    // 3. Decision logic to set the message
+    if (numberInfo.input > 0) {
+      numberInfo.message = numberInfo.input + ' is positive. ';
+    } else if (numberInfo.input < 0) {
+      numberInfo.message = numberInfo.input + ' is negative. ';
     } else {
-      message = 'You entered zero. 0 squared = 0';
+      numberInfo.message = 'You entered zero. ';
     }
 
-    document.getElementById('mySpan01').innerHTML = message;
+    // 4. Add squared result to the message
+    numberInfo.message += numberInfo.input + ' squared = ' + numberInfo.squared;
+
+    // 5. Output the full message
+    document.getElementById('mySpan01').innerHTML = numberInfo.message;
   }
 </script>
 

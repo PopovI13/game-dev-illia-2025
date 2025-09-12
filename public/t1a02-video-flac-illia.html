@@ -3,37 +3,39 @@
 <head>
   <title>t1a02-video-flac-illia.html</title>
   <script>
+    // History array to store past calculations
+    let history = [];
+
     function mySquareFunction() {
-      // Get input and parse it
       let myIn1 = parseFloat(document.getElementById('myNum01').value);
 
-      // Decision: check if input is a positive number
       if (isNaN(myIn1) || myIn1 < 0) {
         document.getElementById('mySpan01').innerHTML = "Please enter a valid positive number.";
         return;
       }
 
-      // Object to hold result details
       let resultObject = {
         number: myIn1,
         square: myIn1 * myIn1
       };
 
-      // Array to store a list of squares from 1 to input
       let squaresArray = [];
-
-      // Loop from 1 to input number (or up to 10 for sanity)
-      let limit = Math.min(10, Math.floor(myIn1)); // limit loop to 10 to avoid huge arrays
+      let limit = Math.min(10, Math.floor(myIn1));
       for (let i = 1; i <= limit; i++) {
         squaresArray.push(i * i);
       }
 
-      // Output message
       let outputMsg = `${resultObject.number} squared = ${resultObject.square}<br>`;
       outputMsg += `Squares from 1 to ${limit}: ${squaresArray.join(', ')}`;
 
-      // Display
+      // Add to history
+      history.push(outputMsg);
+
+      // Display current output
       document.getElementById('mySpan01').innerHTML = outputMsg;
+
+      // Display history (all past outputs)
+      document.getElementById('historySpan').innerHTML = "<strong>History:</strong><br>" + history.join('<br><br>');
     }
   </script>
 </head>
@@ -45,7 +47,12 @@
 
   Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
 
-  Output: <span id="mySpan01">...</span>
+  Output: <span id="mySpan01">...</span><br><br>
+
+  <div id="historySpan" style="border-top:1px solid #ccc; padding-top:10px; margin-top:20px;">
+    <strong>History:</strong><br>
+    No history yet.
+  </div>
 
 </body>
 </html>

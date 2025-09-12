@@ -1,36 +1,78 @@
-<script>
-  function mySquareFunction() {
-    // 1. Get user input and convert it to a number
-    let myIn1 = parseFloat(document.getElementById('myNum01').value);
-
-    // 2. Create an object to hold all related data
-    let numberInfo = {
-      input: myIn1,
-      squared: myIn1 * myIn1,
-      message: ''
-    };
-
-    // 3. Decision logic to set the message
-    if (numberInfo.input > 0) {
-      numberInfo.message = numberInfo.input + ' is positive. ';
-    } else if (numberInfo.input < 0) {
-      numberInfo.message = numberInfo.input + ' is negative. ';
-    } else {
-      numberInfo.message = 'You entered zero. ';
-    }
-
-    // 4. Add squared result to the message
-    numberInfo.message += numberInfo.input + ' squared = ' + numberInfo.squared;
-
-    // 5. Output the full message
-    document.getElementById('mySpan01').innerHTML = numberInfo.message;
-  }
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>All 9 JavaScript Concepts</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #outputHistory { margin-top: 20px; }
+  </style>
+</head>
+<body>
 
 <h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
 
+<!-- Input -->
 Input: <input id="myNum01" type="number" value="4"><br>
 
+<!-- Event -->
 Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
 
+<!-- Output -->
 Output: <span id="mySpan01">...</span>
+
+<!-- Output history using a loop -->
+<div id="outputHistory">
+  <h3>History:</h3>
+  <ul id="historyList"></ul>
+</div>
+
+<script>
+  // Class (for creating number info objects)
+  class NumberInfo {
+    constructor(input) {
+      this.input = input;
+      this.squared = input * input;
+      this.message = '';
+    }
+
+    // Function (method) to set a message based on decision logic
+    createMessage() {
+      if (this.input > 0) {
+        this.message = `${this.input} is positive. ${this.input} squared = ${this.squared}`;
+      } else if (this.input < 0) {
+        this.message = `${this.input} is negative. ${this.input} squared = ${this.squared}`;
+      } else {
+        this.message = `You entered zero. 0 squared = 0`;
+      }
+    }
+  }
+
+  // Array to store all number objects (for history)
+  let numberHistory = [];
+
+  // Main function
+  function mySquareFunction() {
+    // Variable: get input value
+    let myIn1 = parseFloat(document.getElementById('myNum01').value);
+
+    // Create an object using the class
+    let numberObj = new NumberInfo(myIn1);
+    numberObj.createMessage();  // Run method (function in class)
+
+    // Store in array
+    numberHistory.push(numberObj);
+
+    // Display current output
+    document.getElementById('mySpan01').innerHTML = numberObj.message;
+
+    // Loop: update history list
+    let historyHTML = '';
+    for (let i = 0; i < numberHistory.length; i++) {
+      historyHTML += `<li>${numberHistory[i].message}</li>`;
+    }
+    document.getElementById('historyList').innerHTML = historyHTML;
+  }
+</script>
+
+</body>
+</html>

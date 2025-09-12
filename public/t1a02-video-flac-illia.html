@@ -1,14 +1,25 @@
 <script>
-  function mySquareFunction(){
+  function mySquareFunction() {
     let myIn1 = parseFloat(document.getElementById('myNum01').value);
     let myAnswer = myIn1 * myIn1;
-    document.getElementById('mySpan01').innerHTML = myIn1 + ' squared = ' + myAnswer;
+    let message = '';
+
+    // Decision logic
+    if (myIn1 > 0) {
+      message = myIn1 + ' is positive. ' + myIn1 + ' squared = ' + myAnswer;
+    } else if (myIn1 < 0) {
+      message = myIn1 + ' is negative. ' + myIn1 + ' squared = ' + myAnswer;
+    } else {
+      message = 'You entered zero. 0 squared = 0';
+    }
+
+    document.getElementById('mySpan01').innerHTML = message;
   }
 </script>
 
 <h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
 
-Input: <input id="myNum01" type="number" value="4" ><br>
+Input: <input id="myNum01" type="number" value="4"><br>
 
 Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
 

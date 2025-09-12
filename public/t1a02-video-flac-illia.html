@@ -11,16 +11,12 @@
 
 <h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
 
-<!-- Input -->
 Input: <input id="myNum01" type="number" value="4"><br>
 
-<!-- Event -->
 Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
 
-<!-- Output -->
 Output: <span id="mySpan01">...</span>
 
-<!-- Output history using a loop -->
 <div id="outputHistory">
   <h3>History:</h3>
   <ul id="historyList"></ul>
@@ -48,15 +44,21 @@ Output: <span id="mySpan01">...</span>
   }
 
   // Array to store all number objects (for history)
-  let numberHistory = [];
+  const numberHistory = [];
 
   // Main function
   function mySquareFunction() {
     // Variable: get input value
-    let myIn1 = parseFloat(document.getElementById('myNum01').value);
+    const myIn1 = parseFloat(document.getElementById('myNum01').value);
+
+    // Basic input validation
+    if (isNaN(myIn1)) {
+      document.getElementById('mySpan01').innerHTML = 'Please enter a valid number.';
+      return;
+    }
 
     // Create an object using the class
-    let numberObj = new NumberInfo(myIn1);
+    const numberObj = new NumberInfo(myIn1);
     numberObj.createMessage();  // Run method (function in class)
 
     // Store in array
@@ -65,11 +67,8 @@ Output: <span id="mySpan01">...</span>
     // Display current output
     document.getElementById('mySpan01').innerHTML = numberObj.message;
 
-    // Loop: update history list
-    let historyHTML = '';
-    for (let i = 0; i < numberHistory.length; i++) {
-      historyHTML += `<li>${numberHistory[i].message}</li>`;
-    }
+    // Loop: update history list using a more modern approach
+    const historyHTML = numberHistory.map(item => `<li>${item.message}</li>`).join('');
     document.getElementById('historyList').innerHTML = historyHTML;
   }
 </script>

@@ -1,58 +1,84 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>t1a02-video-flac-illia.html</title>
-  <script>
-    // History array to store past calculations
-    let history = [];
-
-    function mySquareFunction() {
-      let myIn1 = parseFloat(document.getElementById('myNum01').value);
-
-      if (isNaN(myIn1) || myIn1 < 0) {
-        document.getElementById('mySpan01').innerHTML = "Please enter a valid positive number.";
-        return;
-      }
-
-      let resultObject = {
-        number: myIn1,
-        square: myIn1 * myIn1
-      };
-
-      let squaresArray = [];
-      let limit = Math.min(10, Math.floor(myIn1));
-      for (let i = 1; i <= limit; i++) {
-        squaresArray.push(i * i);
-      }
-
-      let outputMsg = `${resultObject.number} squared = ${resultObject.square}<br>`;
-      outputMsg += `Squares from 1 to ${limit}: ${squaresArray.join(', ')}`;
-
-      // Add to history
-      history.push(outputMsg);
-
-      // Display current output
-      document.getElementById('mySpan01').innerHTML = outputMsg;
-
-      // Display history (all past outputs)
-      document.getElementById('historySpan').innerHTML = "<strong>History:</strong><br>" + history.join('<br><br>');
-    }
-  </script>
+  <title>All 9 JavaScript Concepts</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #outputHistory { margin-top: 20px; }
+  </style>
 </head>
 <body>
 
-  <h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
+<h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
 
-  Input: <input id="myNum01" type="number" value="4"><br>
+<!-- Input -->
+Input: <input id="myNum01" type="number" value="4"><br>
 
-  Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
+<!-- Event -->
+Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
 
-  Output: <span id="mySpan01">...</span><br><br>
+<!-- Output -->
+Output: <span id="mySpan01">...</span>
 
-  <div id="historySpan" style="border-top:1px solid #ccc; padding-top:10px; margin-top:20px;">
-    <strong>History:</strong><br>
-    No history yet.
-  </div>
+<!-- Output history using loop -->
+<div id="outputHistory">
+  <h3>History:</h3>
+  <ul id="historyList"></ul>
+</div>
+
+<script>
+  // ✅ Class
+  class NumberInfo {
+    constructor(input) {
+      this.input = input;
+      this.squared = input * input;
+      this.message = '';
+    }
+
+    // ✅ Function (method inside class) + ✅ Decision
+    createMessage() {
+      if (this.input > 0) {
+        this.message = `${this.input} is positive. ${this.input} squared = ${this.squared}`;
+      } else if (this.input < 0) {
+        this.message = `${this.input} is negative. ${this.input} squared = ${this.squared}`;
+      } else {
+        this.message = `You entered zero. 0 squared = 0`;
+      }
+    }
+  }
+
+  // ✅ Array to store objects
+  const numberHistory = [];
+
+  // ✅ Main Function (triggered by Event)
+  function mySquareFunction() {
+    // ✅ Variable: get input
+    const myIn1 = parseFloat(document.getElementById('myNum01').value);
+
+    // ✅ Input Validation
+    if (isNaN(myIn1)) {
+      document.getElementById('mySpan01').innerHTML = 'Please enter a valid number.';
+      return;
+    }
+
+    // ✅ Object from Class
+    const numberObj = new NumberInfo(myIn1);
+    numberObj.createMessage();
+
+    // ✅ Store object in array
+    numberHistory.push(numberObj);
+
+    // ✅ Output the latest result
+    document.getElementById('mySpan01').innerHTML = numberObj.message;
+
+    // ✅ Loop: display full history
+    let historyHTML = '';
+    for (let i = 0; i < numberHistory.length; i++) {
+      historyHTML += `<li>${numberHistory[i].message}</li>`;
+    }
+    document.getElementById('historyList').innerHTML = historyHTML;
+  }
+</script>
 
 </body>
 </html>

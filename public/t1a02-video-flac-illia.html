@@ -1,47 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Squares with all concepts</title>
+  <title>t1a02-video-flac-illia.html</title>
   <script>
+    // History array to store past calculations
     let history = [];
 
     function mySquareFunction() {
-      let num = parseFloat(document.getElementById('myNum01').value);
+      let myIn1 = parseFloat(document.getElementById('myNum01').value);
 
-      // Decision: check valid positive number
-      if (isNaN(num) || num < 0) {
-        document.getElementById('mySpan01').innerHTML = "Please enter a positive number.";
+      if (isNaN(myIn1) || myIn1 < 0) {
+        document.getElementById('mySpan01').innerHTML = "Please enter a valid positive number.";
         return;
       }
 
-      // Object representing this calculation
-      let calc = {
-        original: num,
-        squared: num * num
+      let resultObject = {
+        number: myIn1,
+        square: myIn1 * myIn1
       };
 
-      // Array: squares from 1 to num
-      let squares = [];
-      for (let i = 1; i <= num; i++) {
-        squares.push(i * i);
+      let squaresArray = [];
+      let limit = Math.min(10, Math.floor(myIn1));
+      for (let i = 1; i <= limit; i++) {
+        squaresArray.push(i * i);
       }
 
-      let result = `${calc.original} squared = ${calc.squared}<br>Squares: ${squares.join(", ")}`;
+      let outputMsg = `${resultObject.number} squared = ${resultObject.square}<br>`;
+      outputMsg += `Squares from 1 to ${limit}: ${squaresArray.join(', ')}`;
 
-      // Save to history
-      history.push(result);
+      // Add to history
+      history.push(outputMsg);
 
-      // Display current result and history
-      document.getElementById('mySpan01').innerHTML = result;
-      document.getElementById('historySpan').innerHTML = "History:<br>" + history.join("<br><br>");
+      // Display current output
+      document.getElementById('mySpan01').innerHTML = outputMsg;
+
+      // Display history (all past outputs)
+      document.getElementById('historySpan').innerHTML = "<strong>History:</strong><br>" + history.join('<br><br>');
     }
   </script>
 </head>
 <body>
+
+  <h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
+
   Input: <input id="myNum01" type="number" value="4"><br>
-  <button onclick="mySquareFunction()">Calculate Squares</button><br><br>
+
+  Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
 
   Output: <span id="mySpan01">...</span><br><br>
-  <div id="historySpan">History:<br>None yet.</div>
+
+  <div id="historySpan" style="border-top:1px solid #ccc; padding-top:10px; margin-top:20px;">
+    <strong>History:</strong><br>
+    No history yet.
+  </div>
+
 </body>
 </html>

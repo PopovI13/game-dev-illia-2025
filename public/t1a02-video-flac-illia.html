@@ -1,26 +1,47 @@
-<h1 align=centre> t1a02-video-flac-illia.html </h1>
+<<!DOCTYPE html>
+<html>
+<head>
+  <title>t1a02-video-flac-illia.html</title>
+</head>
+<body>
 
+<h1 align="center">t1a02-video-flac-illia.html</h1>
+
+<!-- Input -->
 <input id="myNum01" type="number" value="11" placeholder="Enter a number">
-<button oncick="mySquareFunction()">Go</button>
+<!-- Corrected spelling of "onclick" and function name -->
+<button onclick="mySquareFunction()">Go</button>
+
 <br><br>
+
+<!-- Output -->
 <span id="mySpan01"></span>
 
 <script>
-  fuction mySquereFuction(){
-    let userNum = parseFloat(document.getElementyById('myNum01').value);
+  // Corrected spelling of "function", "mySquareFunction", and "getElementById"
+  function mySquareFunction() {
+    let userNum = parseFloat(document.getElementById('myNum01').value);
+
     let myvideoflac = {
       numbers: [3, 8, userNum]
     };
+
     let output = "";
+
     for (let i = 0; i < myvideoflac.numbers.length; i++) {
       let num = myvideoflac.numbers[i];
       let square = num * num;
+
       if (square % 2 === 0) {
-        output += num + " squared = " + square + " (even)<br>";
-      }else{
-        output += num + " squared = " + square + " (odd)<br>";
+        output += `${num} squared = ${square} (even)<br>`;
+      } else {
+        output += `${num} squared = ${square} (odd)<br>`;
       }
     }
+
     document.getElementById('mySpan01').innerHTML = output;
   }
 </script>
+
+</body>
+</html>

@@ -1,75 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>All 9 JavaScript Concepts (No Classes)</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    #outputHistory { margin-top: 20px; }
-  </style>
-</head>
-<body>
+<h1 align=centre> t1a02-video-flac-illia.html </h1>
 
-<h2 style="text-align:center;">t1a02-video-flac-illia.html</h2>
-
-<!-- Input -->
-Input: <input id="myNum01" type="number" value="4"><br>
-
-<!-- Event -->
-Event: <input type="button" value="myEvent squares" onclick="mySquareFunction()"><br>
-
-<!-- Output -->
-Output: <span id="mySpan01">...</span>
-
-<!-- Output history using loop -->
-<div id="outputHistory">
-  <h3>History:</h3>
-  <ul id="historyList"></ul>
-</div>
+<input id="myNum01" type="number" value="11" placeholder="Enter a number">
+<button oncick="mySquareFunction()">Go</button>
+<br><br>
+<span id="mySpan01"></span>
 
 <script>
-  // Array to store objects
-  const numberHistory = [];
-
-  // Main Function (triggered by Event)
-  function mySquareFunction() {
-    // Variable: get input
-    const myIn1 = parseFloat(document.getElementById('myNum01').value);
-
-    // Input Validation
-    if (isNaN(myIn1)) {
-      document.getElementById('mySpan01').innerHTML = 'Please enter a valid number.';
-      return;
-    }
-
-    // Create object with properties and a message field
-    const numberObj = {
-      input: myIn1,
-      squared: myIn1 * myIn1,
-      message: ''
+  fuction mySquereFuction(){
+    let userNum = parseFloat(document.getElementyById('myNum01').value);
+    let myvideoflac = {
+      numbers: [3, 8, userNum]
     };
-
-    // Decision (if/else) to create message
-    if (numberObj.input > 0) {
-      numberObj.message = `${numberObj.input} is positive. ${numberObj.input} squared = ${numberObj.squared}`;
-    } else if (numberObj.input < 0) {
-      numberObj.message = `${numberObj.input} is negative. ${numberObj.input} squared = ${numberObj.squared}`;
-    } else {
-      numberObj.message = `You entered zero. 0 squared = 0`;
+    let output = "";
+    for (let i = 0; i < myvideoflac.numbers.length; i++) {
+      let num = myvideoflac.numbers[i];
+      let square = num * num;
+      if (square % 2 === 0) {
+        output += num + " squared = " + square + " (even)<br>";
+      }else{
+        output += num + " squared = " + square + " (odd)<br>";
+      }
     }
-
-    // Store object in array
-    numberHistory.push(numberObj);
-
-    // Output the latest result
-    document.getElementById('mySpan01').innerHTML = numberObj.message;
-
-    // Loop: display full history
-    let historyHTML = '';
-    for (let i = 0; i < numberHistory.length; i++) {
-      historyHTML += `<li>${numberHistory[i].message}</li>`;
-    }
-    document.getElementById('historyList').innerHTML = historyHTML;
+    document.getElementById('mySpan01').innerHTML = output;
   }
 </script>
-
-</bod

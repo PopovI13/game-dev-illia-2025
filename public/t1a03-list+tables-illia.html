@@ -1,39 +1,101 @@
-<h5> Version 0.0.2</h5>
-<h1 align=center>T1A03-list-and-tables-by-illia</h1>
-<h2> Lists</h2>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>T1A03-list-and-tables-by-illia</title>
+</head>
+<body>
 
-<ol> Ordered lists of fav foods (at least5)
-<li>Kd
-<li>Steak
+<h5>Version 0.0.2</h5>
+<h1 align="center">T1A03-list-and-tables-by-illia</h1>
+
+<h2>Lists</h2>
+
+<ol> <!-- Ordered list of favorite foods -->
+  <li>KD</li>
+  <li>Steak</li>
+  <li>Pizza</li>
+  <li>Sushi</li>
+  <li>Ice Cream</li>
 </ol>
 
-<ul> Unordered list of Countries (at least 5)
-<li>Canada
-<li>France
+<ul> <!-- Unordered list of countries -->
+  <li>Canada</li>
+  <li>France</li>
+  <li>Japan</li>
+  <li>Brazil</li>
+  <li>Germany</li>
 </ul>
 
-<b> Assigment</b>. You make a list inside a list of 
-multiple items<br>
+<b>Assignment</b>: Make a list inside a list of multiple items<br>
 
-<h2> Tables</h2>
+<!-- Example: Nested List -->
+<ul>
+  <li>Fruits
+    <ul>
+      <li>Apple</li>
+      <li>Banana</li>
+      <li>Grapes</li>
+    </ul>
+  </li>
+  <li>Vegetables
+    <ul>
+      <li>Carrot</li>
+      <li>Broccoli</li>
+      <li>Spinach</li>
+    </ul>
+  </li>
+</ul>
 
-<table bored=1>
+<h2>Tables</h2>
+
+<!-- Fixed table tag and border -->
+<table border="1">
   <tr><td>A</td><td>B</td></tr>
   <tr><td>1</td><td>2</td></tr>
-</table>table><br>
+</table><br>
 
-<b>Assignment</b> Make a 3 x 4 table,
-then make a limk and image table with border = 0<br><br><br>
+<b>Assignment</b>: Make a 3 x 4 table<br><br>
+
+<table border="1">
+  <tr>
+    <th>Row 1</th><th>Col 2</th><th>Col 3</th><th>Col 4</th>
+  </tr>
+  <tr>
+    <td>1</td><td>2</td><td>3</td><td>4</td>
+  </tr>
+  <tr>
+    <td>5</td><td>6</td><td>7</td><td>8</td>
+  </tr>
+</table><br>
+
+<!-- Link and Image table with no border -->
+<table border="0">
+  <tr>
+    <td><a href="https://www.google.com">Google</a></td>
+    <td><img src="https://via.placeholder.com/50" alt="Placeholder Image"></td>
+  </tr>
+</table><br><br>
 
 <h2>Advanced</h2>
 
-Load an image and get it to move 10 pixels to the left using the button below<br>
+<p>Load an image and get it to move 10 pixels to the left using the button below</p>
 
-<image id="myImage01" scr="" style="position:relative; left:0; top:0; width:50; height:50; "><br>
+<img id="myImage01" src="https://via.placeholder.com/50" 
+     style="position:relative; left:0px; top:0px; width:50px; height:50px;"><br><br>
 
-  <input type=button value ="Go left" onclick="{
-    document.getElementById('myImage01').style.left = '200px'
-    document.getElementBuId('myDiva01').innerHTML = 'It went left'
-  }">
+<input type="button" value="Go left" onclick="moveLeft()">
 
-  <div id="myDiv01">...</div>
+<div id="myDiv01">...</div>
+
+<script>
+  function moveLeft() {
+    let img = document.getElementById('myImage01');
+    let currentLeft = parseInt(img.style.left) || 0;
+    img.style.left = (currentLeft - 10) + 'px';
+
+    document.getElementById('myDiv01').innerHTML = 'It went left';
+  }
+</script>
+
+</body>
+</html>

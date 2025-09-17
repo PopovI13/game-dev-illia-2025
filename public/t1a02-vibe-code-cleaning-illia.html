@@ -11,6 +11,36 @@ if doing java script are the variables sensibly named using camelCase "myVar" et
 
  Here is the original vibecode<br>
  <iframe width="100%" height=400 scr="webcam03.html"></iframe>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Number Guessing Game</title>
+</head>
+<body>
+  Guess a number between 1 and 10: 
+  <input id="guess" type="number" min="1" max="10">
+  <button onclick="check()">Guess</button>
+  <br>
+  <span id="result"></span>
+
+  <script>
+    const answer = Math.floor(Math.random() * 10) + 1;
+    function check() {
+      const guess = Number(document.getElementById('guess').value);
+      const result = document.getElementById('result');
+      if (!guess) {
+        result.textContent = "Please enter a number!";
+      } else if (guess === answer) {
+        result.textContent = "Correct! You win!";
+      } else if (guess < answer) {
+        result.textContent = "Too low!";
+      } else {
+        result.textContent = "Too high!";
+      }
+    }
+  </script>
+</body>
+</html>
 
  <br><br>
  Final comments: Any observations about your code compared to the vibeCode<br>

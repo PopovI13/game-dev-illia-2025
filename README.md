@@ -73,7 +73,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 
 ### Title
 1. prepering for videoflac test 
-1.
+1.did a vidoe flac test
 1.
 
 </details>
@@ -81,7 +81,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 <details><summary>Tuesday Sept 16th, 2025</summary>
 
 ### Title
-1.
+1.made a webpage
 1.
 1.
 
@@ -90,8 +90,8 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 <details><summary>Wed Sept 17th, 2025</summary>
 
 ### Title
-1.
-1.
+1.made a new simple game 
+1.did some stuff with robot
 1.
 
 </details>
@@ -99,8 +99,8 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 <details><summary>Thursday Sept 18th, 2025</summary>
 
 ### Title
-1.
-1.
+1.did the webpage mister Elis give
+1.did the names text
 1.
 
 </details>

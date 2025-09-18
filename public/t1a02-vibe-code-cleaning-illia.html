@@ -1,387 +1,195 @@
-<h1 align=centre>t1a02-vibe-code-cleaning-illia.html</h1>
-
-you need to put cleaned code here. No CSS, no confusing divs and paragraphs. Just as simple
-as possible webpage html. <br><br>
-
-if doing java script are the variables sensibly named using camelCase "myVar" etc dont use
- promises (.then) instead use async/await, no addEventListeners unless necessary, get chatGPT to make
- the changes. More changes... Only simple javascript nothing fancy
-
- <br><br>
-
- Here is the original vibecode<br>
- <iframe width="100%" height=400 scr="webcam03.html"></iframe>
-<br><br>
- Final comments: Any observations about your code compared to the vibeCode<br>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightning McQueen: Jumper</title>
+  <meta charset="UTF-8">
+  <title>Lightning McQueen: Jumper</title>
 </head>
 <body>
 
-    <h1>Lightning McQueen: Jumper</h1>
-    <!-- Game container div -->
-    <div id="game-container">
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <button id="restartButton">Play Again</button>
-    </div>
-    <div id="instructions">Press <strong>Spacebar</strong> to JUMP! Collect trophies!</div>
+<h1>Lightning McQueen: Jumper</h1>
+<canvas id="gameCanvas" width="800" height="400"></canvas>
+<button id="restartButton" style="display:none">Play Again</button>
+<div>Press <strong>Spacebar</strong> to JUMP! Collect trophies!</div>
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const restartButton = document.getElementById('restartButton');
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const restartButton = document.getElementById('restartButton');
+  const ROAD_HEIGHT = 50;
+  const GROUND_Y = canvas.height - ROAD_HEIGHT;
 
-        // Game constants
-        const ROAD_HEIGHT = 50;
-        const GROUND_Y = canvas.height - ROAD_HEIGHT;
+  const player = {
+    x: 50, y: GROUND_Y - 60, width: 70, height: 60,
+    velocityY: 0, gravity: 0.8, jumpPower: -18, isJumping: false
+  };
 
-        // Player (Lightning McQueen)
-        const player = {
-            x: 50,
-            y: GROUND_Y - 60,
-            width: 70,
-            height: 60,
-            velocityY: 0,
-            gravity: 0.8,
-            jumpPower: -18,
-            isJumping: false
-        };
+  let entities = [], clouds = [], backgroundLayers = [];
+  let score = 0, highScore = 0, gameSpeed = 5, gameOver = false, spawnTimer = 0;
 
-        // Game state
-        let entities = []; // Will hold obstacles and collectibles
-        let clouds = [];
-        let backgroundLayers = []; // For parallax background
-        let score = 0;
-        let highScore = 0;
-        let gameSpeed = 5;
-        let gameOver = false;
-        let spawnTimer = 0;
+  function drawPlayer() {
+    ctx.fillStyle = 'red';
+    ctx.fillRect(player.x, player.y, player.width, player.height - 15);
+    ctx.fillStyle = 'darkred';
+    ctx.fillRect(player.x + 10, player.y - 15, player.width - 20, 15);
+    ctx.fillStyle = 'black';
+    ctx.beginPath();
+    ctx.arc(player.x + 15, player.y + player.height - 15, 10, 0, Math.PI * 2);
+    ctx.arc(player.x + player.width - 15, player.y + player.height - 15, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'yellow';
+    ctx.beginPath();
+    ctx.moveTo(player.x + 15, player.y + 15);
+    ctx.lineTo(player.x + 40, player.y + 15);
+    ctx.lineTo(player.x + 25, player.y + 25);
+    ctx.lineTo(player.x + 50, player.y + 25);
+    ctx.lineTo(player.x + 20, player.y + 40);
+    ctx.lineTo(player.x + 35, player.y + 28);
+    ctx.lineTo(player.x + 15, player.y + 28);
+    ctx.closePath();
+    ctx.fill();
+  }
 
-        // --- DRAW FUNCTIONS ---
-        function drawPlayer() {
-            // ... (player drawing code is unchanged)
-            // Main body
-            ctx.fillStyle = 'red';
-            ctx.fillRect(player.x, player.y, player.width, player.height - 15);
-
-            // Roof
-            ctx.fillStyle = 'darkred';
-            ctx.fillRect(player.x + 10, player.y - 15, player.width - 20, 15);
-
-            // Wheels
-            ctx.fillStyle = 'black';
-            ctx.beginPath();
-            ctx.arc(player.x + 15, player.y + player.height - 15, 10, 0, Math.PI * 2);
-            ctx.arc(player.x + player.width - 15, player.y + player.height - 15, 10, 0, Math.PI * 2);
-            ctx.fill();
-
-            // --- UPDATED LIGHTNING BOLT ---
-            ctx.fillStyle = 'yellow';
-            ctx.beginPath();
-            ctx.moveTo(player.x + 15, player.y + 15); // Start point
-            ctx.lineTo(player.x + 40, player.y + 15); // Top edge
-            ctx.lineTo(player.x + 25, player.y + 25); // Jag down
-            ctx.lineTo(player.x + 50, player.y + 25); // Bottom edge
-            ctx.lineTo(player.x + 20, player.y + 40); // Pointy end
-            ctx.lineTo(player.x + 35, player.y + 28); // Jag up
-            ctx.lineTo(player.x + 15, player.y + 28); // Back to start
-            ctx.closePath();
-            ctx.fill();
+  function drawBackground() {
+    backgroundLayers.forEach(layer => {
+      ctx.fillStyle = layer.color;
+      layer.elements.forEach(el => {
+        ctx.beginPath();
+        if (layer.type === 'mountains') {
+          ctx.moveTo(el.x, GROUND_Y);
+          ctx.lineTo(el.x + el.width / 2, GROUND_Y - el.height);
+          ctx.lineTo(el.x + el.width, GROUND_Y);
+        } else if (layer.type === 'hills') {
+          ctx.arc(el.x, GROUND_Y, el.width, Math.PI, 0);
         }
+        ctx.closePath();
+        ctx.fill();
+      });
+    });
+  }
 
-        // --- NEW BACKGROUND DRAWING ---
-        function drawBackground() {
-            backgroundLayers.forEach(layer => {
-                ctx.fillStyle = layer.color;
-                layer.elements.forEach(el => {
-                    ctx.beginPath();
-                    if (layer.type === 'mountains') {
-                        ctx.moveTo(el.x, GROUND_Y);
-                        ctx.lineTo(el.x + el.width / 2, GROUND_Y - el.height);
-                        ctx.lineTo(el.x + el.width, GROUND_Y);
-                    } else if (layer.type === 'hills') {
-                        ctx.arc(el.x, GROUND_Y, el.width, Math.PI, 0);
-                    }
-                    ctx.closePath();
-                    ctx.fill();
-                });
-            });
+  function drawRoad() {
+    ctx.fillStyle = '#333';
+    ctx.fillRect(0, GROUND_Y, canvas.width, ROAD_HEIGHT);
+    ctx.fillStyle = 'yellow';
+    for (let i = -gameSpeed * spawnTimer % 40; i < canvas.width; i += 40) {
+      ctx.fillRect(i, GROUND_Y + ROAD_HEIGHT / 2 - 2, 20, 4);
+    }
+  }
+
+  function drawEntities() {
+    entities.forEach(e => {
+      if (e.type === 'pothole') {
+        ctx.fillStyle = '#A0522D';
+        ctx.fillRect(e.x, e.y, e.width, e.height);
+      } else if (e.type === 'cone') {
+        ctx.fillStyle = 'orange';
+        ctx.beginPath();
+        ctx.moveTo(e.x + e.width / 2, e.y);
+        ctx.lineTo(e.x, e.y + e.height);
+        ctx.lineTo(e.x + e.width, e.y + e.height);
+        ctx.closePath();
+        ctx.fill();
+      } else if (e.type === 'trophy') {
+        ctx.fillStyle = '#FFD700';
+        ctx.fillRect(e.x, e.y, e.width, e.height);
+        ctx.fillRect(e.x + e.width / 4, e.y - e.height / 2, e.width / 2, e.height / 2);
+      }
+    });
+  }
+
+  function drawClouds() {
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    clouds.forEach(c => {
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+      ctx.arc(c.x + c.size * 0.8, c.y, c.size * 0.8, 0, Math.PI * 2);
+      ctx.arc(c.x - c.size * 0.8, c.y, c.size * 0.7, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  function drawScore() {
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#FFF';
+    ctx.textAlign = 'left';
+    ctx.fillText(`Score: ${Math.floor(score)}`, 20, 40);
+    ctx.textAlign = 'right';
+    ctx.fillText(`High Score: ${Math.floor(highScore)}`, canvas.width - 20, 40);
+  }
+
+  function updatePlayer() {
+    player.velocityY += player.gravity;
+    player.y += player.velocityY;
+    if (player.y > GROUND_Y - player.height) {
+      player.y = GROUND_Y - player.height;
+      player.velocityY = 0;
+      player.isJumping = false;
+    }
+  }
+
+  function updateBackground() {
+    backgroundLayers.forEach(layer => {
+      layer.elements.forEach(el => el.x -= gameSpeed * layer.speed);
+      if (layer.elements[0].x < -layer.elements[0].width) {
+        const el = layer.elements.shift();
+        const last = layer.elements[layer.elements.length - 1];
+        el.x = last.x + last.width + layer.gap;
+        layer.elements.push(el);
+      }
+    });
+  }
+
+  function updateEntities() {
+    spawnTimer++;
+    if (spawnTimer > 80 + Math.random() * 120) {
+      const rand = Math.random();
+      if (rand < 0.5) {
+        entities.push({ type: 'pothole', x: canvas.width, y: GROUND_Y - 15, width: 30, height: 15 });
+      } else if (rand < 0.8) {
+        entities.push({ type: 'cone', x: canvas.width, y: GROUND_Y - 40, width: 30, height: 40 });
+      } else {
+        entities.push({ type: 'trophy', x: canvas.width, y: GROUND_Y - 80, width: 25, height: 25 });
+      }
+      spawnTimer = 0;
+    }
+    entities.forEach(e => e.x -= gameSpeed);
+  }
+
+  function updateClouds() {
+    if (clouds.length < 5 && Math.random() < 0.01) {
+      clouds.push({ x: canvas.width + 50, y: Math.random() * (canvas.height / 2), size: Math.random() * 15 + 15 });
+    }
+    clouds.forEach(c => c.x -= gameSpeed * 0.4);
+    clouds = clouds.filter(c => c.x > -100);
+  }
+
+  function checkCollisions() {
+    entities = entities.filter(e => {
+      const hit = player.x < e.x + e.width && player.x + player.width > e.x &&
+                  player.y < e.y + e.height && player.y + player.height > e.y;
+      if (hit) {
+        if (e.type === 'trophy') {
+          score += 50;
+          return false;
+        } else {
+          gameOver = true;
         }
-        
-        function drawRoad() {
-            ctx.fillStyle = '#333';
-            ctx.fillRect(0, GROUND_Y, canvas.width, ROAD_HEIGHT);
-            
-            ctx.fillStyle = 'yellow';
-            for (let i = -gameSpeed * spawnTimer % 40; i < canvas.width; i += 40) {
-                ctx.fillRect(i, GROUND_Y + ROAD_HEIGHT / 2 - 2, 20, 4);
-            }
-        }
+      }
+      return e.x + e.width > 0;
+    });
+  }
 
-        function drawEntities() {
-            // ... (unchanged)
-            entities.forEach(entity => {
-                if (entity.type === 'pothole') {
-                    ctx.fillStyle = '#A0522D'; // Brown
-                    ctx.fillRect(entity.x, entity.y, entity.width, entity.height);
-                } else if (entity.type === 'cone') {
-                    ctx.fillStyle = 'orange';
-                    ctx.beginPath();
-                    ctx.moveTo(entity.x + entity.width / 2, entity.y);
-                    ctx.lineTo(entity.x, entity.y + entity.height);
-                    ctx.lineTo(entity.x + entity.width, entity.y + entity.height);
-                    ctx.closePath();
-                    ctx.fill();
-                } else if (entity.type === 'trophy') {
-                    ctx.fillStyle = '#FFD700'; // Gold
-                    ctx.fillRect(entity.x, entity.y, entity.width, entity.height);
-                    ctx.fillRect(entity.x + entity.width / 4, entity.y - entity.height / 2, entity.width / 2, entity.height / 2);
-                }
-            });
-        }
-        
-        function drawClouds() {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            clouds.forEach(cloud => {
-                ctx.beginPath();
-                ctx.arc(cloud.x, cloud.y, cloud.size, 0, Math.PI * 2);
-                ctx.arc(cloud.x + cloud.size * 0.8, cloud.y, cloud.size * 0.8, 0, Math.PI * 2);
-                ctx.arc(cloud.x - cloud.size * 0.8, cloud.y, cloud.size * 0.7, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
+  function showGameOver() {
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (score > highScore) highScore = score;
+    ctx.font = '50px Arial';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
+    ctx.font = '24px Arial';
+    ctx.fillText(`Final Score: ${Math.floor(score)}`, canvas.width / 
 
-        function drawScore() {
-            // ... (unchanged)
-            ctx.font = '24px Arial';
-            ctx.fillStyle = '#FFF';
-            ctx.textAlign = 'left';
-            ctx.fillText(`Score: ${Math.floor(score)}`, 20, 40);
-            ctx.textAlign = 'right';
-            ctx.fillText(`High Score: ${Math.floor(highScore)}`, canvas.width - 20, 40);
-        }
-
-        // --- UPDATE FUNCTIONS ---
-        function updatePlayer() {
-            // ... (unchanged)
-            player.velocityY += player.gravity;
-            player.y += player.velocityY;
-
-            if (player.y > GROUND_Y - player.height) {
-                player.y = GROUND_Y - player.height;
-                player.velocityY = 0;
-                player.isJumping = false;
-            }
-        }
-        
-        // --- NEW BACKGROUND UPDATE ---
-        function updateBackground() {
-            backgroundLayers.forEach(layer => {
-                layer.elements.forEach(el => {
-                    el.x -= gameSpeed * layer.speed;
-                });
-                // If the first element is off-screen, move it to the end
-                let firstEl = layer.elements[0];
-                if (firstEl.x < -firstEl.width) {
-                    layer.elements.shift();
-                    let lastEl = layer.elements[layer.elements.length -1];
-                    firstEl.x = lastEl.x + lastEl.width + layer.gap;
-                    layer.elements.push(firstEl);
-                }
-            });
-        }
-
-        function updateEntities() {
-            // ... (unchanged)
-            spawnTimer++;
-
-            if (spawnTimer > 80 + Math.random() * 120) {
-                const rand = Math.random();
-                if (rand < 0.5) { // 50% chance for a pothole
-                     entities.push({ type: 'pothole', x: canvas.width, y: GROUND_Y - 15, width: 30, height: 15 });
-                } else if (rand < 0.8) { // 30% chance for a cone
-                     entities.push({ type: 'cone', x: canvas.width, y: GROUND_Y - 40, width: 30, height: 40 });
-                } else { // 20% chance for a trophy
-                     entities.push({ type: 'trophy', x: canvas.width, y: GROUND_Y - 80, width: 25, height: 25 });
-                }
-                spawnTimer = 0;
-            }
-
-            entities.forEach(entity => {
-                entity.x -= gameSpeed;
-            });
-        }
-        
-        function updateClouds() {
-             if (clouds.length < 5 && Math.random() < 0.01) {
-                clouds.push({
-                    x: canvas.width + 50,
-                    y: Math.random() * (canvas.height / 2),
-                    size: Math.random() * 15 + 15
-                });
-            }
-            clouds.forEach(cloud => {
-                cloud.x -= gameSpeed * 0.4; // Slightly faster than hills
-            });
-            clouds = clouds.filter(cloud => cloud.x > -100);
-        }
-
-        function checkCollisions() {
-            // ... (unchanged)
-            entities = entities.filter(entity => {
-                 if (
-                    player.x < entity.x + entity.width &&
-                    player.x + player.width > entity.x &&
-                    player.y < entity.y + entity.height &&
-                    player.y + player.height > entity.y
-                ) {
-                    if (entity.type === 'trophy') {
-                        score += 50; // Bonus points!
-                        return false; // Remove trophy from entities array
-                    } else {
-                        gameOver = true;
-                    }
-                }
-                return entity.x + entity.width > 0; // Keep entity if on screen
-            });
-        }
-        
-        function showGameOver() {
-            // ... (unchanged)
-             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-             if (score > highScore) {
-                highScore = score;
-             }
-
-             ctx.font = '50px Arial';
-             ctx.fillStyle = 'white';
-             ctx.textAlign = 'center';
-             ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 30);
-             
-             ctx.font = '24px Arial';
-             ctx.fillText(`Final Score: ${Math.floor(score)}`, canvas.width / 2, canvas.height / 2 + 20);
-             ctx.fillText(`High Score: ${Math.floor(highScore)}`, canvas.width / 2, canvas.height / 2 + 60);
-             
-             restartButton.style.display = 'block';
-        }
-
-        function restartGame() {
-            player.y = GROUND_Y - player.height;
-            player.velocityY = 0;
-            player.isJumping = false;
-
-            entities = [];
-            score = 0;
-            gameSpeed = 5;
-            spawnTimer = 0;
-            gameOver = false;
-            
-            setupBackground(); // Reset the background
-            
-            restartButton.style.display = 'none';
-            gameLoop();
-        }
-
-        // --- NEW BACKGROUND SETUP FUNCTION ---
-        function setupBackground() {
-            backgroundLayers = [];
-            // Layer 1: Distant mountains
-            let mountainLayer = { type: 'mountains', speed: 0.1, color: '#4F4F4F', elements: [], gap: 0 };
-            for(let i=0; i<4; i++) {
-                let width = 200 + Math.random() * 150;
-                mountainLayer.elements.push({
-                    x: i * (width + mountainLayer.gap),
-                    width: width,
-                    height: 100 + Math.random() * 100
-                });
-            }
-            backgroundLayers.push(mountainLayer);
-            
-            // Layer 2: Closer hills
-            let hillLayer = { type: 'hills', speed: 0.2, color: '#2E8B57', elements: [], gap: -50 };
-            for(let i=0; i<6; i++) {
-                 let width = 150 + Math.random() * 100;
-                 hillLayer.elements.push({
-                    x: i * (width + hillLayer.gap),
-                    width: width,
-                 });
-            }
-            backgroundLayers.push(hillLayer);
-        }
-        
-        function setup() {
-            clouds = []; // Clear clouds on setup
-            for(let i = 0; i < 5; i++) {
-                 clouds.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * (canvas.height / 2),
-                    size: Math.random() * 15 + 15
-                });
-            }
-            setupBackground();
-            gameLoop();
-        }
-
-        // --- MAIN GAME LOOP ---
-        function gameLoop() {
-            if (gameOver) {
-                showGameOver();
-                return;
-            }
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Update order
-            updateBackground();
-            updateClouds();
-            updatePlayer();
-            updateEntities();
-            checkCollisions();
-            
-            score += 0.1;
-            if (gameSpeed < 15) {
-                gameSpeed += 0.002;
-            }
-
-            // Draw order (back to front)
-            drawBackground();
-            drawClouds();
-            drawRoad();
-            drawEntities();
-            drawPlayer();
-            drawScore();
-
-            requestAnimationFrame(gameLoop);
-        }
-
-        function handleJump(e) {
-            // ... (unchanged)
-            if (gameOver) {
-                if (e.type !== 'mousedown') restartGame(); // prevent double trigger
-                return;
-            }
-            if ((e.code === 'Space' || e.type === 'mousedown') && !player.isJumping) {
-                player.isJumping = true;
-                player.velocityY = player.jumpPower;
-            }
-        }
-        
-        document.addEventListener('keydown', handleJump);
-        canvas.addEventListener('mousedown', handleJump);
-        restartButton.addEventListener('click', restartGame);
-
-        setup(); // Use setup to start the game
-    </script>
-
-</body>
-</html>
 
 
 

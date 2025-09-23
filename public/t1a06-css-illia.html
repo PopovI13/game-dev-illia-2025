@@ -37,3 +37,63 @@ This is <i style="border-left: 3px groove black;">framed with a left border</i>
 <p style="text-decoration: line-through;">This text has a strikethrough.</p>
 <p style="text-decoration: overline;">This text has a line over it.</p>
 <p style="text-decoration: none;">This text has no decoration.</p>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notebook Style Background</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: repeating-linear-gradient(
+        to bottom,
+        #fff,
+        #fff 28px,
+        #d1d5db 29px
+      );
+      /* White background with light gray horizontal lines spaced every 29px */
+      padding: 40px;
+      color: #111;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 28px; /* Match the line spacing */
+    }
+
+    /* Optional: Add a vertical red margin line (like the left margin in a notebook) */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 40px; /* margin distance */
+      width: 2px;
+      background: #ef4444; /* red margin line */
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    h1, p {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Notebook Page</h1>
+  <p>This text fits perfectly over the lined notebook background.</p>
+  <p>You can add as many paragraphs as you want and the lines will repeat behind the text.</p>
+  <p>Try resizing the window to see how the lines adjust!</p>
+</body>
+</html>

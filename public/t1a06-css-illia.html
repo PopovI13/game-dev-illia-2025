@@ -54,35 +54,3 @@ This is <i style="border-left: 3px groove black;">framed with a left border</i>
 
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jumping Text on Page Load</title>
-  <style>
-    /* Keyframes for jumping animation */
-    @keyframes jump {
-      0%   { transform: translateY(0); }
-      50%  { transform: translateY(-30px); }
-      100% { transform: translateY(0); }
-    }
-
-    /* Apply the animation */
-    .jump-once {
-      display: inline-block; /* needed for transform to work properly */
-      animation: jump 0.6s ease forwards;
-      animation-iteration-count: 1; /* only once */
-    }
-  </style>
-</head>
-<body>
-  <h1 class="jump-once">Welcome to my page!</h1>
-</body>
-</html>
-
-
-
-
-
-

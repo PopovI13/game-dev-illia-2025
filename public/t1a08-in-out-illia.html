@@ -3,13 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>t1a08-in-out-illia.html</title>
-  <script>
-    function myDoStuff() {
-      // Example: show input value inside the span
-      const inputValue = document.getElementById('myNum01').value;
-      document.getElementById('mySpan01').textContent = "You typed: " + inputValue;
-    }
-  </script>
 </head>
 <body>
 
@@ -19,33 +12,38 @@
   <span id="mySpan01">...</span><br>
 
   <input type="button" value="Do Stuff" onclick="myDoStuff()"><br>
+  <input type="button" value="Clear Input" onclick="clearInput()"><br>
+  <input type="button" value="Reset Output" onclick="resetOutput()"><br>
+  <input type="button" value="Count Characters" onclick="countCharacters()"><br>
+  <input type="button" value="Reverse Text" onclick="reverseText()"><br>
 
+  <script>
+    function myDoStuff() {
+      const inputValue = document.getElementById('myNum01').value;
+      document.getElementById('mySpan01').textContent = "You typed: " + inputValue;
+    }
+
+    function clearInput() {
+      document.getElementById('myNum01').value = "";
+    }
+
+    function resetOutput() {
+      document.getElementById('mySpan01').textContent = "...";
+    }
+
+    function countCharacters() {
+      const inputValue = document.getElementById('myNum01').value;
+      const length = inputValue.length;
+      document.getElementById('mySpan01').textContent = "Character count: " + length;
+    }
+
+    function reverseText() {
+      const inputValue = document.getElementById('myNum01').value;
+      const reversed = inputValue.split('').reverse().join('');
+      document.getElementById('mySpan01').textContent = "Reversed: " + reversed;
+    }
+  </script>
 </body>
 </html>
 
-<script>
-  function myDoStuff() {
-    const inputValue = document.getElementById('myNum01').value;
-    document.getElementById('mySpan01').textContent = "You typed: " + inputValue;
-  }
 
-  function clearInput() {
-    document.getElementById('myNum01').value = "";
-  }
-
-  function resetOutput() {
-    document.getElementById('mySpan01').textContent = "...";
-  }
-
-  function countCharacters() {
-    const inputValue = document.getElementById('myNum01').value;
-    const length = inputValue.length;
-    document.getElementById('mySpan01').textContent = "Character count: " + length;
-  }
-
-  function reverseText() {
-    const inputValue = document.getElementById('myNum01').value;
-    const reversed = inputValue.split('').reverse().join('');
-    document.getElementById('mySpan01').textContent = "Reversed: " + reversed;
-  }
-</script>

@@ -23,3 +23,29 @@
 </body>
 </html>
 
+<script>
+  function myDoStuff() {
+    const inputValue = document.getElementById('myNum01').value;
+    document.getElementById('mySpan01').textContent = "You typed: " + inputValue;
+  }
+
+  function clearInput() {
+    document.getElementById('myNum01').value = "";
+  }
+
+  function resetOutput() {
+    document.getElementById('mySpan01').textContent = "...";
+  }
+
+  function countCharacters() {
+    const inputValue = document.getElementById('myNum01').value;
+    const length = inputValue.length;
+    document.getElementById('mySpan01').textContent = "Character count: " + length;
+  }
+
+  function reverseText() {
+    const inputValue = document.getElementById('myNum01').value;
+    const reversed = inputValue.split('').reverse().join('');
+    document.getElementById('mySpan01').textContent = "Reversed: " + reversed;
+  }
+</script>

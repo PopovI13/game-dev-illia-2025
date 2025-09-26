@@ -1,15 +1,25 @@
-<script>
-    function myDoStuff(){
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>t1a08-in-out-illia.html</title>
+  <script>
+    function myDoStuff() {
+      // Example: show input value inside the span
+      const inputValue = document.getElementById('myNum01').value;
+      document.getElementById('mySpan01').textContent = "You typed: " + inputValue;
     }
-</script>
+  </script>
+</head>
+<body>
 
-<h1 aligh=centre>t1a08-in-out-illia.html</h1>
+  <h1 style="text-align: center;">t1a08-in-out-illia.html</h1>
 
-<input id="myNum01" type=text  value="Illia"><br>
-<span id="mySpan01">...</span><br>
+  <input id="myNum01" type="text" value="Illia"><br>
+  <span id="mySpan01">...</span><br>
 
-<input type=button value="Do Stuff" onlcick="{
-    alert ('Hi')
-    }"><br>
-    
-    
+  <input type="button" value="Do Stuff" onclick="myDoStuff()"><br>
+
+</body>
+</html>
+

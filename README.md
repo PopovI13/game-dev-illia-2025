@@ -150,7 +150,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 <details><summary>Friday Sept 26th, 2025</summary>
 
 ### Title
-1.
+1.tried to make a webpage by myslef 
 1.
 1.
 

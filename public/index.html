@@ -56,3 +56,28 @@
   </ul>
 </body>
 </html>
+
+
+
+<div class="section" style="text-align: center;">
+  <input type="button" value="🌓 Toggle Dark Mode" onclick="{
+    document.body.classList.toggle('dark');
+  }">
+</div>
+
+<style>
+  body.dark {
+    background-color: #222;
+    color: #eee;
+  }
+
+  body.dark .section {
+    background-color: #333;
+    box-shadow: none;
+  }
+
+  body.dark input[type='button'] {
+    background-color: #444;
+  }
+</style>
+

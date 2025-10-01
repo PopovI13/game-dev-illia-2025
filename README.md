@@ -178,11 +178,11 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 
 ---
 
-<details><summary>October 2025 Journal Entries</summary>
+<details open><summary>October 2025 Journal Entries</summary>
 
 ---
 
-<details open><summary>Wednesday Oct 1st, 2025</summary>
+<details><summary>Wednesday Oct 1st, 2025</summary>
 
 ### Title
 1.

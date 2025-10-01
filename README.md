@@ -15,7 +15,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 
 ---
 
-<details open><summary>September 2025 Journal Entries</summary>
+<details><summary>September 2025 Journal Entries</summary>
 
 ---
 
@@ -182,7 +182,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 
 ---
 
-<details><summary>Wednesday Oct 1st, 2025</summary>
+<details open><summary>Wednesday Oct 1st, 2025</summary>
 
 ### Title
 1.

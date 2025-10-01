@@ -60,9 +60,7 @@
 
 
 <div class="section" style="text-align: center;">
-  <input type="button" value="🌓 Dark Mode" onclick="{
-    document.body.classList.toggle('dark');
-  }">
+  <input id="themeToggleBtn" type="button" value="🌙 Dark Mode" onclick="toggleTheme()">
 </div>
 
 <style>
@@ -80,4 +78,20 @@
     background-color: #444;
   }
 </style>
+
+<script>
+  function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('themeToggleBtn');
+
+    body.classList.toggle('dark');
+
+    if (body.classList.contains('dark')) {
+      btn.value = '☀️ Light Mode';
+    } else {
+      btn.value = '🌙 Dark Mode';
+    }
+  }
+</script>
+
 

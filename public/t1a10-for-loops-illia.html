@@ -23,20 +23,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Days of the Month</title>
+  <title>Days List</title>
 </head>
 <body>
 
 <h1>Days of the Month</h1>
+<div id="daysOutput"></div>
 
 <script>
+  let output = "";
   for (let day = 1; day <= 31; day++) {
-    document.write("Day " + day + "<br>");
+    output += "Day " + day + "<br>";
   }
+
+  document.getElementById("daysOutput").innerHTML = output;
 </script>
 
 </body>
 </html>
+
 
 
   

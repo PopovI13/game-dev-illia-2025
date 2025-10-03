@@ -1,51 +1,51 @@
-<h2>Adding integers</h2>
+<h1 align="center">t1a09-veriablse-illia.html</h1>
 
-<input id="myInt01" type="text" value="7">
+show correct use of const, va, let and integer, character, boolean, float and string.<br>
+
+<input id="myNum01" type="text" value="Illia" > 
++ 
+<input id="myNum02" type="text" value="Mary" ><br>
+<span id="mySpan01">...</span><br>
+
+<input type="button" value="add (concatenate) strings" onclick="{
+  let myIllia = document.getElementById('myNum01').value;
+  var myMary = document.getElementById('myNum02').value;
+  const myOut = document.getElementById('mySpan01');
+  myOut.innerHTML = myIllia + ' ' + myMary;
+}"><br>
+
+You do similar versions of this for integer character, boolean and float.
+
+
+<h2> Adding floating point numbers</h2>
+
+<input id="myNum03" type=text value="3.4">
 +
-<input id="myInt02" type="text" value="5"><br>
-<span id="mySpan04">...</span><br>
+<input id="myNum04" type=text value="2.1"><br>
+<span id="mySpan02">...</span><br>
 
-<input type="button" value="add integers" onclick="{
-  let num1 = document.getElementById('myInt01').value;
-  var num2 = document.getElementById('myInt02').value;
-  let result = parseInt(num1) + parseInt(num2);
-  const output = document.getElementById('mySpan04');
-  output.innerHTML = num1 + ' + ' + num2 + ' = ' + result;
+<input type=button value="add floating point numbers" onclick="{
+  let myIllia = document.getElementById('myNum03').value
+  var myMary  = document.getElementById('myNum04').value
+  let myAnswer = parseFloat(myIllia) + parseFloat(myMary)
+  const myOut = document.getElementById('mySpan02')
+  myOut.innerHTML = myIllia + ' + ' + myMary + ' = ' + myAnswer
 }"><br>
 
+<h2> test for boolean</h2>
 
-<h2>Concatenate characters</h2>
+<input id="myBool" type=text value="3.4">
 
-<input id="myChar01" type="text" value="A">
-+
-<input id="myChar02" type="text" value="B"><br>
-<span id="mySpan05">...</span><br>
+<span id="mySpan03">...</span><br>
 
-<input type="button" value="concatenate characters" onclick="{
-  let char1 = document.getElementById('myChar01').value;
-  var char2 = document.getElementById('myChar02').value;
-  const output = document.getElementById('mySpan05');
-  output.innerHTML = 'Characters: ' + char1 + ' + ' + char2 + ' = ' + char1 + char2;
+<input type=button value="is boolean?" onclick="{
+  let myBool = document.getElementById('myBool').value
+  const myOut = document.getElementById('mySpan03')
+
+  if (myBool.toLowerCase() === 'true' || myBool.toLowerCase() === 'false') {
+     myAnswer = 'yes'
+  } else {
+    myAnswer = 'No'
+  }
+  myOut.innerHTML = 'Is' + myBool +' a Boolean? ' + myAnswer;
 }"><br>
-
-
-<h2>Convert string to Boolean (true/false)</h2>
-
-<input id="myBool2" type="text" value="true"><br>
-<span id="mySpan06">...</span><br>
-
-<input type="button" value="convert to Boolean" onclick="{
-  let input = document.getElementById('myBool2').value.toLowerCase().trim();
-  const output = document.getElementById('mySpan06');
-  
-  let isBoolean = (input === 'true' || input === 'false');
-  let converted = (input === 'true');
-  
-  output.innerHTML = 'Input: ' + input + '<br>' +
-                     'Is Boolean? ' + isBoolean + '<br>' +
-                     'Converted Boolean Value: ' + (isBoolean ? converted : 'N/A');
-}"><br>
-
-  
-    
- 

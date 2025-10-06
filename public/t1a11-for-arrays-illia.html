@@ -1,30 +1,46 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>t1a11-for-arrays-illia</title>
+</head>
+<body>
+
 <script>
-  
-  myArray[0] = 'Illia'
-  myArray[1] = 'Mary'
-  myArray[2] = 'Zizzy'
-  
+  // Declare the array
+  let myArray = [];
+  myArray[0] = 'Illia';
+  myArray[1] = 'Mary';
+  myArray[2] = 'Zizzy';
 </script>
 
-<h2 aligh=centre>t1a11-for-arrays-illia.html</h2>
+<h2 align="center">t1a11-for-arrays-illia.html</h2>
 
-Max Array Entry: <input tyt1a11-arrays-loops-illia.htmle=text id="myText01" value="3"><br>
+Max Array Entry:
+<input type="text" id="myText01" value="3"><br><br>
 
-<input type=button value="Example onClick" onClick="{
-  let myMax = document.getElementyById('myText01').value
-  let mySum = ''
-  document.getElementyById('myDiv01').innerHTML = ' '
+<input type="button" value="Example onClick" onClick="
+  let myMax = document.getElementById('myText01').value;
+  let mySum = '';
+  document.getElementById('myDiv01').innerHTML = '';
 
-  for (let myLoop=0;  myLoop < myMax; myLoop++){
-  mySun       += 'Loop #:' + myLoop + ' array entry: ' + myArray[myLoop] +'<br>'
-  }">
+  for (let myLoop = 0; myLoop < myMax; myLoop++) {
+    mySum += 'Loop #' + myLoop + ' — array entry: ' + myArray[myLoop] + '<br>';
+  }
+
+  document.getElementById('myDiv01').innerHTML = mySum;
+">
+
 <div id="myDiv01">...</div>
 
-<br>
+<br><br>
 
 You do at least 7 other arrays:<br>
-  
+<!-- You can add your other arrays here below this line -->
+
+</body>
+</html>
 
 
 

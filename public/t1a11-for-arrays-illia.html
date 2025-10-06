@@ -7,41 +7,65 @@
 </head>
 <body>
 
-<script>
-  // Declare the array
-  let myArray = [];
-  myArray[0] = 'Illia';
-  myArray[1] = 'Mary';
-  myArray[2] = 'Zizzy';
-</script>
-
 <h2 align="center">t1a11-for-arrays-illia.html</h2>
 
+<!-- Dropdown to select the array -->
+Select an Array:
+<select id="arraySelect">
+  <option value="0">People</option>
+  <option value="1">Colors</option>
+  <option value="2">Animals</option>
+  <option value="3">Fruits</option>
+  <option value="4">Countries</option>
+  <option value="5">Sports</option>
+  <option value="6">Subjects</option>
+  <option value="7">Cars</option>
+</select>
+<br><br>
+
 Max Array Entry:
-<input type="text" id="myText01" value="3"><br><br>
+<input type="text" id="myText01" value="3">
+<br><br>
 
-<input type="button" value="Example onClick" onClick="
-  let myMax = document.getElementById('myText01').value;
-  let mySum = '';
-  document.getElementById('myDiv01').innerHTML = '';
-
-  for (let myLoop = 0; myLoop < myMax; myLoop++) {
-    mySum += 'Loop #' + myLoop + ' — array entry: ' + myArray[myLoop] + '<br>';
-  }
-
-  document.getElementById('myDiv01').innerHTML = mySum;
-">
+<input type="button" value="Show Array Entries" onclick="showArray()">
+<br><br>
 
 <div id="myDiv01">...</div>
 
-<br><br>
+<script>
+  // All 8 arrays stored inside a big array
+  const allArrays = [
+    ['Illia', 'Mary', 'Zizzy', 'Tom'],                         // 0: People
+    ['Red', 'Blue', 'Green', 'Yellow', 'Purple'],             // 1: Colors
+    ['Cat', 'Dog', 'Elephant', 'Zebra', 'Tiger'],             // 2: Animals
+    ['Apple', 'Banana', 'Orange', 'Mango', 'Peach'],          // 3: Fruits
+    ['Canada', 'Ukraine', 'Japan', 'Brazil', 'France'],       // 4: Countries
+    ['Soccer', 'Basketball', 'Tennis', 'Cricket', 'Rugby'],   // 5: Sports
+    ['Math', 'Science', 'English', 'Art', 'History'],         // 6: Subjects
+    ['Tesla', 'BMW', 'Toyota', 'Ford', 'Audi']                // 7: Cars
+  ];
 
-You do at least 7 other arrays:<br>
-<!-- You can add your other arrays here below this line -->
+  function showArray() {
+    let selectedArrayIndex = document.getElementById("arraySelect").value;
+    let myMax = parseInt(document.getElementById("myText01").value);
+    let output = '';
+
+    let selectedArray = allArrays[selectedArrayIndex];
+
+    if (myMax > selectedArray.length) {
+      myMax = selectedArray.length; // prevent going out of bounds
+    }
+
+    for (let i = 0; i < myMax; i++) {
+      output += 'Loop #' + i + ' — array entry: ' + selectedArray[i] + '<br>';
+    }
+
+    document.getElementById("myDiv01").innerHTML = output;
+  }
+</script>
 
 </body>
 </html>
-
 
 
 

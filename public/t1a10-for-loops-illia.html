@@ -1,47 +1,69 @@
 
-  <h1>t1a10-for-loops-illia</h1>
-
-  <input id="muNum01" type="number" value="4"><br>
-
-  <input type="button" value="myEvent squares" onclick="{
-    let myTemp = '';
-    document.getElementById('myDiv01').innerHTML = '';
-    for (let x = 0; x < 10; x++) {
-      if (x == 3) {
-        myTemp += x + ' third <br>';
-      } else {
-        myTemp += x + '<br>';
-      }
-    }
-    document.getElementById('myDiv01').innerHTML = myTemp;
-  }"><br>
-
-  <div id="myDiv01">...</div>
-
-
-
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Days List</title>
+  <title>For Loops Demo - Illia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .special {
+      color: red;
+      font-weight: bold;
+    }
+    .day {
+      margin-left: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Days of the Month</h1>
-<div id="daysOutput"></div>
+  <h1>t1a10-for-loops-illia</h1>
 
-<script>
-  let output = "";
-  for (let day = 1; day <= 31; day++) {
-    output += "Day " + day + "<br>";
-  }
+  <label>Enter a number:</label>
+  <input id="muNum01" type="number" value="4"><br><br>
 
-  document.getElementById("daysOutput").innerHTML = output;
-</script>
+  <input type="button" value="Show Squares with Highlight" onclick="showSquares()"><br><br>
+  <div id="myDiv01">...</div>
+
+  <hr>
+
+  <h1>Days of the Month</h1>
+  <label>How many days? </label>
+  <input type="number" id="numDays" value="31" min="1" max="31">
+  <input type="button" value="Show Days" onclick="showDays()"><br><br>
+  <div id="daysOutput"></div>
+
+  <script>
+    function showSquares() {
+      let myTemp = '';
+      for (let x = 0; x < 10; x++) {
+        if (x == 3) {
+          myTemp += `<span class="special">${x} - third</span><br>`;
+        } else {
+          myTemp += `${x}<br>`;
+        }
+      }
+      document.getElementById('myDiv01').innerHTML = myTemp;
+    }
+
+    function showDays() {
+      let output = "";
+      const maxDays = parseInt(document.getElementById('numDays').value);
+      for (let day = 1; day <= maxDays; day++) {
+        if (day === 3) {
+          output += `<div class="special">Day ${day} - Special Day</div>`;
+        } else {
+          output += `<div class="day">Day ${day}</div>`;
+        }
+      }
+      document.getElementById("daysOutput").innerHTML = output;
+    }
+  </script>
 
 </body>
 </html>
-
 
 
   

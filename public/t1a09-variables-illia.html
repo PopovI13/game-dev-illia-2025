@@ -63,8 +63,11 @@
 <input id="myBool" type="text" value="true"><br>
 <span id="mySpan03">...</span><br>
 <input type="button" value="Is Boolean?" onclick="{
-  let userInput = document.getElementById('myBo
+  let userInput = document.getElementById('myBool').value.trim().toLowerCase();
+  const output = document.getElementById('mySpan03');
+  let isBoolean = (userInput === 'true' || userInput === 'false');
+  output.innerHTML = 'Is "' + userInput + '" a Boolean? ' + (isBoolean ? 'Yes' : 'No');
+}"><br><br>
 
-
-
-
+</body>
+</html>

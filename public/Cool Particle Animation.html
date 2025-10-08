@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Interactive Starburst Particles</title>
+  <title>Stars + Firework Explosions</title>
   <style>
     * {
       margin: 0;
@@ -44,7 +44,7 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <h1>Move your mouse! Click a star to make it shoot!</h1>
+  <h1>Move your mouse! Click a star to starburst, click elsewhere for fireworks!</h1>
 
   <script>
     const canvas = document.getElementById('canvas');
@@ -60,6 +60,7 @@
     window.addEventListener('resize', resize);
     resize();
 
+    // Base Particle class (floating stars)
     class Particle {
       constructor(x, y, radius = null, color = null) {
         this.x = x !== undefined ? x : Math.random() * width;
@@ -69,7 +70,7 @@
         this.speedX = (Math.random() - 0.5) * 0.5;
         this.speedY = (Math.random() - 0.5) * 0.5;
         this.opacity = 1;
-        this.isExploded = false; // Whether this star has exploded
+        this.isExploded = false; // mark if exploded already
       }
       draw() {
         ctx.beginPath();
@@ -92,6 +93,7 @@
       }
     }
 
+    // Starburst particles (rays shooting out from a star)
     class StarburstParticle extends Particle {
       constructor(x, y, angle) {
         const radius = Math.random() * 2 + 1.5;
@@ -116,13 +118,42 @@
       }
     }
 
+    // Firework explosion particles (burst from any point)
+    class FireworkParticle extends Particle {
+      constructor(x, y) {
+        const radius = Math.random() * 4 + 2;
+        const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        super(x, y, radius, color);
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 7 + 3;
+        this.speedX = Math.cos(angle) * speed;
+        this.speedY = Math.sin(angle) * speed;
+        this.friction = 0.95;
+        this.gravity = 0.1;
+        this.opacity = 1;
+        this.decay = Math.random() * 0.015 + 0.01;
+      }
+      update() {
+        this.speedX *= this.friction;
+        this.speedY *= this.friction;
+        this.speedY += this.gravity;
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.opacity -= this.decay;
+        if (this.opacity < 0) this.opacity = 0;
+      }
+    }
+
+    // Initialize floating stars
     const particles = [];
     const PARTICLE_COUNT = 150;
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle());
     }
 
+    // Arrays to hold starburst and firework explosions
     const starbursts = [];
+    const fireworks = [];
 
     let mouse = { x: null, y: null };
 
@@ -131,12 +162,12 @@
       mouse.y = e.clientY;
     });
 
-    // On click, check if click is near any particle, if so explode it!
     window.addEventListener('click', e => {
       const clickX = e.clientX;
       const clickY = e.clientY;
-      const threshold = 15; // How close to a star to trigger explosion
+      const threshold = 15; // click range to trigger starburst
 
+      let explodedStar = false;
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         if (p.isExploded) continue;
@@ -145,15 +176,18 @@
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < threshold) {
           triggerStarburst(p, i);
+          explodedStar = true;
           break;
         }
+      }
+      if (!explodedStar) {
+        createFirework(clickX, clickY);
       }
     });
 
     function triggerStarburst(particle, index) {
       particle.isExploded = true;
 
-      // Create starburst particles radiating out
       const raysCount = 20;
       const starburstParticles = [];
       for (let i = 0; i < raysCount; i++) {
@@ -162,10 +196,19 @@
       }
       starbursts.push(starburstParticles);
 
-      // Optionally remove the original star after explosion or fade it out
+      // Remove original particle after short delay to keep explosion visible briefly
       setTimeout(() => {
         particles.splice(index, 1);
-      }, 300); // small delay so it still shows briefly exploded
+      }, 300);
+    }
+
+    function createFirework(x, y) {
+      const count = 40;
+      const fireworkParticles = [];
+      for (let i = 0; i < count; i++) {
+        fireworkParticles.push(new FireworkParticle(x, y));
+      }
+      fireworks.push(fireworkParticles);
     }
 
     function connectParticles() {
@@ -190,10 +233,11 @@
     function animate() {
       ctx.clearRect(0, 0, width, height);
 
+      // Update and draw floating particles
       particles.forEach(p => {
         p.update();
 
-        // Repel from mouse
+        // Mouse repelling effect
         if (mouse.x !== null && mouse.y !== null) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
@@ -223,6 +267,18 @@
         if (allFaded) starbursts.splice(i, 1);
       }
 
+      // Animate fireworks
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        const firework = fireworks[i];
+        let allFaded = true;
+        firework.forEach(p => {
+          p.update();
+          p.draw();
+          if (p.opacity > 0) allFaded = false;
+        });
+        if (allFaded) fireworks.splice(i, 1);
+      }
+
       requestAnimationFrame(animate);
     }
 
@@ -230,3 +286,4 @@
   </script>
 </body>
 </html>
+

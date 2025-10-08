@@ -34,19 +34,36 @@
       z-index: 1;
       font-size: 3rem;
       text-shadow: 0 0 10px rgba(255,255,255,0.6);
-      pointer-events: none;
+      pointer-events: auto; /* make sure it's clickable */
       user-select: none;
       max-width: 90vw;
       text-align: center;
       margin: 0 20px;
+      cursor: pointer; /* show pointer on hover */
+      transition: opacity 0.4s ease; /* smooth fade (optional) */
+    }
+    h1.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <h1>Move your mouse!</h1>
+  <h1>Move your mouse! Click a star to starburst, click elsewhere for fireworks!</h1>
 
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const heading = document.querySelector('h1');
+      heading.addEventListener('click', () => {
+        // Option 1: Instant hide
+        // heading.style.display = 'none';
+
+        // Option 2: Fade out nicely then remove pointer events
+        heading.classList.add('hidden');
+      });
+    });
+
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
@@ -60,7 +77,6 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // Base Particle class (floating stars)
     class Particle {
       constructor(x, y, radius = null, color = null) {
         this.x = x !== undefined ? x : Math.random() * width;
@@ -70,7 +86,7 @@
         this.speedX = (Math.random() - 0.5) * 0.5;
         this.speedY = (Math.random() - 0.5) * 0.5;
         this.opacity = 1;
-        this.isExploded = false; // mark if exploded already
+        this.isExploded = false;
       }
       draw() {
         ctx.beginPath();
@@ -86,14 +102,12 @@
         if (!this.isExploded) {
           this.x += this.speedX;
           this.y += this.speedY;
-
           if (this.x < 0 || this.x > width) this.speedX *= -1;
           if (this.y < 0 || this.y > height) this.speedY *= -1;
         }
       }
     }
 
-    // Starburst particles (rays shooting out from a star)
     class StarburstParticle extends Particle {
       constructor(x, y, angle) {
         const radius = Math.random() * 2 + 1.5;
@@ -118,7 +132,6 @@
       }
     }
 
-    // Firework explosion particles (burst from any point)
     class FireworkParticle extends Particle {
       constructor(x, y) {
         const radius = Math.random() * 4 + 2;
@@ -144,14 +157,12 @@
       }
     }
 
-    // Initialize floating stars
     const particles = [];
     const PARTICLE_COUNT = 150;
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle());
     }
 
-    // Arrays to hold starburst and firework explosions
     const starbursts = [];
     const fireworks = [];
 
@@ -165,7 +176,7 @@
     window.addEventListener('click', e => {
       const clickX = e.clientX;
       const clickY = e.clientY;
-      const threshold = 15; // click range to trigger starburst
+      const threshold = 15;
 
       let explodedStar = false;
       for (let i = 0; i < particles.length; i++) {
@@ -187,7 +198,6 @@
 
     function triggerStarburst(particle, index) {
       particle.isExploded = true;
-
       const raysCount = 20;
       const starburstParticles = [];
       for (let i = 0; i < raysCount; i++) {
@@ -195,8 +205,6 @@
         starburstParticles.push(new StarburstParticle(particle.x, particle.y, angle));
       }
       starbursts.push(starburstParticles);
-
-      // Remove original particle after short delay to keep explosion visible briefly
       setTimeout(() => {
         particles.splice(index, 1);
       }, 300);
@@ -232,12 +240,8 @@
 
     function animate() {
       ctx.clearRect(0, 0, width, height);
-
-      // Update and draw floating particles
       particles.forEach(p => {
         p.update();
-
-        // Mouse repelling effect
         if (mouse.x !== null && mouse.y !== null) {
           const dx = p.x - mouse.x;
           const dy = p.y - mouse.y;
@@ -249,13 +253,11 @@
             p.y += Math.sin(angle) * repelForce;
           }
         }
-
         p.draw();
       });
 
       connectParticles();
 
-      // Animate starbursts
       for (let i = starbursts.length - 1; i >= 0; i--) {
         const burst = starbursts[i];
         let allFaded = true;
@@ -267,7 +269,6 @@
         if (allFaded) starbursts.splice(i, 1);
       }
 
-      // Animate fireworks
       for (let i = fireworks.length - 1; i >= 0; i--) {
         const firework = fireworks[i];
         let allFaded = true;
@@ -283,11 +284,6 @@
     }
 
     animate();
-     const heading = document.querySelector('h1');
-    heading.addEventListener('click', () => {
-      heading.style.display = 'none';
-    });
   </script>
 </body>
 </html>
-

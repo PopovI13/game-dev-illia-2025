@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cool Particle Explosion</title>
+  <title>Interactive Starburst Particles</title>
   <style>
     * {
       margin: 0;
@@ -36,12 +36,15 @@
       text-shadow: 0 0 10px rgba(255,255,255,0.6);
       pointer-events: none;
       user-select: none;
+      max-width: 90vw;
+      text-align: center;
+      margin: 0 20px;
     }
   </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <h1>Move your mouse! Click to explode!</h1>
+  <h1>Move your mouse! Click a star to make it shoot!</h1>
 
   <script>
     const canvas = document.getElementById('canvas');
@@ -66,6 +69,7 @@
         this.speedX = (Math.random() - 0.5) * 0.5;
         this.speedY = (Math.random() - 0.5) * 0.5;
         this.opacity = 1;
+        this.isExploded = false; // Whether this star has exploded
       }
       draw() {
         ctx.beginPath();
@@ -78,27 +82,28 @@
         ctx.globalAlpha = 1;
       }
       update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+        if (!this.isExploded) {
+          this.x += this.speedX;
+          this.y += this.speedY;
 
-        if (this.x < 0 || this.x > width) this.speedX *= -1;
-        if (this.y < 0 || this.y > height) this.speedY *= -1;
+          if (this.x < 0 || this.x > width) this.speedX *= -1;
+          if (this.y < 0 || this.y > height) this.speedY *= -1;
+        }
       }
     }
 
-    class ExplosionParticle extends Particle {
-      constructor(x, y) {
-        const radius = Math.random() * 4 + 2;
-        const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+    class StarburstParticle extends Particle {
+      constructor(x, y, angle) {
+        const radius = Math.random() * 2 + 1.5;
+        const color = `hsl(${Math.random() * 360}, 100%, 85%)`;
         super(x, y, radius, color);
-        const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 7 + 3;
+        const speed = Math.random() * 6 + 3;
         this.speedX = Math.cos(angle) * speed;
         this.speedY = Math.sin(angle) * speed;
-        this.friction = 0.95;
-        this.gravity = 0.1;
+        this.friction = 0.92;
+        this.gravity = 0.05;
         this.opacity = 1;
-        this.decay = Math.random() * 0.015 + 0.01;
+        this.decay = Math.random() * 0.02 + 0.015;
       }
       update() {
         this.speedX *= this.friction;
@@ -113,12 +118,11 @@
 
     const particles = [];
     const PARTICLE_COUNT = 150;
-
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle());
     }
 
-    const explosions = [];
+    const starbursts = [];
 
     let mouse = { x: null, y: null };
 
@@ -127,17 +131,41 @@
       mouse.y = e.clientY;
     });
 
+    // On click, check if click is near any particle, if so explode it!
     window.addEventListener('click', e => {
-      createExplosion(e.clientX, e.clientY);
+      const clickX = e.clientX;
+      const clickY = e.clientY;
+      const threshold = 15; // How close to a star to trigger explosion
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        if (p.isExploded) continue;
+        const dx = p.x - clickX;
+        const dy = p.y - clickY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < threshold) {
+          triggerStarburst(p, i);
+          break;
+        }
+      }
     });
 
-    function createExplosion(x, y) {
-      const count = 40;
-      const explosionParticles = [];
-      for (let i = 0; i < count; i++) {
-        explosionParticles.push(new ExplosionParticle(x, y));
+    function triggerStarburst(particle, index) {
+      particle.isExploded = true;
+
+      // Create starburst particles radiating out
+      const raysCount = 20;
+      const starburstParticles = [];
+      for (let i = 0; i < raysCount; i++) {
+        const angle = (i / raysCount) * Math.PI * 2;
+        starburstParticles.push(new StarburstParticle(particle.x, particle.y, angle));
       }
-      explosions.push(explosionParticles);
+      starbursts.push(starburstParticles);
+
+      // Optionally remove the original star after explosion or fade it out
+      setTimeout(() => {
+        particles.splice(index, 1);
+      }, 300); // small delay so it still shows briefly exploded
     }
 
     function connectParticles() {
@@ -183,16 +211,16 @@
 
       connectParticles();
 
-      // Animate explosions
-      for (let i = explosions.length - 1; i >= 0; i--) {
-        const explosion = explosions[i];
+      // Animate starbursts
+      for (let i = starbursts.length - 1; i >= 0; i--) {
+        const burst = starbursts[i];
         let allFaded = true;
-        explosion.forEach(p => {
+        burst.forEach(p => {
           p.update();
           p.draw();
           if (p.opacity > 0) allFaded = false;
         });
-        if (allFaded) explosions.splice(i, 1);
+        if (allFaded) starbursts.splice(i, 1);
       }
 
       requestAnimationFrame(animate);

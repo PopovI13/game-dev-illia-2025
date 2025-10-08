@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Stars + Firework Explosions</title>
+  <title>Exploding Text + Fireworks</title>
   <style>
     * {
       margin: 0;
@@ -34,13 +34,13 @@
       z-index: 1;
       font-size: 3rem;
       text-shadow: 0 0 10px rgba(255,255,255,0.6);
-      pointer-events: auto; /* make sure it's clickable */
+      pointer-events: auto;
       user-select: none;
       max-width: 90vw;
       text-align: center;
       margin: 0 20px;
-      cursor: pointer; /* show pointer on hover */
-      transition: opacity 0.4s ease; /* smooth fade (optional) */
+      cursor: pointer;
+      transition: opacity 0.4s ease;
     }
     h1.hidden {
       opacity: 0;
@@ -50,17 +50,22 @@
 </head>
 <body>
   <canvas id="canvas"></canvas>
-  <h1>Move your mouse! Click a star to starburst, click elsewhere for fireworks!</h1>
+  <h1 id="exploding-text">Click me for a big explosion!</h1>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const heading = document.querySelector('h1');
-      heading.addEventListener('click', () => {
-        // Option 1: Instant hide
-        // heading.style.display = 'none';
+      const heading = document.getElementById('exploding-text');
 
-        // Option 2: Fade out nicely then remove pointer events
+      heading.addEventListener('click', () => {
         heading.classList.add('hidden');
+
+        // Get the position of the heading in the viewport
+        const rect = heading.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // Create a big firework at heading's position
+        createFirework(centerX, centerY, true);
       });
     });
 
@@ -79,8 +84,8 @@
 
     class Particle {
       constructor(x, y, radius = null, color = null) {
-        this.x = x !== undefined ? x : Math.random() * width;
-        this.y = y !== undefined ? y : Math.random() * height;
+        this.x = x ?? Math.random() * width;
+        this.y = y ?? Math.random() * height;
         this.radius = radius || (Math.random() * 3 + 1);
         this.color = color || `hsl(${Math.random() * 360}, 70%, 60%)`;
         this.speedX = (Math.random() - 0.5) * 0.5;
@@ -92,7 +97,7 @@
         ctx.beginPath();
         ctx.fillStyle = this.color;
         ctx.shadowColor = this.color;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 10;
         ctx.globalAlpha = this.opacity;
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -108,41 +113,17 @@
       }
     }
 
-    class StarburstParticle extends Particle {
-      constructor(x, y, angle) {
-        const radius = Math.random() * 2 + 1.5;
-        const color = `hsl(${Math.random() * 360}, 100%, 85%)`;
-        super(x, y, radius, color);
-        const speed = Math.random() * 6 + 3;
-        this.speedX = Math.cos(angle) * speed;
-        this.speedY = Math.sin(angle) * speed;
-        this.friction = 0.92;
-        this.gravity = 0.05;
-        this.opacity = 1;
-        this.decay = Math.random() * 0.02 + 0.015;
-      }
-      update() {
-        this.speedX *= this.friction;
-        this.speedY *= this.friction;
-        this.speedY += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.opacity -= this.decay;
-        if (this.opacity < 0) this.opacity = 0;
-      }
-    }
-
     class FireworkParticle extends Particle {
-      constructor(x, y) {
-        const radius = Math.random() * 4 + 2;
+      constructor(x, y, big = false) {
+        const radius = Math.random() * (big ? 6 : 4) + 2;
         const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
         super(x, y, radius, color);
         const angle = Math.random() * 2 * Math.PI;
-        const speed = Math.random() * 7 + 3;
+        const speed = Math.random() * (big ? 10 : 7) + (big ? 4 : 3);
         this.speedX = Math.cos(angle) * speed;
         this.speedY = Math.sin(angle) * speed;
-        this.friction = 0.95;
-        this.gravity = 0.1;
+        this.friction = 0.93;
+        this.gravity = 0.15;
         this.opacity = 1;
         this.decay = Math.random() * 0.015 + 0.01;
       }
@@ -158,116 +139,35 @@
     }
 
     const particles = [];
-    const PARTICLE_COUNT = 150;
+    const PARTICLE_COUNT = 100;
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle());
     }
 
-    const starbursts = [];
     const fireworks = [];
-
-    let mouse = { x: null, y: null };
-
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
 
     window.addEventListener('click', e => {
       const clickX = e.clientX;
       const clickY = e.clientY;
-      const threshold = 15;
-
-      let explodedStar = false;
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        if (p.isExploded) continue;
-        const dx = p.x - clickX;
-        const dy = p.y - clickY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < threshold) {
-          triggerStarburst(p, i);
-          explodedStar = true;
-          break;
-        }
-      }
-      if (!explodedStar) {
-        createFirework(clickX, clickY);
-      }
+      createFirework(clickX, clickY);
     });
 
-    function triggerStarburst(particle, index) {
-      particle.isExploded = true;
-      const raysCount = 20;
-      const starburstParticles = [];
-      for (let i = 0; i < raysCount; i++) {
-        const angle = (i / raysCount) * Math.PI * 2;
-        starburstParticles.push(new StarburstParticle(particle.x, particle.y, angle));
-      }
-      starbursts.push(starburstParticles);
-      setTimeout(() => {
-        particles.splice(index, 1);
-      }, 300);
-    }
-
-    function createFirework(x, y) {
-      const count = 40;
+    function createFirework(x, y, big = false) {
+      const count = big ? 100 : 40;
       const fireworkParticles = [];
       for (let i = 0; i < count; i++) {
-        fireworkParticles.push(new FireworkParticle(x, y));
+        fireworkParticles.push(new FireworkParticle(x, y, big));
       }
       fireworks.push(fireworkParticles);
     }
 
-    function connectParticles() {
-      const maxDistance = 100;
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < maxDistance) {
-            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - dist / maxDistance})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
     function animate() {
       ctx.clearRect(0, 0, width, height);
+
       particles.forEach(p => {
         p.update();
-        if (mouse.x !== null && mouse.y !== null) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
-            const angle = Math.atan2(dy, dx);
-            const repelForce = (100 - dist) / 20;
-            p.x += Math.cos(angle) * repelForce;
-            p.y += Math.sin(angle) * repelForce;
-          }
-        }
         p.draw();
       });
-
-      connectParticles();
-
-      for (let i = starbursts.length - 1; i >= 0; i--) {
-        const burst = starbursts[i];
-        let allFaded = true;
-        burst.forEach(p => {
-          p.update();
-          p.draw();
-          if (p.opacity > 0) allFaded = false;
-        });
-        if (allFaded) starbursts.splice(i, 1);
-      }
 
       for (let i = fireworks.length - 1; i >= 0; i--) {
         const firework = fireworks[i];

@@ -4,13 +4,26 @@
   <meta charset="UTF-8">
   <title>t1a12-for-events-illia.html</title>
   <style>
-    #hover-box {
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .box {
       width: 200px;
       height: 100px;
       background-color: lightgray;
       text-align: center;
       line-height: 100px;
-      margin-bottom: 10px;
+      margin: 10px 0;
+    }
+    #log {
+      margin-top: 20px;
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-family: monospace;
     }
   </style>
 </head>
@@ -18,38 +31,99 @@
 
 <h1 style="text-align: center;">t1a12-for-events-illia.html</h1>
 
-<!-- Event 1: onclick on button -->
-<button onclick="console.log('Hi from button!')">Click Me (Check Console)</button><br><br>
+<!-- Event 1: onclick -->
+<button onclick="log('Button clicked')">Click Me</button><br><br>
 
-<!-- Event 2: onmouseover on input -->
+<!-- Event 2: onmouseover -->
 <input type="button" value="Hover over me" onmouseover="this.style.backgroundColor='green'"><br><br>
 
-<!-- Event 3: onmouseout on input -->
-<input type="button" value="Move out" onmouseout="this.style.backgroundColor='red'"><br><br>
+<!-- Event 3: onmouseout -->
+<input type="button" value="Mouse out" onmouseout="this.style.backgroundColor='red'"><br><br>
 
-<!-- Event 4: onchange on select -->
-<select onchange="alert('Changed to: ' + this.value)">
-  <option value="">Select something</option>
-  <option value="apple">Apple</option>
-  <option value="banana">Banana</option>
+<!-- Event 4: ondblclick -->
+<p ondblclick="this.style.color='blue'">Double-click me to turn blue</p>
+
+<!-- Event 5: onchange -->
+<select onchange="log('Selected: ' + this.value)">
+  <option value="">Choose...</option>
+  <option value="one">One</option>
+  <option value="two">Two</option>
 </select><br><br>
 
-<!-- Event 5: onfocus on input -->
+<!-- Event 6: onfocus -->
 <input type="text" placeholder="Focus on me" onfocus="this.style.borderColor='blue'"><br><br>
 
-<!-- Event 6: onblur on input -->
-<input type="text" placeholder="Click away" onblur="this.style.borderColor='gray'"><br><br>
+<!-- Event 7: onblur -->
+<input type="text" placeholder="Blur (click away)" onblur="this.style.borderColor='gray'"><br><br>
 
-<!-- Event 7: onkeydown on input -->
-<input type="text" placeholder="Type here" onkeydown="console.log('Key down: ' + event.key)"><br><br>
+<!-- Event 8: onkeydown -->
+<input type="text" placeholder="Type something" onkeydown="log('Key: ' + event.key)"><br><br>
 
-<!-- Event 8: oncontextmenu on div -->
-<div id="hover-box" oncontextmenu="alert('Right-click detected'); return false;">
+<!-- Event 9: oncontextmenu -->
+<div class="box" oncontextmenu="alert('Right-clicked!'); return false;">
   Right-click me
 </div>
 
-<!-- Event 9: ondblclick -->
-<p ondblclick="this.style.color='purple'">Double-click this text to change color.</p>
+<!-- Event 10: onsubmit -->
+<form onsubmit="log('Form submitted'); return false;">
+  <input type="text" name="name" placeholder="Your name" required>
+  <button type="submit">Submit Form</button>
+</form><br>
+
+<!-- Event 11: onreset -->
+<form onreset="log('Form reset')">
+  <input type="text" name="email" placeholder="Email">
+  <button type="reset">Reset Form</button>
+</form><br>
+
+<!-- Event 12: oninput -->
+<input type="text" placeholder="Input changes" oninput="log('Input: ' + this.value)"><br><br>
+
+<!-- Event 13: oncopy -->
+<textarea oncopy="log('Copied text!')" placeholder="Try copying me..."></textarea><br><br>
+
+<!-- Event 14: oncut -->
+<textarea oncut="log('Cut text!')" placeholder="Try cutting me..."></textarea><br><br>
+
+<!-- Event 15: onpaste -->
+<textarea onpaste="log('Pasted text!')" placeholder="Try pasting here..."></textarea><br><br>
+
+<!-- Event 16: onscroll -->
+<div style="height: 100px; overflow-y: scroll; border: 1px solid black;" onscroll="log('Scrolled!')">
+  <p>Scroll inside this box</p>
+  <p>More content...</p>
+  <p>Even more...</p>
+  <p>Still more...</p>
+  <p>Last one...</p>
+</div><br>
+
+<!-- Event 17: onresize -->
+<button onclick="window.resizeTo(600, 400);">Resize Window</button><br><br>
+
+<!-- Event 18: onload -->
+<!-- handled in script below -->
+
+<!-- Event 19: onerror (image) -->
+<img src="wrongimage.jpg" onerror="log('Image failed to load')" width="100"><br><br>
+
+<!-- Logger -->
+<div id="log"><strong>Event log:</strong></div>
+
+<script>
+  function log(message) {
+    const logBox = document.getElementById('log');
+    const time = new Date().toLocaleTimeString();
+    logBox.innerHTML += `<div>[${time}] ${message}</div>`;
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  // Event 18: onload
+  window.onload = () => log('Page loaded');
+
+  // Event 20: window resize
+  window.onresize = () => log('Window resized');
+</script>
 
 </body>
 </html>
+

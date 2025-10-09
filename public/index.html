@@ -4,17 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Game Dev by Illia - Index</title>
+  <!-- Keep head minimal for now -->
   <style>
+    /* Just a small fix for body font & layout here */
     body {
       font-family: 'Inter', sans-serif;
-      text-align: side;
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #222;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    h1, h2, h3 {
+      color: #333;
+      margin-bottom: 0.5rem;
     }
     ul {
       list-style-type: none;
-      padding: 0;
+      padding-left: 0;
+      margin-bottom: 1.5rem;
     }
     li {
-      margin: 8px 0;
+      margin: 0.6rem 0;
+    }
+    a {
+      text-decoration: none;
+      color: #0077cc;
+      transition: color 0.2s;
+    }
+    a:hover, a:focus {
+      color: #005fa3;
+      text-decoration: underline;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 2rem 0;
     }
   </style>
 </head>
@@ -27,85 +54,103 @@
   </ul>
   <hr>
 
-
-
   <h2>Please mark those:</h2>
-<ul>
-  <li><a href=".."></a></li>
-  <li><a href="t1a09-variables-illia.html">t1a09-variables-illia.html</a></li>
-  <li><a href="t1a10-for-loops-illia.html">t1a10-for-loops-illia.html</a></li>
-  <li><a href="t1a11-for-arrays-illia.html">t1a11-for-arrays-illia.html</a></li>
-  <li><a href="Cool Particle Animation.html">Cool Particle Animation.html</a></li>
-</ul>
-  
+  <ul>
+    <li><a href=".."></a></li>
+    <li><a href="t1a09-variables-illia.html">t1a09-variables-illia.html</a></li>
+    <li><a href="t1a10-for-loops-illia.html">t1a10-for-loops-illia.html</a></li>
+    <li><a href="t1a11-for-arrays-illia.html">t1a11-for-arrays-illia.html</a></li>
+    <li><a href="Cool Particle Animation.html">Cool Particle Animation.html</a></li>
+  </ul>
+
   <h3>The following only need the exact file name</h3>
-
- <ul>
-  <li><a href="t1a01-dropem-webpage-illia.html">t1a01-dropem-webpage-illia.html</a></li>
-  <li><a href="t1a02-video-flac-illia.html">t1a02-video-flac-illia.html</a></li>
-  <li><a href="t1a03-list+tables-illia.html">t1a03-list+tables-illia.html</a></li>
-  <li><a href="t1a04-vibe-code-cleaning-illia.html">t1a04-vibe-code-cleaning-illia.html</a></li>
-  <li><a href="t1a05-forms-illia.html">t1a05-forms-illia.html</a></li>
-  <li><a href="t1a06-css-illia.html">t1a06-css-illia.html</a></li>
-  <li><a href="t1a07-easyEDA-illia.html">t1a07-easyEDA-illia.html</a></li>
-  <li><a href="t1a08-in-out-illia.html">t1a08-in-out-illia.html</a></li>
-  <li><a href="t1a09-variables-illia.html">t1a09-variables-illia.html</a></li>
-  <li><a href="t1a10-for-loops-illia.html">t1a10-for-loops-illia.html</a></li>
-  <li><a href="t1a11-for-arrays-illia.html">t1a11-for-arrays-illia.html</a></li>
-</ul>
-
+  <ul>
+    <li><a href="t1a01-dropem-webpage-illia.html">t1a01-dropem-webpage-illia.html</a></li>
+    <li><a href="t1a02-video-flac-illia.html">t1a02-video-flac-illia.html</a></li>
+    <li><a href="t1a03-list+tables-illia.html">t1a03-list+tables-illia.html</a></li>
+    <li><a href="t1a04-vibe-code-cleaning-illia.html">t1a04-vibe-code-cleaning-illia.html</a></li>
+    <li><a href="t1a05-forms-illia.html">t1a05-forms-illia.html</a></li>
+    <li><a href="t1a06-css-illia.html">t1a06-css-illia.html</a></li>
+    <li><a href="t1a07-easyEDA-illia.html">t1a07-easyEDA-illia.html</a></li>
+    <li><a href="t1a08-in-out-illia.html">t1a08-in-out-illia.html</a></li>
+    <li><a href="t1a09-variables-illia.html">t1a09-variables-illia.html</a></li>
+    <li><a href="t1a10-for-loops-illia.html">t1a10-for-loops-illia.html</a></li>
+    <li><a href="t1a11-for-arrays-illia.html">t1a11-for-arrays-illia.html</a></li>
+  </ul>
 
   <h3>Bonus x assignments</h3>
-
   <ul>
     <li><a href="t2a14browser-hack.html">t2a14browser-hack.html</a></li>
     <li><a href="Cool Particle Animation.html">Cool Particle Animation.html</a></li>
   </ul>
 
   <h3>Play My Game</h3>
-
   <ul>
     <li><a href="https://g.co/gemini/share/3760dde0bfe5" target="_blank" rel="noopener noreferrer">Webpage Creation for Game Dev Class</a></li>
   </ul>
+
+  <div class="section" style="text-align: center; margin: 2rem 0;">
+    <input id="themeToggleBtn" type="button" value="🌚 Dark Mode" onclick="toggleTheme()">
+  </div>
+
+  <!-- Put all style improvements here -->
+  <style>
+    /* Style for the toggle button */
+    input[type="button"] {
+      cursor: pointer;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgb(0 119 204 / 0.4);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    input[type="button"]:hover {
+      background-color: #005fa3;
+      box-shadow: 0 3px 8px rgb(0 95 163 / 0.6);
+    }
+
+    /* Dark mode */
+    body.dark {
+      background-color: #222;
+      color: #eee;
+    }
+    body.dark a {
+      color: #66aaff;
+    }
+    body.dark a:hover,
+    body.dark a:focus {
+      color: #99cfff;
+    }
+    body.dark input[type='button'] {
+      background-color: #444;
+      box-shadow: none;
+      color: #eee;
+    }
+    body.dark input[type='button']:hover {
+      background-color: #666;
+      box-shadow: none;
+    }
+  </style>
+
+  <!-- And the dark mode toggle script -->
+  <script>
+    function toggleTheme() {
+      const body = document.body;
+      const btn = document.getElementById('themeToggleBtn');
+      body.classList.toggle('dark');
+      if (body.classList.contains('dark')) {
+        btn.value = '☀️ Light Mode';
+      } else {
+        btn.value = '🌚 Dark Mode';
+      }
+    }
+  </script>
 </body>
 </html>
 
-
-
-<div class="section" style="text-align: center;">
-  <input id="themeToggleBtn" type="button" value="🌚 Dark Mode" onclick="toggleTheme()">
-</div>
-
-<style>
-  body.dark {
-    background-color: #222;
-    color: #eee;
-  }
-
-  body.dark .section {
-    background-color: #333;
-    box-shadow: none;
-  }
-
-  body.dark input[type='button'] {
-    background-color: #444;
-  }
-</style>
-
-<script>
-  function toggleTheme() {
-    const body = document.body;
-    const btn = document.getElementById('themeToggleBtn');
-
-    body.classList.toggle('dark');
-
-    if (body.classList.contains('dark')) {
-      btn.value = '☀️ Light Mode';
-    } else {
-      btn.value = '🌚 Dark Mode';
-    }
-  }
-</script>
 
 
 

@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Game Dev by Illia - Index</title>
-  <!-- Keep head minimal for now -->
+  <!-- Minimal essential styles in head -->
   <style>
-    /* Just a small fix for body font & layout here */
+    @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
     body {
       font-family: 'Inter', sans-serif;
       max-width: 720px;
@@ -93,7 +94,6 @@
     <input id="themeToggleBtn" type="button" value="🌚 Dark Mode" onclick="toggleTheme()">
   </div>
 
-  <!-- Put all style improvements here -->
   <style>
     /* Style for the toggle button */
     input[type="button"] {
@@ -133,9 +133,14 @@
       background-color: #666;
       box-shadow: none;
     }
+
+    /* Force all links in lists to be left aligned */
+    ul li a {
+      display: block;
+      text-align: left;
+    }
   </style>
 
-  <!-- And the dark mode toggle script -->
   <script>
     function toggleTheme() {
       const body = document.body;

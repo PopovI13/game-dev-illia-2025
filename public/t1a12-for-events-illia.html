@@ -1,107 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>HTML Events Demo</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  button, input, textarea { margin: 10px 0; padding: 8px; width: 250px; }
-  div#mouse-area {
-    width: 250px; height: 150px; border: 2px solid #333;
-    margin: 10px 0; display: flex; align-items: center; justify-content: center;
-    user-select: none;
-  }
-  #log {
-    margin-top: 20px; padding: 10px; background: #f0f0f0; height: 150px; overflow-y: auto;
-    border: 1px solid #ccc; white-space: pre-wrap; font-family: monospace;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>t1a12-for-events-illia.html</title>
+  <style>
+    #hover-box {
+      width: 200px;
+      height: 100px;
+      background-color: lightgray;
+      text-align: center;
+      line-height: 100px;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>HTML Events Demo</h1>
+<h1 style="text-align: center;">t1a12-for-events-illia.html</h1>
 
-<!-- Mouse Events -->
-<div id="mouse-area">Mouse over me and click me!</div>
+<!-- Event 1: onclick on button -->
+<button onclick="console.log('Hi from button!')">Click Me (Check Console)</button><br><br>
 
-<!-- Keyboard Events -->
-<input id="keyboard-input" type="text" placeholder="Type something here" />
+<!-- Event 2: onmouseover on input -->
+<input type="button" value="Hover over me" onmouseover="this.style.backgroundColor='green'"><br><br>
 
-<!-- Form Events -->
-<form id="demo-form">
-  <input type="text" name="name" placeholder="Your name" required />
-  <input type="email" name="email" placeholder="Your email" required />
-  <button type="submit">Submit Form</button>
-  <button type="reset">Reset Form</button>
-</form>
+<!-- Event 3: onmouseout on input -->
+<input type="button" value="Move out" onmouseout="this.style.backgroundColor='red'"><br><br>
 
-<!-- Clipboard Events -->
-<textarea id="clipboard-area" rows="4" placeholder="Try copy, cut, and paste here"></textarea>
+<!-- Event 4: onchange on select -->
+<select onchange="alert('Changed to: ' + this.value)">
+  <option value="">Select something</option>
+  <option value="apple">Apple</option>
+  <option value="banana">Banana</option>
+</select><br><br>
 
-<!-- Window Events -->
-<button id="resize-btn">Resize Window</button>
+<!-- Event 5: onfocus on input -->
+<input type="text" placeholder="Focus on me" onfocus="this.style.borderColor='blue'"><br><br>
 
-<!-- Log output -->
-<div id="log"></div>
+<!-- Event 6: onblur on input -->
+<input type="text" placeholder="Click away" onblur="this.style.borderColor='gray'"><br><br>
 
-<script>
-  const log = document.getElementById('log');
+<!-- Event 7: onkeydown on input -->
+<input type="text" placeholder="Type here" onkeydown="console.log('Key down: ' + event.key)"><br><br>
 
-  function logEvent(event) {
-    const time = new Date().toLocaleTimeString();
-    log.textContent += `[${time}] Event: ${event.type}\n`;
-    log.scrollTop = log.scrollHeight;
-  }
+<!-- Event 8: oncontextmenu on div -->
+<div id="hover-box" oncontextmenu="alert('Right-click detected'); return false;">
+  Right-click me
+</div>
 
-  // Mouse Events
-  const mouseArea = document.getElementById('mouse-area');
-  mouseArea.addEventListener('click', logEvent);
-  mouseArea.addEventListener('dblclick', logEvent);
-  mouseArea.addEventListener('mousedown', logEvent);
-  mouseArea.addEventListener('mouseup', logEvent);
-  mouseArea.addEventListener('mouseover', logEvent);
-  mouseArea.addEventListener('mouseout', logEvent);
-  mouseArea.addEventListener('mousemove', logEvent);
-  mouseArea.addEventListener('contextmenu', e => {
-    logEvent(e);
-    e.preventDefault(); // prevent context menu
-  });
-
-  // Keyboard Events
-  const keyboardInput = document.getElementById('keyboard-input');
-  keyboardInput.addEventListener('keydown', logEvent);
-  keyboardInput.addEventListener('keyup', logEvent);
-
-  // Form Events
-  const form = document.getElementById('demo-form');
-  form.addEventListener('submit', e => {
-    logEvent(e);
-    e.preventDefault(); // prevent actual submission for demo
-  });
-  form.addEventListener('reset', logEvent);
-  form.addEventListener('focusin', logEvent);  // focus on any element inside form
-  form.addEventListener('focusout', logEvent); // blur on any element inside form
-  form.querySelectorAll('input').forEach(input => {
-    input.addEventListener('change', logEvent);
-    input.addEventListener('input', logEvent);
-  });
-
-  // Clipboard Events
-  const clipboardArea = document.getElementById('clipboard-area');
-  clipboardArea.addEventListener('copy', logEvent);
-  clipboardArea.addEventListener('cut', logEvent);
-  clipboardArea.addEventListener('paste', logEvent);
-
-  // Window Events
-  window.addEventListener('resize', logEvent);
-  window.addEventListener('scroll', logEvent);
-
-  // Trigger resize event on button click to demo window resize
-  document.getElementById('resize-btn').addEventListener('click', () => {
-    window.resizeTo(600, 400);
-  });
-</script>
+<!-- Event 9: ondblclick -->
+<p ondblclick="this.style.color='purple'">Double-click this text to change color.</p>
 
 </body>
 </html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HTML Events Demo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  button, input, textarea { margin: 10px 0; padding: 8px; width: 250px; }
+  div#mouse-area {
+    width: 250px; height: 150px; border: 2px solid #333;
+    margin: 10px 0; display: flex; align-items: center; justify-content: center;
+    user-select: none;
+  }
+  #log {
+    margin-top: 20px; padding: 10px; background: #f0f0f0; height: 150px; overflow-y: auto;
+    border: 1px solid #ccc; white-space: pre-wrap; font-family: monospace;
+  }
+</style>
+</head>
+<body>
+
+<h1>HTML Events Demo</h1>
+
+<!-- Mouse Events -->
+<div id="mouse-area">Mouse over me and click me!</div>
+
+<!-- Keyboard Events -->
+<input id="keyboard-input" type="text" placeholder="Type something here" />
+
+<!-- Form Events -->
+<form id="demo-form">
+  <input type="text" name="name" placeholder="Your name" required />
+  <input type="email" name="email" placeholder="Your email" required />
+  <button type="submit">Submit Form</button>
+  <button type="reset">Reset Form</button>
+</form>
+
+<!-- Clipboard Events -->
+<textarea id="clipboard-area" rows="4" placeholder="Try copy, cut, and paste here"></textarea>
+
+<!-- Window Events -->
+<button id="resize-btn">Resize Window</button>
+
+<!-- Log output -->
+<div id="log"></div>
+
+<script>
+  const log = document.getElementById('log');
+
+  function logEvent(event) {
+    const time = new Date().toLocaleTimeString();
+    log.textContent += `[${time}] Event: ${event.type}\n`;
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // Mouse Events
+  const mouseArea = document.getElementById('mouse-area');
+  mouseArea.addEventListener('click', logEvent);
+  mouseArea.addEventListener('dblclick', logEvent);
+  mouseArea.addEventListener('mousedown', logEvent);
+  mouseArea.addEventListener('mouseup', logEvent);
+  mouseArea.addEventListener('mouseover', logEvent);
+  mouseArea.addEventListener('mouseout', logEvent);
+  mouseArea.addEventListener('mousemove', logEvent);
+  mouseArea.addEventListener('contextmenu', e => {
+    logEvent(e);
+    e.preventDefault(); // prevent context menu
+  });
+
+  // Keyboard Events
+  const keyboardInput = document.getElementById('keyboard-input');
+  keyboardInput.addEventListener('keydown', logEvent);
+  keyboardInput.addEventListener('keyup', logEvent);
+
+  // Form Events
+  const form = document.getElementById('demo-form');
+  form.addEventListener('submit', e => {
+    logEvent(e);
+    e.preventDefault(); // prevent actual submission for demo
+  });
+  form.addEventListener('reset', logEvent);
+  form.addEventListener('focusin', logEvent);  // focus on any element inside form
+  form.addEventListener('focusout', logEvent); // blur on any element inside form
+  form.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', logEvent);
+    input.addEventListener('input', logEvent);
+  });
+
+  // Clipboard Events
+  const clipboardArea = document.getElementById('clipboard-area');
+  clipboardArea.addEventListener('copy', logEvent);
+  clipboardArea.addEventListener('cut', logEvent);
+  clipboardArea.addEventListener('paste', logEvent);
+
+  // Window Events
+  window.addEventListener('resize', logEvent);
+  window.addEventListener('scroll', logEvent);
+
+  // Trigger resize event on button click to demo window resize
+  document.getElementById('resize-btn').addEventListener('click', () => {
+    window.resizeTo(600, 400);
+  });
+</script>
+
+</body>
+</html>

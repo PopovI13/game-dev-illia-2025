@@ -1,13 +1,16 @@
 <script>
+
   class myAnimal {
-    constructor(passName, passAge) {
+    constructor(passName, passAge){
       this.myName = passName;
       this.myAge = passAge;
     }
-    myShow() {
-      document.getElementById('myDiv01').innerHTML = 'Hello ' + this.myName + '<br>';
-    }
+    myShow(){
+      document.getElementById('myDiv01').innerHTML = 'Hello '+ this.myName + '<br>' +
+                                                      'Age: ' + this.myAge + '<br>';
+    } 
   } // end class myAnimal
+
 </script>
 
 <h2 align="center">t1a13-extend-class-illia.html</h2>
@@ -21,17 +24,49 @@
 
 <h4> Example extending Class code</h4>
 
-Nothing:<input type="text" id="myText01" value="Useless at the moment"><br>
+Nothing: <input type="text" id="myText01" value="Useless at the moment"><br><br>
 
-<input type="button" value="Example Extend Class Animal" onClick="{
+<!-- Cat Button -->
+<input type="button" value="Example Extend Class Animal (Cat)" onClick="{
   class myCat extends myAnimal {
+    constructor(name, age, breed) {
+      super(name, age);
+      this.breed = breed;
+    }
     myShow() {
-      document.getElementById('myDiv01').innerHTML = this.myName + ' is a great cat<br>';
+      document.getElementById('myDiv01').innerHTML = 
+        this.myName + ' is a great ' + this.breed + ' cat<br>' +
+        'Age: ' + this.myAge + '<br>';
     }
   } // end extended class myCat
 
-  myPet = new myCat('Fluffy', 14);
+  let catName = document.getElementById('myText01').value;
+  myPet = new myCat(catName, 14, 'Siamese');
   myPet.myShow();
+}">
+
+<!-- Dog Button -->
+<input type="button" value="Example Extend Class Animal (Dog)" onClick="{
+  class myDogExtended extends myAnimal {
+    constructor(name, age, breed) {
+      super(name, age);
+      this.breed = breed;
+    }
+    myShow() {
+      document.getElementById('myDiv01').innerHTML = 
+        this.myName + ' is a friendly ' + this.breed + ' dog<br>' +
+        'Age: ' + this.myAge + '<br>';
+    }
+  } // end extended class myDogExtended
+
+  let dogName = document.getElementById('myText01').value;
+  myDoggy = new myDogExtended(dogName, 8, 'Labrador');
+  myDoggy.myShow();
+}">
+
+<!-- Clear Output Button -->
+<input type="button" value="Clear Output" onClick="{
+  document.getElementById('myDiv01').innerHTML = '...';
 }">
 
 <div id="myDiv01">...</div>

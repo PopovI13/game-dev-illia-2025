@@ -1,5 +1,6 @@
 game-dev-illia-2025
 
+<img src="images/myphoto.jpg" alt="My Photo" width="300" />
 
 
 https://popovi13.github.io/game-dev-illia-2025/public/

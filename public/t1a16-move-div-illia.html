@@ -1,26 +1,133 @@
-<body onkeypress="myKeyPress(event)">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>8 Moving Objects</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    .object {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 100px;
+      background-color: red;
+      text-align: center;
+      line-height: 50px;
+      color: white;
+      font-size: 14px;
+      border-radius: 5px;
+    }
+    #obj1 { background-color: red; top: 50px; left: 10px; }
+    #obj2 { background-color: green; top: 120px; left: 10px; }
+    #obj3 { background-color: blue; top: 200px; left: 10px; }
+    #obj4 { background-color: orange; top: 300px; left: 200px; }
+    #obj5 { background-color: purple; top: 400px; left: 10px; }
+    #obj6 { background-color: teal; top: 500px; left: 10px; }
+    #obj7 { background-color: brown; top: 600px; left: 10px; }
+    #obj8 { background-color: pink; top: 700px; left: 10px; }
+  </style>
+</head>
+<body onkeydown="moveWithKeys(event)">
+
+  <div class="object" id="obj1">1</div>
+  <button onclick="moveRight('obj1')">Move Right</button><br>
+
+  <div class="object" id="obj2">2</div>
+
+  <div class="object" id="obj3">3</div>
+
+  <div class="object" id="obj4">4</div>
+
+  <div class="object" id="obj5">5</div>
+
+  <div class="object" id="obj6">6</div>
+
+  <div class="object" id="obj7">7</div>
+
+  <div class="object" id="obj8">8</div>
 
   <script>
-    function myKeyPress(event) {
-      alert(`You pressed: ${event.key}`);
+    // 1. Linear move on button click
+    function moveRight(id) {
+      const el = document.getElementById(id);
+      el.style.left = (parseInt(el.style.left) || 0) + 20 + 'px';
     }
+
+    // 2. Continuous move (linear motion)
+    const obj2 = document.getElementById('obj2');
+    let x2 = 10;
+    setInterval(() => {
+      x2 += 1;
+      obj2.style.left = x2 + 'px';
+    }, 10);
+
+    // 3. Bounce within bounds
+    const obj3 = document.getElementById('obj3');
+    let x3 = 10;
+    let dx3 = 2;
+    setInterval(() => {
+      x3 += dx3;
+      if (x3 > window.innerWidth - 60 || x3 < 0) dx3 *= -1;
+      obj3.style.left = x3 + 'px';
+    }, 10);
+
+    // 4. Circular motion
+    const obj4 = document.getElementById('obj4');
+    let angle = 0;
+    setInterval(() => {
+      angle += 0.05;
+      let centerX = 300, centerY = 350, radius = 100;
+      let x = centerX + radius * Math.cos(angle);
+      let y = centerY + radius * Math.sin(angle);
+      obj4.style.left = x + 'px';
+      obj4.style.top = y + 'px';
+    }, 20);
+
+    // 5. Move with arrow keys
+    let x5 = 10, y5 = 400;
+    function moveWithKeys(e) {
+      const obj5 = document.getElementById('obj5');
+      const step = 10;
+      if (e.key === 'ArrowRight') x5 += step;
+      if (e.key === 'ArrowLeft') x5 -= step;
+      if (e.key === 'ArrowUp') y5 -= step;
+      if (e.key === 'ArrowDown') y5 += step;
+      obj5.style.left = x5 + 'px';
+      obj5.style.top = y5 + 'px';
+    }
+
+    // 6. Follow the mouse
+    const obj6 = document.getElementById('obj6');
+    document.addEventListener('mousemove', (e) => {
+      obj6.style.left = (e.clientX + 10) + 'px';
+      obj6.style.top = (e.clientY + 10) + 'px';
+    });
+
+    // 7. Acceleration
+    const obj7 = document.getElementById('obj7');
+    let x7 = 10, speed7 = 1;
+    setInterval(() => {
+      speed7 *= 1.01;
+      x7 += speed7;
+      if (x7 > window.innerWidth - 60) {
+        x7 = 10;
+        speed7 = 1;
+      }
+      obj7.style.left = x7 + 'px';
+    }, 20);
+
+    // 8. Random movement
+    const obj8 = document.getElementById('obj8');
+    setInterval(() => {
+      let randX = Math.random() * (window.innerWidth - 60);
+      let randY = Math.random() * (window.innerHeight - 60);
+      obj8.style.left = randX + 'px';
+      obj8.style.top = randY + 'px';
+    }, 1000);
   </script>
 
-  <h1 align="center">t1a16-move-div-illia.html</h1>
-
-  Have 8 different types of objects move in different ways
-
-  <div style="position:relative; left:0; right:0" id="myDiv01">...</div>
-
-  <button onclick="{
-    const myDiv = document.getElementById('myDiv01');
-    myDiv.style.left = '100px';
-  }">Move to 100px</button><br>
-
-  <button onclick="{
-    const myDiv = document.getElementById('myDiv01');
-    myDiv.style.left = (parseInt(myDiv.style.left) || 0) + 20 + 'px';
-  }">Move Right</button>
-
 </body>
-
+</html>

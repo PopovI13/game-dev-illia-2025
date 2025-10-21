@@ -1,13 +1,26 @@
+<body onkeypress="muKeyPress(event)">
+
+  <script>
+    function myKeyPress(evemt) {
+      alert('You pressed: ${event.key}');
+    }
+  </script>
+
 <h1 align="centre">t1a16-move-div-illia.html</h1>
 
 Have 8 different tyopes of objects move in different ways
 
 
-<div style="position:relative; left:0; right:0"    id="MyDiv01">...</div>
+<div style="position:relative; left:0; right:0" id="MyDiv01">...</div>
 
 <button onclick="{
   const myDiv = document.getElementById('myDiv01')
   myDiv.style.left = '100x'
+}">Move to 100px</button><br>
+
+<button onclick="{
+  const myDiv = document.getElementById('myDiv01')
+  myDiv.style.left = parseInt(myDiv.style.left) + 20 +'px'
 }">Move Right</button>
 
 

@@ -4,60 +4,51 @@
   <meta charset="UTF-8">
   <title>t1a15-liteRTjs-illia</title>
   <style>
-    body {
-      font-family: Arial;
-      background: #f2f2f2;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    h1 { text-align: center; }
     #output {
       background: white;
       padding: 15px;
-      margin-top: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
       white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
   <h1>t1a15-liteRTjs-illia Demo</h1>
-  <p>This demo loads a TensorFlow Lite model in the browser using <b>liteRT.js</b>.</p>
-  <input type="file" id="modelUpload" accept=".tflite">
-  <button id="runBtn">Run Inference</button>
-  <div id="output">Upload a .tflite model to test.</div>
+  <p>This page automatically loads a TensorFlow Lite model from a URL.</p>
+  <div id="output">Loading model...</div>
 
   <script type="module">
     import * as tflite from "https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tflite";
 
-    let model;
     const outputEl = document.getElementById("output");
-    const runBtn = document.getElementById("runBtn");
-    const modelInput = document.getElementById("modelUpload");
 
-    modelInput.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      outputEl.textContent = "Loading model...";
-      const buffer = await file.arrayBuffer();
-      model = await tflite.loadTFLiteModel(buffer);
-      outputEl.textContent = "✅ Model loaded successfully.";
-    });
+    async function loadAndRunModel() {
+      try {
+        // 👇 Replace this with the actual path to your model
+        const modelUrl = "https://hpaajellis.github.io/my-examples-of-liteRTjs/public/model.tflite";
 
-    runBtn.addEventListener("click", async () => {
-      if (!model) {
-        outputEl.textContent = "⚠️ Please load a model first.";
-        return;
+        outputEl.textContent = "Fetching model from: " + modelUrl;
+        const response = await fetch(modelUrl);
+        if (!response.ok) throw new Error("Model file not found at " + modelUrl);
+        const buffer = await response.arrayBuffer();
+
+        outputEl.textContent = "Loading model into liteRT.js...";
+        const model = await tflite.loadTFLiteModel(buffer);
+        outputEl.textContent = "✅ Model loaded!\nRunning inference...";
+
+        // Example input (you can change this based on your model)
+        const input = new Float32Array([0.1, 0.2, 0.3]);
+        const output = model.predict(input);
+        outputEl.textContent = "✅ Inference done!\n\nResult:\n" + JSON.stringify(output, null, 2);
+      } catch (err) {
+        outputEl.textContent = "❌ Error: " + err.message;
       }
-      // Example: assume model expects 1D input of size 3 (adjust as needed)
-      const input = new Float32Array([0.1, 0.2, 0.3]);
-      const output = model.predict(input);
-      outputEl.textContent = "Inference result:\n" + JSON.stringify(output, null, 2);
-    });
+    }
+
+    loadAndRunModel();
   </script>
 </body>
 </html>
-

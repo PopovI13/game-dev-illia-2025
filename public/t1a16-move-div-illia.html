@@ -2,15 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Animated Text Movements</title>
+<title>Text Motion Demo</title>
 <style>
   body {
     margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #fdfdfd;
+    color: #222;
     height: 100vh;
-    overflow: hidden;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #111, #222);
-    color: white;
     display: flex;
     align-items: center;
   }
@@ -22,123 +21,119 @@
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 25px;
   }
 
-  .text-container {
+  .item {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
   .text {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 500;
-    opacity: 0.9;
-    transform: translateX(0);
-    transition: all 0.6s ease;
+    transition: transform 0.7s cubic-bezier(0.25, 1, 0.3, 1);
   }
 
   button {
-    margin-top: 8px;
-    padding: 6px 12px;
-    border: none;
+    margin-top: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    background-color: #444;
-    color: white;
-    font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: 0.2s;
   }
 
   button:hover {
-    background-color: #666;
-    transform: scale(1.05);
+    background: #333;
+    color: white;
   }
 
-  /* Animations */
-  .slide-right { transform: translateX(150px); opacity: 1; }
-  .slide-left  { transform: translateX(-150px); opacity: 1; }
-  .slide-up    { transform: translateY(-80px); opacity: 1; }
-  .slide-down  { transform: translateY(80px); opacity: 1; }
-  .fade        { opacity: 0.3; }
-  .zoom        { transform: scale(1.5); opacity: 1; }
-  .bounce {
-    animation: bounceAnim 1s ease-in-out infinite alternate;
-  }
-  @keyframes bounceAnim {
-    from { transform: translateY(0); }
-    to { transform: translateY(-40px); }
+  /* motion presets */
+  .move-right   { transform: translateX(150px); }
+  .move-left    { transform: translateX(-150px); }
+  .move-up      { transform: translateY(-60px); }
+  .move-down    { transform: translateY(60px); }
+  .zoom         { transform: scale(1.4); }
+  .tilt         { transform: rotate(10deg); }
+  .bounce       { animation: bounce 0.8s ease-in-out 2 alternate; }
+  .wave         { animation: wave 0.6s ease-in-out 3 alternate; }
+
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+    100% { transform: translateY(0); }
   }
 
-  .rotate {
-    animation: spin 1.5s linear infinite;
+  @keyframes wave {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(12deg); }
+    100% { transform: rotate(0deg); }
   }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <div class="text-container">
-    <div class="text" id="txt1">Slide Right</div>
-    <button onclick="animateText('txt1','slide-right')">Animate</button>
-  </div>
+  <div class="sidebar">
 
-  <div class="text-container">
-    <div class="text" id="txt2">Slide Left</div>
-    <button onclick="animateText('txt2','slide-left')">Animate</button>
-  </div>
+    <div class="item">
+      <div class="text" id="t1">→ Slide Right</div>
+      <button onclick="trigger('t1','move-right')">Animate</button>
+    </div>
 
-  <div class="text-container">
-    <div class="text" id="txt3">Slide Up</div>
-    <button onclick="animateText('txt3','slide-up')">Animate</button>
-  </div>
+    <div class="item">
+      <div class="text" id="t2">← Slide Left</div>
+      <button onclick="trigger('t2','move-left')">Animate</button>
+    </div>
 
-  <div class="text-container">
-    <div class="text" id="txt4">Slide Down</div>
-    <button onclick="animateText('txt4','slide-down')">Animate</button>
-  </div>
+    <div class="item">
+      <div class="text" id="t3">↑ Slide Up</div>
+      <button onclick="trigger('t3','move-up')">Animate</button>
+    </div>
 
-  <div class="text-container">
-    <div class="text" id="txt5">Fade</div>
-    <button onclick="animateText('txt5','fade')">Animate</button>
-  </div>
+    <div class="item">
+      <div class="text" id="t4">↓ Slide Down</div>
+      <button onclick="trigger('t4','move-down')">Animate</button>
+    </div>
 
-  <div class="text-container">
-    <div class="text" id="txt6">Zoom</div>
-    <button onclick="animateText('txt6','zoom')">Animate</button>
-  </div>
+    <div class="item">
+      <div class="text" id="t5">Zoom</div>
+      <button onclick="trigger('t5','zoom')">Animate</button>
+    </div>
 
-  <div class="text-container">
-    <div class="text" id="txt7">Bounce</div>
-    <button onclick="animateText('txt7','bounce')">Animate</button>
-  </div>
+    <div class="item">
+      <div class="text" id="t6">Tilt</div>
+      <button onclick="trigger('t6','tilt')">Animate</button>
+    </div>
 
-  <div class="text-container">
-    <div class="text" id="txt8">Rotate</div>
-    <button onclick="animateText('txt8','rotate')">Animate</button>
+    <div class="item">
+      <div class="text" id="t7">Bounce</div>
+      <button onclick="trigger('t7','bounce')">Animate</button>
+    </div>
+
+    <div class="item">
+      <div class="text" id="t8">Wave</div>
+      <button onclick="trigger('t8','wave')">Animate</button>
+    </div>
+
   </div>
-</div>
 
 <script>
-  function animateText(id, animation) {
+  function trigger(id, cls) {
     const el = document.getElementById(id);
-    // reset first
-    el.className = 'text';
-    void el.offsetWidth; // force reflow to restart CSS transition
-    el.classList.add(animation);
 
-    // if it's not infinite, revert after 1s
-    if (animation !== 'bounce' && animation !== 'rotate') {
-      setTimeout(() => {
-        el.className = 'text';
-      }, 1000);
+    // Reset animation
+    el.className = 'text';
+    void el.offsetWidth; // force reflow
+    el.classList.add(cls);
+
+    // remove temporary transform after animation ends
+    if (!cls.startsWith('bounce') && !cls.startsWith('wave')) {
+      setTimeout(() => el.className = 'text', 800);
     }
   }
 </script>

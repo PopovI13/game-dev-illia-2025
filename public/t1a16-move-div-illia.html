@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Command-Based Text Movement</title>
+<title>Smart Text Command Box + Moving Objects</title>
 <style>
   body {
     margin: 0;
@@ -56,7 +56,7 @@
   input {
     padding: 5px 10px;
     margin-top: 8px;
-    width: 180px;
+    width: 220px;
     border: 1px solid #ccc;
     border-radius: 4px;
     outline: none;
@@ -66,7 +66,7 @@
     border-color: #555;
   }
 
-  /* Simple jump & spin */
+  /* Simple animations */
   @keyframes jump {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-30px); }
@@ -76,44 +76,51 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+
+  @keyframes tilt {
+    0%,100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+  }
 </style>
 </head>
 <body>
 
-  <div class="sidebar">
-
-    <div class="item">
-      <div class="text" id="t1">→ Slide Right</div>
-      <button onclick="trigger('t1','translateX(150px)')">Animate</button>
-    </div>
-
-    <div class="item">
-      <div class="text" id="t2">← Slide Left</div>
-      <button onclick="trigger('t2','translateX(-150px)')">Animate</button>
-    </div>
-
-    <div class="item">
-      <div class="text" id="t3">Jump</div>
-      <button onclick="jump('t3')">Jump</button>
-    </div>
-
-    <div class="item">
-      <div class="text" id="t4">Spin</div>
-      <button onclick="spin('t4')">Spin</button>
-    </div>
-
-    <hr style="width:100%;border:none;border-top:1px solid #ccc;margin:20px 0;">
-
-    <div class="item">
-      <div class="text" id="commandText">🤖 Command Me</div>
-      <input type="text" id="commandInput" placeholder="e.g. move right or jump 20px" onkeydown="handleCommand(event)">
-    </div>
-
+<div class="sidebar">
+  <!-- Old moving objects buttons -->
+  <div class="item">
+    <div class="text" id="t1">→ Slide Right</div>
+    <button onclick="trigger('t1','translateX(150px)')">Animate</button>
   </div>
 
-<script>
-  const positions = { commandText: {x: 0, y: 0} };
+  <div class="item">
+    <div class="text" id="t2">← Slide Left</div>
+    <button onclick="trigger('t2','translateX(-150px)')">Animate</button>
+  </div>
 
+  <div class="item">
+    <div class="text" id="t3">Jump</div>
+    <button onclick="jump('t3')">Jump</button>
+  </div>
+
+  <div class="item">
+    <div class="text" id="t4">Spin</div>
+    <button onclick="spin('t4')">Spin</button>
+  </div>
+
+  <hr style="width:100%;border:none;border-top:1px solid #ccc;margin:20px 0;">
+
+  <!-- Smart commandable text box -->
+  <div class="item">
+    <div class="text" id="commandText">🤖 Command Me</div>
+    <input type="text" id="commandInput" placeholder="Type command..." onkeydown="handleCommand(event)">
+  </div>
+</div>
+
+<script>
+  const positions = { commandText: {x: 0, y: 0, scale:1, rotate:0} };
+  const el = document.getElementById('commandText');
+
+  // old buttons
   function trigger(id, transform) {
     const el = document.getElementById(id);
     el.style.transform = transform;
@@ -133,37 +140,58 @@
   }
 
   function handleCommand(e) {
-    if (e.key === 'Enter') {
-      const input = e.target.value.trim().toLowerCase();
-      e.target.value = '';
-      const el = document.getElementById('commandText');
-      const pos = positions.commandText;
+    if (e.key !== 'Enter') return;
 
-      const num = parseInt(input.match(/\d+/)?.[0]) || 50; // default 50px if not specified
-      const dir = input.match(/left|right|up|down/)?.[0];
+    let input = e.target.value.trim().toLowerCase();
+    e.target.value = '';
 
-      if (input.includes('move') || input.includes('slide')) {
-        switch (dir) {
-          case 'left': pos.x -= num; break;
-          case 'right': pos.x += num; break;
-          case 'up': pos.y -= num; break;
-          case 'down': pos.y += num; break;
-        }
-        el.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-      } 
-      else if (input.includes('jump')) {
-        el.style.animation = 'jump 0.5s ease';
-        setTimeout(() => el.style.animation = '', 500);
-      } 
-      else if (input.includes('spin') || input.includes('rotate')) {
-        el.style.animation = 'spin 1s linear';
-        setTimeout(() => el.style.animation = '', 1000);
-      } 
-      else {
-        el.textContent = '🤖 Unknown command';
-        setTimeout(() => el.textContent = '🤖 Command Me', 1200);
-      }
+    const pos = positions.commandText;
+    let feedback = '🤖 Done!';
+
+    // Move commands: move/slide
+    if (input.match(/move|slide/)) {
+      const val = parseInt(input.match(/\d+/)?.[0]) || 50;
+      if (input.includes('left')) pos.x -= val;
+      if (input.includes('right')) pos.x += val;
+      if (input.includes('up')) pos.y -= val;
+      if (input.includes('down')) pos.y += val;
     }
+    // jump
+    else if (input.includes('jump')) {
+      el.style.animation = 'jump 0.5s ease';
+      setTimeout(() => el.style.animation = '', 500);
+    }
+    // spin
+    else if (input.includes('spin') || input.includes('rotate')) {
+      el.style.animation = 'spin 1s linear';
+      setTimeout(() => el.style.animation = '', 1000);
+    }
+    // tilt
+    else if (input.includes('tilt')) {
+      el.style.animation = 'tilt 0.6s ease';
+      setTimeout(() => el.style.animation = '', 600);
+    }
+    // zoom
+    else if (input.includes('zoom') || input.includes('scale')) {
+      const val = parseFloat(input.match(/\d+(\.\d+)?/)?.[0]) || 1.2;
+      pos.scale = val;
+    }
+    // reset
+    else if (input.includes('reset')) {
+      pos.x = 0;
+      pos.y = 0;
+      pos.scale = 1;
+      pos.rotate = 0;
+      feedback = '🤖 Reset!';
+    }
+    else {
+      feedback = '🤖 Unknown command';
+      setTimeout(() => el.textContent = '🤖 Command Me', 1200);
+    }
+
+    // Apply transforms
+    el.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${pos.scale}) rotate(${pos.rotate}deg)`;
+    el.textContent = feedback;
   }
 </script>
 

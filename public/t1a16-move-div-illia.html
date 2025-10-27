@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Smart Text + Commands</title>
+<title>Moving Text + Smart Command</title>
 <style>
   body {
     margin: 0;
@@ -11,7 +11,13 @@
     color: #222;
     height: 100vh;
     overflow: hidden;
-    padding: 20px;
+  }
+
+  .moving-text {
+    position: absolute;
+    font-size: 20px;
+    font-weight: bold;
+    user-select: none;
   }
 
   .sidebar {
@@ -83,28 +89,22 @@
     0%,100% { transform: rotate(0deg); }
     50% { transform: rotate(15deg); }
   }
-
 </style>
 </head>
-<body>
+<body onkeydown="moveWithKeys(event)">
 
-<h1>Welcome to Smart Text Commands</h1>
-<p>Instead of colorful moving objects, we now have descriptive text for each function:</p>
-<ul>
-  <li>Obj1 → Move Right via button</li>
-  <li>Obj2 → Continuous sliding</li>
-  <li>Obj3 → Bounce back and forth</li>
-  <li>Obj4 → Circular motion</li>
-  <li>Obj5 → Arrow key controlled</li>
-  <li>Obj6 → Follows mouse</li>
-  <li>Obj7 → Accelerating motion</li>
-  <li>Obj8 → Random movement</li>
-</ul>
+<!-- Moving Text -->
+<div class="moving-text" id="txt1" style="top:50px; left:10px;">Text1 → Slide Right</div>
+<div class="moving-text" id="txt2" style="top:120px; left:10px;">Text2 → Continuous</div>
+<div class="moving-text" id="txt3" style="top:200px; left:10px;">Text3 → Bounce</div>
+<div class="moving-text" id="txt4" style="top:300px; left:200px;">Text4 → Circular</div>
+<div class="moving-text" id="txt5" style="top:400px; left:10px;">Text5 → Arrow Keys</div>
+<div class="moving-text" id="txt6" style="top:500px; left:10px;">Text6 → Follows Mouse</div>
+<div class="moving-text" id="txt7" style="top:600px; left:10px;">Text7 → Acceleration</div>
+<div class="moving-text" id="txt8" style="top:700px; left:10px;">Text8 → Random</div>
 
-<!-- Sidebar with buttons -->
+<!-- Sidebar -->
 <div class="sidebar">
-
-  <!-- Smart commandable text box -->
   <div class="item">
     <div class="text" id="commandText">🤖 Command Me</div>
     <input type="text" id="commandInput" placeholder="Type command...">
@@ -114,6 +114,82 @@
 </div>
 
 <script>
+  // --- Moving Text ---
+
+  // 1. Slide Right (button)
+  function moveRight(id) {
+    const el = document.getElementById(id);
+    el.style.left = (parseInt(el.style.left) || 0) + 20 + 'px';
+  }
+
+  // 2. Continuous
+  const txt2 = document.getElementById('txt2');
+  let x2 = 10;
+  setInterval(() => {
+    x2 += 1;
+    txt2.style.left = x2 + 'px';
+  }, 10);
+
+  // 3. Bounce
+  const txt3 = document.getElementById('txt3');
+  let x3 = 10, dx3 = 2;
+  setInterval(() => {
+    x3 += dx3;
+    if (x3 > window.innerWidth - 200 || x3 < 0) dx3 *= -1;
+    txt3.style.left = x3 + 'px';
+  }, 10);
+
+  // 4. Circular
+  const txt4 = document.getElementById('txt4');
+  let angle = 0;
+  setInterval(() => {
+    angle += 0.05;
+    let centerX = 300, centerY = 350, radius = 100;
+    let x = centerX + radius * Math.cos(angle);
+    let y = centerY + radius * Math.sin(angle);
+    txt4.style.left = x + 'px';
+    txt4.style.top = y + 'px';
+  }, 20);
+
+  // 5. Arrow keys
+  let x5 = 10, y5 = 400;
+  function moveWithKeys(e) {
+    const txt5 = document.getElementById('txt5');
+    const step = 10;
+    if (e.key === 'ArrowRight') x5 += step;
+    if (e.key === 'ArrowLeft') x5 -= step;
+    if (e.key === 'ArrowUp') y5 -= step;
+    if (e.key === 'ArrowDown') y5 += step;
+    txt5.style.left = x5 + 'px';
+    txt5.style.top = y5 + 'px';
+  }
+
+  // 6. Follows mouse
+  const txt6 = document.getElementById('txt6');
+  document.addEventListener('mousemove', (e) => {
+    txt6.style.left = (e.clientX + 10) + 'px';
+    txt6.style.top = (e.clientY + 10) + 'px';
+  });
+
+  // 7. Acceleration
+  const txt7 = document.getElementById('txt7');
+  let x7 = 10, speed7 = 1;
+  setInterval(() => {
+    speed7 *= 1.01;
+    x7 += speed7;
+    if (x7 > window.innerWidth - 200) { x7 = 10; speed7 = 1; }
+    txt7.style.left = x7 + 'px';
+  }, 20);
+
+  // 8. Random
+  const txt8 = document.getElementById('txt8');
+  setInterval(() => {
+    let randX = Math.random() * (window.innerWidth - 200);
+    let randY = Math.random() * (window.innerHeight - 50);
+    txt8.style.left = randX + 'px';
+    txt8.style.top = randY + 'px';
+  }, 1000);
+
   // --- Smart Command Box ---
   const positions = { commandText: {x:0,y:0,scale:1,rotate:0} };
   const commandEl = document.getElementById('commandText');

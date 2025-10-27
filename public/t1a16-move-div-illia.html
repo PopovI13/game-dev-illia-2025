@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Smart Text + Moving Objects</title>
+<title>Smart Text + Commands</title>
 <style>
   body {
     margin: 0;
@@ -11,29 +11,8 @@
     color: #222;
     height: 100vh;
     overflow: hidden;
+    padding: 20px;
   }
-
-  .object {
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    text-align: center;
-    line-height: 50px;
-    color: white;
-    font-size: 14px;
-    border-radius: 5px;
-    font-weight: bold;
-    user-select: none;
-  }
-
-  #obj1 { background-color: red; top: 50px; left: 10px; }
-  #obj2 { background-color: green; top: 120px; left: 10px; }
-  #obj3 { background-color: blue; top: 200px; left: 10px; }
-  #obj4 { background-color: orange; top: 300px; left: 200px; }
-  #obj5 { background-color: purple; top: 400px; left: 10px; }
-  #obj6 { background-color: teal; top: 500px; left: 10px; }
-  #obj7 { background-color: brown; top: 600px; left: 10px; }
-  #obj8 { background-color: pink; top: 700px; left: 10px; }
 
   .sidebar {
     position: fixed;
@@ -107,32 +86,23 @@
 
 </style>
 </head>
-<body onkeydown="moveWithKeys(event)">
+<body>
 
-<!-- 8 Objects -->
-<div class="object" id="obj1">1</div>
-<div class="object" id="obj2">2</div>
-<div class="object" id="obj3">3</div>
-<div class="object" id="obj4">4</div>
-<div class="object" id="obj5">5</div>
-<div class="object" id="obj6">6</div>
-<div class="object" id="obj7">7</div>
-<div class="object" id="obj8">8</div>
+<h1>Welcome to Smart Text Commands</h1>
+<p>Instead of colorful moving objects, we now have descriptive text for each function:</p>
+<ul>
+  <li>Obj1 → Move Right via button</li>
+  <li>Obj2 → Continuous sliding</li>
+  <li>Obj3 → Bounce back and forth</li>
+  <li>Obj4 → Circular motion</li>
+  <li>Obj5 → Arrow key controlled</li>
+  <li>Obj6 → Follows mouse</li>
+  <li>Obj7 → Accelerating motion</li>
+  <li>Obj8 → Random movement</li>
+</ul>
 
 <!-- Sidebar with buttons -->
 <div class="sidebar">
-
-  <!-- Object 1 -->
-  <div class="item">
-    <div class="text" id="t1">→ Slide Right</div>
-    <button onclick="moveRight('obj1')">Move Obj1 Right</button>
-  </div>
-
-  <!-- Object 5 arrow key controlled -->
-  <div class="item">
-    <div class="text" id="t5">Arrow Keys</div>
-    <p style="font-size:12px;margin:0;">Use arrow keys for Obj5</p>
-  </div>
 
   <!-- Smart commandable text box -->
   <div class="item">
@@ -144,82 +114,6 @@
 </div>
 
 <script>
-  // --- Moving Objects ---
-
-  // 1. Move Right on button
-  function moveRight(id) {
-    const el = document.getElementById(id);
-    el.style.left = (parseInt(el.style.left) || 0) + 20 + 'px';
-  }
-
-  // 2. Continuous move
-  const obj2 = document.getElementById('obj2');
-  let x2 = 10;
-  setInterval(() => {
-    x2 += 1;
-    obj2.style.left = x2 + 'px';
-  }, 10);
-
-  // 3. Bounce
-  const obj3 = document.getElementById('obj3');
-  let x3 = 10, dx3 = 2;
-  setInterval(() => {
-    x3 += dx3;
-    if (x3 > window.innerWidth - 60 || x3 < 0) dx3 *= -1;
-    obj3.style.left = x3 + 'px';
-  }, 10);
-
-  // 4. Circular motion
-  const obj4 = document.getElementById('obj4');
-  let angle = 0;
-  setInterval(() => {
-    angle += 0.05;
-    let centerX = 300, centerY = 350, radius = 100;
-    let x = centerX + radius * Math.cos(angle);
-    let y = centerY + radius * Math.sin(angle);
-    obj4.style.left = x + 'px';
-    obj4.style.top = y + 'px';
-  }, 20);
-
-  // 5. Arrow keys
-  let x5 = 10, y5 = 400;
-  function moveWithKeys(e) {
-    const obj5 = document.getElementById('obj5');
-    const step = 10;
-    if (e.key === 'ArrowRight') x5 += step;
-    if (e.key === 'ArrowLeft') x5 -= step;
-    if (e.key === 'ArrowUp') y5 -= step;
-    if (e.key === 'ArrowDown') y5 += step;
-    obj5.style.left = x5 + 'px';
-    obj5.style.top = y5 + 'px';
-  }
-
-  // 6. Follow mouse
-  const obj6 = document.getElementById('obj6');
-  document.addEventListener('mousemove', (e) => {
-    obj6.style.left = (e.clientX + 10) + 'px';
-    obj6.style.top = (e.clientY + 10) + 'px';
-  });
-
-  // 7. Acceleration
-  const obj7 = document.getElementById('obj7');
-  let x7 = 10, speed7 = 1;
-  setInterval(() => {
-    speed7 *= 1.01;
-    x7 += speed7;
-    if (x7 > window.innerWidth - 60) { x7 = 10; speed7 = 1; }
-    obj7.style.left = x7 + 'px';
-  }, 20);
-
-  // 8. Random movement
-  const obj8 = document.getElementById('obj8');
-  setInterval(() => {
-    let randX = Math.random() * (window.innerWidth - 60);
-    let randY = Math.random() * (window.innerHeight - 60);
-    obj8.style.left = randX + 'px';
-    obj8.style.top = randY + 'px';
-  }, 1000);
-
   // --- Smart Command Box ---
   const positions = { commandText: {x:0,y:0,scale:1,rotate:0} };
   const commandEl = document.getElementById('commandText');
@@ -269,7 +163,6 @@
     commandEl.textContent = feedback;
   }
 
-  // --- GPT controlled button ---
   function runFromGPT() {
     const el = document.getElementById('commandText');
     const pos = positions.commandText;

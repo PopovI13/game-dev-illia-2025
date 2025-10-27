@@ -1,156 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>8 Moving Objects (Buttons on Side)</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      font-family: sans-serif;
-      background-color: #f4f4f4;
-    }
+<meta charset="UTF-8">
+<title>Animated Text Movements</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #111, #222);
+    color: white;
+    display: flex;
+    align-items: center;
+  }
 
-    .sidebar {
-      position: fixed;
-      left: 20px;
-      top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+  .sidebar {
+    position: fixed;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
 
-    .object-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  .text-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .object {
-      width: 50px;
-      height: 50px;
-      text-align: center;
-      line-height: 50px;
-      color: white;
-      font-size: 16px;
-      border-radius: 5px;
-      margin-bottom: 5px;
-      transition: transform 0.2s ease;
-    }
+  .text {
+    font-size: 24px;
+    font-weight: 500;
+    opacity: 0.9;
+    transform: translateX(0);
+    transition: all 0.6s ease;
+  }
 
-    button {
-      padding: 5px 10px;
-      border: none;
-      background-color: #333;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+  button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: #444;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+  }
 
-    button:hover {
-      background-color: #555;
-    }
+  button:hover {
+    background-color: #666;
+    transform: scale(1.05);
+  }
 
-    /* Object colors */
-    #obj1 { background-color: red; }
-    #obj2 { background-color: green; }
-    #obj3 { background-color: blue; }
-    #obj4 { background-color: orange; }
-    #obj5 { background-color: purple; }
-    #obj6 { background-color: teal; }
-    #obj7 { background-color: brown; }
-    #obj8 { background-color: pink; color: black; }
-  </style>
+  /* Animations */
+  .slide-right { transform: translateX(150px); opacity: 1; }
+  .slide-left  { transform: translateX(-150px); opacity: 1; }
+  .slide-up    { transform: translateY(-80px); opacity: 1; }
+  .slide-down  { transform: translateY(80px); opacity: 1; }
+  .fade        { opacity: 0.3; }
+  .zoom        { transform: scale(1.5); opacity: 1; }
+  .bounce {
+    animation: bounceAnim 1s ease-in-out infinite alternate;
+  }
+  @keyframes bounceAnim {
+    from { transform: translateY(0); }
+    to { transform: translateY(-40px); }
+  }
+
+  .rotate {
+    animation: spin 1.5s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+</style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <div class="object-container">
-      <div class="object" id="obj1">1</div>
-      <button onclick="moveObject('obj1','right')">Move →</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj2">2</div>
-      <button onclick="moveObject('obj2','left')">Move ←</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj3">3</div>
-      <button onclick="moveObject('obj3','up')">Move ↑</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj4">4</div>
-      <button onclick="moveObject('obj4','down')">Move ↓</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj5">5</div>
-      <button onclick="moveObject('obj5','diagonal1')">Move ↘</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj6">6</div>
-      <button onclick="moveObject('obj6','diagonal2')">Move ↙</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj7">7</div>
-      <button onclick="moveObject('obj7','circle')">Circle</button>
-    </div>
-
-    <div class="object-container">
-      <div class="object" id="obj8">8</div>
-      <button onclick="moveObject('obj8','random')">Random</button>
-    </div>
+<div class="sidebar">
+  <div class="text-container">
+    <div class="text" id="txt1">Slide Right</div>
+    <button onclick="animateText('txt1','slide-right')">Animate</button>
   </div>
 
-  <script>
-    // Track each object’s position
-    let positions = {
-      obj1: {x: 0, y: 0},
-      obj2: {x: 0, y: 0},
-      obj3: {x: 0, y: 0},
-      obj4: {x: 0, y: 0},
-      obj5: {x: 0, y: 0},
-      obj6: {x: 0, y: 0},
-      obj7: {x: 0, y: 0},
-      obj8: {x: 0, y: 0}
-    };
+  <div class="text-container">
+    <div class="text" id="txt2">Slide Left</div>
+    <button onclick="animateText('txt2','slide-left')">Animate</button>
+  </div>
 
-    function moveObject(id, type) {
-      const el = document.getElementById(id);
-      let pos = positions[id];
+  <div class="text-container">
+    <div class="text" id="txt3">Slide Up</div>
+    <button onclick="animateText('txt3','slide-up')">Animate</button>
+  </div>
 
-      let steps = 10;
-      let interval = setInterval(() => {
-        if (steps-- <= 0) {
-          clearInterval(interval);
-          return;
-        }
+  <div class="text-container">
+    <div class="text" id="txt4">Slide Down</div>
+    <button onclick="animateText('txt4','slide-down')">Animate</button>
+  </div>
 
-        switch (type) {
-          case 'right': pos.x += 10; break;
-          case 'left': pos.x -= 10; break;
-          case 'up': pos.y -= 10; break;
-          case 'down': pos.y += 10; break;
-          case 'diagonal1': pos.x += 8; pos.y += 8; break;
-          case 'diagonal2': pos.x -= 8; pos.y += 8; break;
-          case 'circle':
-            let t = Date.now() / 100;
-            pos.x = Math.cos(t) * 80;
-            pos.y = Math.sin(t) * 80;
-            break;
-          case 'random':
-            pos.x = Math.random() * 400;
-            pos.y = Math.random() * 400;
-            break;
-        }
+  <div class="text-container">
+    <div class="text" id="txt5">Fade</div>
+    <button onclick="animateText('txt5','fade')">Animate</button>
+  </div>
 
-        el.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-      }, 80);
+  <div class="text-container">
+    <div class="text" id="txt6">Zoom</div>
+    <button onclick="animateText('txt6','zoom')">Animate</button>
+  </div>
+
+  <div class="text-container">
+    <div class="text" id="txt7">Bounce</div>
+    <button onclick="animateText('txt7','bounce')">Animate</button>
+  </div>
+
+  <div class="text-container">
+    <div class="text" id="txt8">Rotate</div>
+    <button onclick="animateText('txt8','rotate')">Animate</button>
+  </div>
+</div>
+
+<script>
+  function animateText(id, animation) {
+    const el = document.getElementById(id);
+    // reset first
+    el.className = 'text';
+    void el.offsetWidth; // force reflow to restart CSS transition
+    el.classList.add(animation);
+
+    // if it's not infinite, revert after 1s
+    if (animation !== 'bounce' && animation !== 'rotate') {
+      setTimeout(() => {
+        el.className = 'text';
+      }, 1000);
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>

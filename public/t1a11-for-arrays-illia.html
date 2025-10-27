@@ -3,34 +3,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>t1a11-for-arrays-illia</title>
+  <title>t1a11-for-arrays-illia-advanced</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background: #f9f9f9; }
+    h2 { text-align: center; }
+    select, input[type="text"], button { margin: 5px; padding: 5px; }
+    #outputBox { background: #fff; border: 1px solid #ccc; padding: 10px; margin-top: 15px; }
+    .section { margin-top: 20px; }
+  </style>
 </head>
 <body>
 
-<h2 align="center">t1a11-for-arrays-illia.html</h2>
+<h2>t1a11-for-arrays-illia-advanced.html</h2>
 
-<!-- Dropdown to select the array -->
-Select an Array:
-<select id="arraySelect">
-  <option value="0">People</option>
-  <option value="1">Colors</option>
-  <option value="2">Animals</option>
-  <option value="3">Fruits</option>
-  <option value="4">Countries</option>
-  <option value="5">Sports</option>
-  <option value="6">Subjects</option>
-  <option value="7">Cars</option>
-</select>
-<br><br>
+<div class="section">
+  <b>Select an Array:</b>
+  <select id="arraySelect" onchange="showArrayInfo()">
+    <option value="0">People</option>
+    <option value="1">Colors</option>
+    <option value="2">Animals</option>
+    <option value="3">Fruits</option>
+    <option value="4">Countries</option>
+    <option value="5">Sports</option>
+    <option value="6">Subjects</option>
+    <option value="7">Cars</option>
+  </select>
+</div>
 
-Max Array Entry:
-<input type="text" id="myText01" value="3">
-<br><br>
+<div class="section">
+  <b>Max Array Entry:</b>
+  <input type="text" id="myText01" value="3">
+  <button onclick="showArray()">Show Array Entries</button>
+</div>
 
-<input type="button" value="Show Array Entries" onclick="showArray()">
-<br><br>
+<div class="section">
+  <b>Array Operations:</b><br>
+  <button onclick="sortArray()">Sort</button>
+  <button onclick="reverseArray()">Reverse</button>
+  <button onclick="addElement()">Add Element</button>
+  <button onclick="removeLast()">Remove Last</button>
+  <button onclick="randomElement()">Random Element</button>
+</div>
 
-<div id="myDiv01">...</div>
+<div id="outputBox">...</div>
 
 <script>
   // All 8 arrays stored inside a big array
@@ -42,34 +57,74 @@ Max Array Entry:
     ['Canada', 'Ukraine', 'Japan', 'Brazil', 'France'],       // 4: Countries
     ['Soccer', 'Basketball', 'Tennis', 'Cricket', 'Rugby'],   // 5: Sports
     ['Math', 'Science', 'English', 'Art', 'History'],         // 6: Subjects
-    ['Ferrari', 'BMW', 'Toyota', 'Ford', 'Audi']                // 7: Cars
+    ['Ferrari', 'BMW', 'Toyota', 'Ford', 'Audi']              // 7: Cars
   ];
 
-  function showArray() {
-    let selectedArrayIndex = document.getElementById("arraySelect").value;
-    let myMax = parseInt(document.getElementById("myText01").value);
-    let output = '';
-
-    let selectedArray = allArrays[selectedArrayIndex];
-
-    if (myMax > selectedArray.length) {
-      myMax = selectedArray.length; // prevent going out of bounds
-    }
-
-    for (let i = 0; i < myMax; i++) {
-      output += 'Loop #' + i + ' — array entry: ' + selectedArray[i] + '<br>';
-    }
-
-    document.getElementById("myDiv01").innerHTML = output;
+  function getSelectedArray() {
+    const index = parseInt(document.getElementById("arraySelect").value);
+    return allArrays[index];
   }
+
+  function showArray() {
+    const arr = getSelectedArray();
+    let myMax = parseInt(document.getElementById("myText01").value);
+    if (myMax > arr.length) myMax = arr.length;
+
+    let output = `<b>Showing first ${myMax} entries:</b><br>`;
+    for (let i = 0; i < myMax; i++) {
+      output += `Loop #${i} — array entry: ${arr[i]}<br>`;
+    }
+
+    document.getElementById("outputBox").innerHTML = output;
+  }
+
+  function showArrayInfo() {
+    const arr = getSelectedArray();
+    document.getElementById("outputBox").innerHTML =
+      `<b>Array Info:</b><br>
+      Length: ${arr.length}<br>
+      First: ${arr[0]}<br>
+      Last: ${arr[arr.length - 1]}<br>
+      Entries: ${arr.join(', ')}`;
+  }
+
+  function sortArray() {
+    const arr = getSelectedArray();
+    arr.sort();
+    showArrayInfo();
+  }
+
+  function reverseArray() {
+    const arr = getSelectedArray();
+    arr.reverse();
+    showArrayInfo();
+  }
+
+  function addElement() {
+    const arr = getSelectedArray();
+    const newItem = prompt("Enter new element to add:");
+    if (newItem) {
+      arr.push(newItem);
+      showArrayInfo();
+    }
+  }
+
+  function removeLast() {
+    const arr = getSelectedArray();
+    arr.pop();
+    showArrayInfo();
+  }
+
+  function randomElement() {
+    const arr = getSelectedArray();
+    const randIndex = Math.floor(Math.random() * arr.length);
+    document.getElementById("outputBox").innerHTML =
+      `<b>Random Element:</b> ${arr[randIndex]}<br><br>Array: ${arr.join(', ')}`;
+  }
+
+  // Show info for default selection
+  showArrayInfo();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-

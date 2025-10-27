@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>8 Moving Objects</title>
+  <title>8 Moving Objects with Controls</title>
   <style>
     body {
       margin: 0;
@@ -12,8 +12,6 @@
       width: 50px;
       height: 50px;
       position: absolute;
-      top: 100px;
-      background-color: red;
       text-align: center;
       line-height: 50px;
       color: white;
@@ -28,65 +26,121 @@
     #obj6 { background-color: teal; top: 500px; left: 10px; }
     #obj7 { background-color: brown; top: 600px; left: 10px; }
     #obj8 { background-color: pink; top: 700px; left: 10px; }
+
+    .controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .controls h3 {
+      margin-top: 0;
+    }
+
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+      border: none;
+      background-color: #333;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
   </style>
 </head>
 <body onkeydown="moveWithKeys(event)">
 
+  <!-- 8 objects -->
   <div class="object" id="obj1">1</div>
-  <button onclick="moveRight('obj1')">Move Right</button><br>
-
   <div class="object" id="obj2">2</div>
-
   <div class="object" id="obj3">3</div>
-
   <div class="object" id="obj4">4</div>
-
   <div class="object" id="obj5">5</div>
-
   <div class="object" id="obj6">6</div>
-
   <div class="object" id="obj7">7</div>
-
   <div class="object" id="obj8">8</div>
 
+  <!-- Control Panel -->
+  <div class="controls">
+    <h3>Controls</h3>
+    <div>
+      <strong>Obj1:</strong><br>
+      <button onclick="move('obj1', 'up')">Up</button>
+      <button onclick="move('obj1', 'left')">Left</button>
+      <button onclick="move('obj1', 'right')">Right</button>
+      <button onclick="move('obj1', 'down')">Down</button>
+    </div>
+    <hr>
+    <div>
+      <strong>Global:</strong><br>
+      <button onclick="pauseResume()">Pause / Resume</button>
+      <button onclick="resetPositions()">Reset All</button>
+    </div>
+  </div>
+
   <script>
-    // 1. Linear move on button click
-    function moveRight(id) {
+    // Store intervals so we can pause/resume
+    let intervals = [];
+    let paused = false;
+
+    // === 1. Manual button movement ===
+    function move(id, direction) {
       const el = document.getElementById(id);
-      el.style.left = (parseInt(el.style.left) || 0) + 20 + 'px';
+      const step = 20;
+      let x = parseInt(el.style.left) || 0;
+      let y = parseInt(el.style.top) || 0;
+      if (direction === 'up') y -= step;
+      if (direction === 'down') y += step;
+      if (direction === 'left') x -= step;
+      if (direction === 'right') x += step;
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
     }
 
-    // 2. Continuous move (linear motion)
+    // === 2. Continuous linear move (obj2) ===
     const obj2 = document.getElementById('obj2');
     let x2 = 10;
-    setInterval(() => {
-      x2 += 1;
-      obj2.style.left = x2 + 'px';
-    }, 10);
+    intervals.push(setInterval(() => {
+      if (!paused) {
+        x2 += 1;
+        obj2.style.left = x2 + 'px';
+      }
+    }, 10));
 
-    // 3. Bounce within bounds
+    // === 3. Bounce (obj3) ===
     const obj3 = document.getElementById('obj3');
-    let x3 = 10;
-    let dx3 = 2;
-    setInterval(() => {
-      x3 += dx3;
-      if (x3 > window.innerWidth - 60 || x3 < 0) dx3 *= -1;
-      obj3.style.left = x3 + 'px';
-    }, 10);
+    let x3 = 10, dx3 = 2;
+    intervals.push(setInterval(() => {
+      if (!paused) {
+        x3 += dx3;
+        if (x3 > window.innerWidth - 60 || x3 < 0) dx3 *= -1;
+        obj3.style.left = x3 + 'px';
+      }
+    }, 10));
 
-    // 4. Circular motion
+    // === 4. Circular motion (obj4) ===
     const obj4 = document.getElementById('obj4');
     let angle = 0;
-    setInterval(() => {
-      angle += 0.05;
-      let centerX = 300, centerY = 350, radius = 100;
-      let x = centerX + radius * Math.cos(angle);
-      let y = centerY + radius * Math.sin(angle);
-      obj4.style.left = x + 'px';
-      obj4.style.top = y + 'px';
-    }, 20);
+    intervals.push(setInterval(() => {
+      if (!paused) {
+        angle += 0.05;
+        let centerX = 300, centerY = 350, radius = 100;
+        let x = centerX + radius * Math.cos(angle);
+        let y = centerY + radius * Math.sin(angle);
+        obj4.style.left = x + 'px';
+        obj4.style.top = y + 'px';
+      }
+    }, 20));
 
-    // 5. Move with arrow keys
+    // === 5. Move with arrow keys (obj5) ===
     let x5 = 10, y5 = 400;
     function moveWithKeys(e) {
       const obj5 = document.getElementById('obj5');
@@ -99,34 +153,70 @@
       obj5.style.top = y5 + 'px';
     }
 
-    // 6. Follow the mouse
+    // === 6. Follow mouse (obj6) ===
     const obj6 = document.getElementById('obj6');
     document.addEventListener('mousemove', (e) => {
-      obj6.style.left = (e.clientX + 10) + 'px';
-      obj6.style.top = (e.clientY + 10) + 'px';
+      if (!paused) {
+        obj6.style.left = (e.clientX + 10) + 'px';
+        obj6.style.top = (e.clientY + 10) + 'px';
+      }
     });
 
-    // 7. Acceleration
+    // === 7. Acceleration (obj7) ===
     const obj7 = document.getElementById('obj7');
     let x7 = 10, speed7 = 1;
-    setInterval(() => {
-      speed7 *= 1.01;
-      x7 += speed7;
-      if (x7 > window.innerWidth - 60) {
-        x7 = 10;
-        speed7 = 1;
+    intervals.push(setInterval(() => {
+      if (!paused) {
+        speed7 *= 1.01;
+        x7 += speed7;
+        if (x7 > window.innerWidth - 60) {
+          x7 = 10;
+          speed7 = 1;
+        }
+        obj7.style.left = x7 + 'px';
       }
-      obj7.style.left = x7 + 'px';
-    }, 20);
+    }, 20));
 
-    // 8. Random movement
+    // === 8. Random movement (obj8) ===
     const obj8 = document.getElementById('obj8');
-    setInterval(() => {
-      let randX = Math.random() * (window.innerWidth - 60);
-      let randY = Math.random() * (window.innerHeight - 60);
-      obj8.style.left = randX + 'px';
-      obj8.style.top = randY + 'px';
-    }, 1000);
+    intervals.push(setInterval(() => {
+      if (!paused) {
+        let randX = Math.random() * (window.innerWidth - 60);
+        let randY = Math.random() * (window.innerHeight - 60);
+        obj8.style.left = randX + 'px';
+        obj8.style.top = randY + 'px';
+      }
+    }, 1000));
+
+    // === Pause/Resume ===
+    function pauseResume() {
+      paused = !paused;
+    }
+
+    // === Reset positions ===
+    function resetPositions() {
+      const defaults = [
+        {id: 'obj1', x: 10, y: 50},
+        {id: 'obj2', x: 10, y: 120},
+        {id: 'obj3', x: 10, y: 200},
+        {id: 'obj4', x: 200, y: 300},
+        {id: 'obj5', x: 10, y: 400},
+        {id: 'obj6', x: 10, y: 500},
+        {id: 'obj7', x: 10, y: 600},
+        {id: 'obj8', x: 10, y: 700}
+      ];
+      defaults.forEach(obj => {
+        const el = document.getElementById(obj.id);
+        el.style.left = obj.x + 'px';
+        el.style.top = obj.y + 'px';
+      });
+      x2 = 10;
+      x3 = 10;
+      x5 = 10;
+      y5 = 400;
+      x7 = 10;
+      speed7 = 1;
+    }
   </script>
 
 </body>

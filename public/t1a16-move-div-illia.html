@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Smart Text Command Box + Moving Objects</title>
+<title>Smart Text + Moving Objects</title>
 <style>
   body {
     margin: 0;
@@ -10,18 +10,39 @@
     background: #fdfdfd;
     color: #222;
     height: 100vh;
-    display: flex;
-    align-items: center;
+    overflow: hidden;
   }
+
+  .object {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    text-align: center;
+    line-height: 50px;
+    color: white;
+    font-size: 14px;
+    border-radius: 5px;
+    font-weight: bold;
+    user-select: none;
+  }
+
+  #obj1 { background-color: red; top: 50px; left: 10px; }
+  #obj2 { background-color: green; top: 120px; left: 10px; }
+  #obj3 { background-color: blue; top: 200px; left: 10px; }
+  #obj4 { background-color: orange; top: 300px; left: 200px; }
+  #obj5 { background-color: purple; top: 400px; left: 10px; }
+  #obj6 { background-color: teal; top: 500px; left: 10px; }
+  #obj7 { background-color: brown; top: 600px; left: 10px; }
+  #obj8 { background-color: pink; top: 700px; left: 10px; }
 
   .sidebar {
     position: fixed;
-    left: 40px;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 15px;
   }
 
   .item {
@@ -34,6 +55,9 @@
     font-size: 22px;
     font-weight: 500;
     transition: transform 0.7s cubic-bezier(0.25, 1, 0.3, 1);
+    background: #eee;
+    padding: 6px 10px;
+    border-radius: 6px;
   }
 
   button {
@@ -66,7 +90,6 @@
     border-color: #555;
   }
 
-  /* Simple animations */
   @keyframes jump {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-30px); }
@@ -81,117 +104,212 @@
     0%,100% { transform: rotate(0deg); }
     50% { transform: rotate(15deg); }
   }
+
 </style>
 </head>
-<body>
+<body onkeydown="moveWithKeys(event)">
 
+<!-- 8 Objects -->
+<div class="object" id="obj1">1</div>
+<div class="object" id="obj2">2</div>
+<div class="object" id="obj3">3</div>
+<div class="object" id="obj4">4</div>
+<div class="object" id="obj5">5</div>
+<div class="object" id="obj6">6</div>
+<div class="object" id="obj7">7</div>
+<div class="object" id="obj8">8</div>
+
+<!-- Sidebar with buttons -->
 <div class="sidebar">
-  <!-- Old moving objects buttons -->
+
+  <!-- Object 1 -->
   <div class="item">
     <div class="text" id="t1">→ Slide Right</div>
-    <button onclick="trigger('t1','translateX(150px)')">Animate</button>
+    <button onclick="moveRight('obj1')">Move Obj1 Right</button>
   </div>
 
+  <!-- Object 5 arrow key controlled -->
   <div class="item">
-    <div class="text" id="t2">← Slide Left</div>
-    <button onclick="trigger('t2','translateX(-150px)')">Animate</button>
+    <div class="text" id="t5">Arrow Keys</div>
+    <p style="font-size:12px;margin:0;">Use arrow keys for Obj5</p>
   </div>
-
-  <div class="item">
-    <div class="text" id="t3">Jump</div>
-    <button onclick="jump('t3')">Jump</button>
-  </div>
-
-  <div class="item">
-    <div class="text" id="t4">Spin</div>
-    <button onclick="spin('t4')">Spin</button>
-  </div>
-
-  <hr style="width:100%;border:none;border-top:1px solid #ccc;margin:20px 0;">
 
   <!-- Smart commandable text box -->
   <div class="item">
     <div class="text" id="commandText">🤖 Command Me</div>
-    <input type="text" id="commandInput" placeholder="Type command..." onkeydown="handleCommand(event)">
+    <input type="text" id="commandInput" placeholder="Type command...">
+    <button onclick="runCommand()">Run Command</button>
+    <button onclick="runFromGPT()">Run From GPT</button>
   </div>
 </div>
 
 <script>
-  const positions = { commandText: {x: 0, y: 0, scale:1, rotate:0} };
-  const el = document.getElementById('commandText');
+  // --- Moving Objects ---
 
-  // old buttons
-  function trigger(id, transform) {
+  // 1. Move Right on button
+  function moveRight(id) {
     const el = document.getElementById(id);
-    el.style.transform = transform;
-    setTimeout(() => el.style.transform = 'translate(0,0)', 700);
+    el.style.left = (parseInt(el.style.left) || 0) + 20 + 'px';
   }
 
-  function jump(id) {
-    const el = document.getElementById(id);
-    el.style.animation = 'jump 0.6s ease';
-    setTimeout(() => el.style.animation = '', 600);
+  // 2. Continuous move
+  const obj2 = document.getElementById('obj2');
+  let x2 = 10;
+  setInterval(() => {
+    x2 += 1;
+    obj2.style.left = x2 + 'px';
+  }, 10);
+
+  // 3. Bounce
+  const obj3 = document.getElementById('obj3');
+  let x3 = 10, dx3 = 2;
+  setInterval(() => {
+    x3 += dx3;
+    if (x3 > window.innerWidth - 60 || x3 < 0) dx3 *= -1;
+    obj3.style.left = x3 + 'px';
+  }, 10);
+
+  // 4. Circular motion
+  const obj4 = document.getElementById('obj4');
+  let angle = 0;
+  setInterval(() => {
+    angle += 0.05;
+    let centerX = 300, centerY = 350, radius = 100;
+    let x = centerX + radius * Math.cos(angle);
+    let y = centerY + radius * Math.sin(angle);
+    obj4.style.left = x + 'px';
+    obj4.style.top = y + 'px';
+  }, 20);
+
+  // 5. Arrow keys
+  let x5 = 10, y5 = 400;
+  function moveWithKeys(e) {
+    const obj5 = document.getElementById('obj5');
+    const step = 10;
+    if (e.key === 'ArrowRight') x5 += step;
+    if (e.key === 'ArrowLeft') x5 -= step;
+    if (e.key === 'ArrowUp') y5 -= step;
+    if (e.key === 'ArrowDown') y5 += step;
+    obj5.style.left = x5 + 'px';
+    obj5.style.top = y5 + 'px';
   }
 
-  function spin(id) {
-    const el = document.getElementById(id);
-    el.style.animation = 'spin 1s linear';
-    setTimeout(() => el.style.animation = '', 1000);
-  }
+  // 6. Follow mouse
+  const obj6 = document.getElementById('obj6');
+  document.addEventListener('mousemove', (e) => {
+    obj6.style.left = (e.clientX + 10) + 'px';
+    obj6.style.top = (e.clientY + 10) + 'px';
+  });
+
+  // 7. Acceleration
+  const obj7 = document.getElementById('obj7');
+  let x7 = 10, speed7 = 1;
+  setInterval(() => {
+    speed7 *= 1.01;
+    x7 += speed7;
+    if (x7 > window.innerWidth - 60) { x7 = 10; speed7 = 1; }
+    obj7.style.left = x7 + 'px';
+  }, 20);
+
+  // 8. Random movement
+  const obj8 = document.getElementById('obj8');
+  setInterval(() => {
+    let randX = Math.random() * (window.innerWidth - 60);
+    let randY = Math.random() * (window.innerHeight - 60);
+    obj8.style.left = randX + 'px';
+    obj8.style.top = randY + 'px';
+  }, 1000);
+
+  // --- Smart Command Box ---
+  const positions = { commandText: {x:0,y:0,scale:1,rotate:0} };
+  const commandEl = document.getElementById('commandText');
 
   function handleCommand(e) {
     if (e.key !== 'Enter') return;
+    runCommand();
+  }
 
-    let input = e.target.value.trim().toLowerCase();
-    e.target.value = '';
+  document.getElementById('commandInput').addEventListener('keydown', handleCommand);
+
+  function runCommand() {
+    const inputElement = document.getElementById('commandInput');
+    let input = inputElement.value.trim().toLowerCase();
+    inputElement.value = '';
 
     const pos = positions.commandText;
     let feedback = '🤖 Done!';
 
-    // Move commands: move/slide
     if (input.match(/move|slide/)) {
       const val = parseInt(input.match(/\d+/)?.[0]) || 50;
       if (input.includes('left')) pos.x -= val;
       if (input.includes('right')) pos.x += val;
       if (input.includes('up')) pos.y -= val;
       if (input.includes('down')) pos.y += val;
-    }
-    // jump
-    else if (input.includes('jump')) {
-      el.style.animation = 'jump 0.5s ease';
-      setTimeout(() => el.style.animation = '', 500);
-    }
-    // spin
-    else if (input.includes('spin') || input.includes('rotate')) {
-      el.style.animation = 'spin 1s linear';
-      setTimeout(() => el.style.animation = '', 1000);
-    }
-    // tilt
-    else if (input.includes('tilt')) {
-      el.style.animation = 'tilt 0.6s ease';
-      setTimeout(() => el.style.animation = '', 600);
-    }
-    // zoom
-    else if (input.includes('zoom') || input.includes('scale')) {
+    } else if (input.includes('jump')) {
+      commandEl.style.animation = 'jump 0.5s ease';
+      setTimeout(() => commandEl.style.animation = '', 500);
+    } else if (input.includes('spin') || input.includes('rotate')) {
+      commandEl.style.animation = 'spin 1s linear';
+      setTimeout(() => commandEl.style.animation = '', 1000);
+    } else if (input.includes('tilt')) {
+      commandEl.style.animation = 'tilt 0.6s ease';
+      setTimeout(() => commandEl.style.animation = '', 600);
+    } else if (input.includes('zoom') || input.includes('scale')) {
       const val = parseFloat(input.match(/\d+(\.\d+)?/)?.[0]) || 1.2;
       pos.scale = val;
-    }
-    // reset
-    else if (input.includes('reset')) {
-      pos.x = 0;
-      pos.y = 0;
-      pos.scale = 1;
-      pos.rotate = 0;
+    } else if (input.includes('reset')) {
+      pos.x = 0; pos.y = 0; pos.scale = 1; pos.rotate = 0;
       feedback = '🤖 Reset!';
-    }
-    else {
+    } else {
       feedback = '🤖 Unknown command';
-      setTimeout(() => el.textContent = '🤖 Command Me', 1200);
+      setTimeout(() => commandEl.textContent = '🤖 Command Me', 1200);
     }
 
-    // Apply transforms
-    el.style.transform = `translate(${pos.x}px, ${pos.y}px) scale(${pos.scale}) rotate(${pos.rotate}deg)`;
-    el.textContent = feedback;
+    commandEl.style.transform = `translate(${pos.x}px,${pos.y}px) scale(${pos.scale}) rotate(${pos.rotate}deg)`;
+    commandEl.textContent = feedback;
+  }
+
+  // --- GPT controlled button ---
+  function runFromGPT() {
+    const el = document.getElementById('commandText');
+    const pos = positions.commandText;
+    let sequence = [
+      {action:'move', direction:'right', value:80},
+      {action:'jump'},
+      {action:'move', direction:'down', value:50},
+      {action:'spin'},
+      {action:'move', direction:'left', value:100},
+      {action:'tilt'},
+      {action:'zoom', value:1.5},
+    ];
+    let delay = 0;
+    sequence.forEach(cmd => {
+      setTimeout(() => {
+        if (cmd.action === 'move') {
+          if (cmd.direction==='left') pos.x -= cmd.value;
+          if (cmd.direction==='right') pos.x += cmd.value;
+          if (cmd.direction==='up') pos.y -= cmd.value;
+          if (cmd.direction==='down') pos.y += cmd.value;
+        } else if (cmd.action==='jump') {
+          el.style.animation='jump 0.5s ease';
+          setTimeout(()=>el.style.animation='',500);
+        } else if (cmd.action==='spin') {
+          el.style.animation='spin 1s linear';
+          setTimeout(()=>el.style.animation='',1000);
+        } else if (cmd.action==='tilt') {
+          el.style.animation='tilt 0.6s ease';
+          setTimeout(()=>el.style.animation='',600);
+        } else if (cmd.action==='zoom') {
+          pos.scale = cmd.value;
+        }
+
+        el.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${pos.scale}) rotate(${pos.rotate}deg)`;
+        el.textContent='🤖 Running...';
+      }, delay);
+      delay += 700;
+    });
+
+    setTimeout(()=>el.textContent='🤖 Command Me', delay + 300);
   }
 </script>
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>8 Moving Objects with Controls</title>
+  <title>Control All 8 Objects</title>
   <style>
     body {
       margin: 0;
@@ -21,7 +21,7 @@
     #obj1 { background-color: red; top: 50px; left: 10px; }
     #obj2 { background-color: green; top: 120px; left: 10px; }
     #obj3 { background-color: blue; top: 200px; left: 10px; }
-    #obj4 { background-color: orange; top: 300px; left: 200px; }
+    #obj4 { background-color: orange; top: 300px; left: 10px; }
     #obj5 { background-color: purple; top: 400px; left: 10px; }
     #obj6 { background-color: teal; top: 500px; left: 10px; }
     #obj7 { background-color: brown; top: 600px; left: 10px; }
@@ -56,7 +56,7 @@
     }
   </style>
 </head>
-<body onkeydown="moveWithKeys(event)">
+<body>
 
   <!-- 8 objects -->
   <div class="object" id="obj1">1</div>
@@ -70,152 +70,75 @@
 
   <!-- Control Panel -->
   <div class="controls">
-    <h3>Controls</h3>
-    <div>
-      <strong>Obj1:</strong><br>
-      <button onclick="move('obj1', 'up')">Up</button>
-      <button onclick="move('obj1', 'left')">Left</button>
-      <button onclick="move('obj1', 'right')">Right</button>
-      <button onclick="move('obj1', 'down')">Down</button>
-    </div>
-    <hr>
-    <div>
-      <strong>Global:</strong><br>
-      <button onclick="pauseResume()">Pause / Resume</button>
-      <button onclick="resetPositions()">Reset All</button>
-    </div>
+    <h3>Control All Objects</h3>
+    <button onclick="moveAll(10)">Move All (10x)</button>
+    <button onclick="pauseResume()">Pause / Resume</button>
+    <button onclick="resetPositions()">Reset</button>
   </div>
 
   <script>
-    // Store intervals so we can pause/resume
-    let intervals = [];
     let paused = false;
+    let objects = [];
+    let directions = []; // each object moves differently
 
-    // === 1. Manual button movement ===
-    function move(id, direction) {
-      const el = document.getElementById(id);
-      const step = 20;
-      let x = parseInt(el.style.left) || 0;
-      let y = parseInt(el.style.top) || 0;
-      if (direction === 'up') y -= step;
-      if (direction === 'down') y += step;
-      if (direction === 'left') x -= step;
-      if (direction === 'right') x += step;
-      el.style.left = x + 'px';
-      el.style.top = y + 'px';
+    window.onload = () => {
+      // Store initial positions & directions
+      for (let i = 1; i <= 8; i++) {
+        let el = document.getElementById(`obj${i}`);
+        objects.push(el);
+      }
+
+      // Directions for each object (dx, dy)
+      directions = [
+        {dx: 5, dy: 0},    // obj1 → right
+        {dx: -5, dy: 0},   // obj2 ← left
+        {dx: 0, dy: 5},    // obj3 ↓ down
+        {dx: 0, dy: -5},   // obj4 ↑ up
+        {dx: 5, dy: 5},    // obj5 ↘ diagonal
+        {dx: -5, dy: -5},  // obj6 ↖ diagonal
+        {dx: -5, dy: 5},   // obj7 ↙ diagonal
+        {dx: 5, dy: -5}    // obj8 ↗ diagonal
+      ];
+    };
+
+    // Move all objects 10 times (or more)
+    function moveAll(times) {
+      if (paused) return;
+      let count = 0;
+      let interval = setInterval(() => {
+        if (paused) return;
+        count++;
+        objects.forEach((obj, i) => {
+          let x = parseInt(obj.style.left) || 0;
+          let y = parseInt(obj.style.top) || 0;
+          obj.style.left = (x + directions[i].dx) + 'px';
+          obj.style.top = (y + directions[i].dy) + 'px';
+        });
+        if (count >= times) clearInterval(interval);
+      }, 100);
     }
 
-    // === 2. Continuous linear move (obj2) ===
-    const obj2 = document.getElementById('obj2');
-    let x2 = 10;
-    intervals.push(setInterval(() => {
-      if (!paused) {
-        x2 += 1;
-        obj2.style.left = x2 + 'px';
-      }
-    }, 10));
-
-    // === 3. Bounce (obj3) ===
-    const obj3 = document.getElementById('obj3');
-    let x3 = 10, dx3 = 2;
-    intervals.push(setInterval(() => {
-      if (!paused) {
-        x3 += dx3;
-        if (x3 > window.innerWidth - 60 || x3 < 0) dx3 *= -1;
-        obj3.style.left = x3 + 'px';
-      }
-    }, 10));
-
-    // === 4. Circular motion (obj4) ===
-    const obj4 = document.getElementById('obj4');
-    let angle = 0;
-    intervals.push(setInterval(() => {
-      if (!paused) {
-        angle += 0.05;
-        let centerX = 300, centerY = 350, radius = 100;
-        let x = centerX + radius * Math.cos(angle);
-        let y = centerY + radius * Math.sin(angle);
-        obj4.style.left = x + 'px';
-        obj4.style.top = y + 'px';
-      }
-    }, 20));
-
-    // === 5. Move with arrow keys (obj5) ===
-    let x5 = 10, y5 = 400;
-    function moveWithKeys(e) {
-      const obj5 = document.getElementById('obj5');
-      const step = 10;
-      if (e.key === 'ArrowRight') x5 += step;
-      if (e.key === 'ArrowLeft') x5 -= step;
-      if (e.key === 'ArrowUp') y5 -= step;
-      if (e.key === 'ArrowDown') y5 += step;
-      obj5.style.left = x5 + 'px';
-      obj5.style.top = y5 + 'px';
-    }
-
-    // === 6. Follow mouse (obj6) ===
-    const obj6 = document.getElementById('obj6');
-    document.addEventListener('mousemove', (e) => {
-      if (!paused) {
-        obj6.style.left = (e.clientX + 10) + 'px';
-        obj6.style.top = (e.clientY + 10) + 'px';
-      }
-    });
-
-    // === 7. Acceleration (obj7) ===
-    const obj7 = document.getElementById('obj7');
-    let x7 = 10, speed7 = 1;
-    intervals.push(setInterval(() => {
-      if (!paused) {
-        speed7 *= 1.01;
-        x7 += speed7;
-        if (x7 > window.innerWidth - 60) {
-          x7 = 10;
-          speed7 = 1;
-        }
-        obj7.style.left = x7 + 'px';
-      }
-    }, 20));
-
-    // === 8. Random movement (obj8) ===
-    const obj8 = document.getElementById('obj8');
-    intervals.push(setInterval(() => {
-      if (!paused) {
-        let randX = Math.random() * (window.innerWidth - 60);
-        let randY = Math.random() * (window.innerHeight - 60);
-        obj8.style.left = randX + 'px';
-        obj8.style.top = randY + 'px';
-      }
-    }, 1000));
-
-    // === Pause/Resume ===
+    // Pause or resume all movement
     function pauseResume() {
       paused = !paused;
     }
 
-    // === Reset positions ===
+    // Reset positions
     function resetPositions() {
       const defaults = [
-        {id: 'obj1', x: 10, y: 50},
-        {id: 'obj2', x: 10, y: 120},
-        {id: 'obj3', x: 10, y: 200},
-        {id: 'obj4', x: 200, y: 300},
-        {id: 'obj5', x: 10, y: 400},
-        {id: 'obj6', x: 10, y: 500},
-        {id: 'obj7', x: 10, y: 600},
-        {id: 'obj8', x: 10, y: 700}
+        {x: 10, y: 50},
+        {x: 10, y: 120},
+        {x: 10, y: 200},
+        {x: 10, y: 300},
+        {x: 10, y: 400},
+        {x: 10, y: 500},
+        {x: 10, y: 600},
+        {x: 10, y: 700}
       ];
-      defaults.forEach(obj => {
-        const el = document.getElementById(obj.id);
-        el.style.left = obj.x + 'px';
-        el.style.top = obj.y + 'px';
+      objects.forEach((obj, i) => {
+        obj.style.left = defaults[i].x + 'px';
+        obj.style.top = defaults[i].y + 'px';
       });
-      x2 = 10;
-      x3 = 10;
-      x5 = 10;
-      y5 = 400;
-      x7 = 10;
-      speed7 = 1;
     }
   </script>
 

@@ -1,51 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>8 Individual Moving Objects</title>
+  <title>8 Moving Objects with Buttons Below</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       font-family: sans-serif;
+      background-color: #f0f0f0;
     }
+
+    .container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100px;
+      margin: 30px;
+    }
+
     .object {
       width: 50px;
       height: 50px;
-      position: absolute;
+      position: relative;
       text-align: center;
       line-height: 50px;
       color: white;
       font-size: 14px;
       border-radius: 5px;
     }
-    #obj1 { background-color: red; top: 50px; left: 10px; }
-    #obj2 { background-color: green; top: 120px; left: 10px; }
-    #obj3 { background-color: blue; top: 200px; left: 10px; }
-    #obj4 { background-color: orange; top: 300px; left: 10px; }
-    #obj5 { background-color: purple; top: 400px; left: 10px; }
-    #obj6 { background-color: teal; top: 500px; left: 10px; }
-    #obj7 { background-color: brown; top: 600px; left: 10px; }
-    #obj8 { background-color: pink; top: 700px; left: 10px; }
 
-    .controls {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(255,255,255,0.95);
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      max-height: 95vh;
-      overflow-y: auto;
-    }
-
-    .controls h3 {
-      margin-top: 0;
-      text-align: center;
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 20px;
     }
 
     button {
-      margin: 5px;
+      margin-top: 8px;
       padding: 5px 10px;
       border: none;
       background-color: #333;
@@ -57,85 +51,63 @@
     button:hover {
       background-color: #555;
     }
-
-    .obj-controls {
-      margin-bottom: 10px;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #ccc;
-    }
   </style>
 </head>
 <body>
 
-  <!-- 8 objects -->
-  <div class="object" id="obj1">1</div>
-  <div class="object" id="obj2">2</div>
-  <div class="object" id="obj3">3</div>
-  <div class="object" id="obj4">4</div>
-  <div class="object" id="obj5">5</div>
-  <div class="object" id="obj6">6</div>
-  <div class="object" id="obj7">7</div>
-  <div class="object" id="obj8">8</div>
-
-  <!-- Control Panel -->
-  <div class="controls">
-    <h3>Object Controls</h3>
-
-    <div class="obj-controls">
-      <strong>Object 1:</strong>
-      <button onclick="moveObject('obj1', 'right')">Move Right</button>
+  <div class="row">
+    <div class="container">
+      <div class="object" id="obj1" style="background-color:red;">1</div>
+      <button onclick="moveObject('obj1','right')">Move →</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 2:</strong>
-      <button onclick="moveObject('obj2', 'left')">Move Left</button>
+    <div class="container">
+      <div class="object" id="obj2" style="background-color:green;">2</div>
+      <button onclick="moveObject('obj2','left')">Move ←</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 3:</strong>
-      <button onclick="moveObject('obj3', 'up')">Move Up</button>
+    <div class="container">
+      <div class="object" id="obj3" style="background-color:blue;">3</div>
+      <button onclick="moveObject('obj3','up')">Move ↑</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 4:</strong>
-      <button onclick="moveObject('obj4', 'down')">Move Down</button>
+    <div class="container">
+      <div class="object" id="obj4" style="background-color:orange;">4</div>
+      <button onclick="moveObject('obj4','down')">Move ↓</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 5:</strong>
-      <button onclick="moveObject('obj5', 'diagonal1')">Move ↘ Diagonal</button>
+    <div class="container">
+      <div class="object" id="obj5" style="background-color:purple;">5</div>
+      <button onclick="moveObject('obj5','diagonal1')">Move ↘</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 6:</strong>
-      <button onclick="moveObject('obj6', 'diagonal2')">Move  Diagonal</button>
+    <div class="container">
+      <div class="object" id="obj6" style="background-color:teal;">6</div>
+      <button onclick="moveObject('obj6','diagonal2')">Move ↙</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 7:</strong>
-      <button onclick="moveObject('obj7', 'circle')">Circle Motion</button>
+    <div class="container">
+      <div class="object" id="obj7" style="background-color:brown;">7</div>
+      <button onclick="moveObject('obj7','circle')">Circle</button>
     </div>
 
-    <div class="obj-controls">
-      <strong>Object 8:</strong>
-      <button onclick="moveObject('obj8', 'random')">Random Jump</button>
+    <div class="container">
+      <div class="object" id="obj8" style="background-color:pink; color:black;">8</div>
+      <button onclick="moveObject('obj8','random')">Random</button>
     </div>
-
-    <hr>
-    <button onclick="resetPositions()">Reset All</button>
   </div>
 
   <script>
     // store positions
     let positions = {
-      obj1: {x: 10, y: 50},
-      obj2: {x: 10, y: 120},
-      obj3: {x: 10, y: 200},
-      obj4: {x: 10, y: 300},
-      obj5: {x: 10, y: 400},
-      obj6: {x: 10, y: 500},
-      obj7: {x: 10, y: 600},
-      obj8: {x: 10, y: 700},
+      obj1: {x: 0, y: 0},
+      obj2: {x: 0, y: 0},
+      obj3: {x: 0, y: 0},
+      obj4: {x: 0, y: 0},
+      obj5: {x: 0, y: 0},
+      obj6: {x: 0, y: 0},
+      obj7: {x: 0, y: 0},
+      obj8: {x: 0, y: 0},
     };
 
     // move function
@@ -168,32 +140,23 @@
             pos.x += 8;
             pos.y += 8;
             break;
-          case 'diagonal2': // 
-            pos.x += 1;
+          case 'diagonal2': // ↙
+            pos.x -= 8;
             pos.y += 8;
             break;
-          case 'circle': // move around center point
-            let time = Date.now() / 100;
-            pos.x = 300 + Math.cos(time) * 80;
-            pos.y = 300 + Math.sin(time) * 80;
+          case 'circle': // circular motion
+            let t = Date.now() / 100;
+            pos.x = Math.cos(t) * 50;
+            pos.y = Math.sin(t) * 50;
             break;
-          case 'random':
-            pos.x = Math.random() * (window.innerWidth - 60);
-            pos.y = Math.random() * (window.innerHeight - 60);
+          case 'random': // jump randomly
+            pos.x = Math.random() * 100 - 50;
+            pos.y = Math.random() * 100 - 50;
             break;
         }
 
-        el.style.left = pos.x + 'px';
-        el.style.top = pos.y + 'px';
-      }, 100);
-    }
-
-    function resetPositions() {
-      for (let id in positions) {
-        const el = document.getElementById(id);
-        el.style.left = positions[id].x + 'px';
-        el.style.top = positions[id].y + 'px';
-      }
+        el.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      }, 80);
     }
   </script>
 

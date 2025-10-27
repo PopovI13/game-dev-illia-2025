@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Control All 8 Objects</title>
+  <title>8 Individual Moving Objects</title>
   <style>
     body {
       margin: 0;
@@ -31,14 +31,17 @@
       position: fixed;
       top: 10px;
       right: 10px;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.95);
       padding: 10px;
       border-radius: 10px;
       box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      max-height: 95vh;
+      overflow-y: auto;
     }
 
     .controls h3 {
       margin-top: 0;
+      text-align: center;
     }
 
     button {
@@ -53,6 +56,12 @@
 
     button:hover {
       background-color: #555;
+    }
+
+    .obj-controls {
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #ccc;
     }
   </style>
 </head>
@@ -70,75 +79,121 @@
 
   <!-- Control Panel -->
   <div class="controls">
-    <h3>Control All Objects</h3>
-    <button onclick="moveAll(10)">Move All (10x)</button>
-    <button onclick="pauseResume()">Pause / Resume</button>
-    <button onclick="resetPositions()">Reset</button>
+    <h3>Object Controls</h3>
+
+    <div class="obj-controls">
+      <strong>Object 1:</strong>
+      <button onclick="moveObject('obj1', 'right')">Move Right</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 2:</strong>
+      <button onclick="moveObject('obj2', 'left')">Move Left</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 3:</strong>
+      <button onclick="moveObject('obj3', 'up')">Move Up</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 4:</strong>
+      <button onclick="moveObject('obj4', 'down')">Move Down</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 5:</strong>
+      <button onclick="moveObject('obj5', 'diagonal1')">Move ↘ Diagonal</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 6:</strong>
+      <button onclick="moveObject('obj6', 'diagonal2')">Move ↙ Diagonal</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 7:</strong>
+      <button onclick="moveObject('obj7', 'circle')">Circle Motion</button>
+    </div>
+
+    <div class="obj-controls">
+      <strong>Object 8:</strong>
+      <button onclick="moveObject('obj8', 'random')">Random Jump</button>
+    </div>
+
+    <hr>
+    <button onclick="resetPositions()">Reset All</button>
   </div>
 
   <script>
-    let paused = false;
-    let objects = [];
-    let directions = []; // each object moves differently
-
-    window.onload = () => {
-      // Store initial positions & directions
-      for (let i = 1; i <= 8; i++) {
-        let el = document.getElementById(`obj${i}`);
-        objects.push(el);
-      }
-
-      // Directions for each object (dx, dy)
-      directions = [
-        {dx: 5, dy: 0},    // obj1 → right
-        {dx: -5, dy: 0},   // obj2 ← left
-        {dx: 0, dy: 5},    // obj3 ↓ down
-        {dx: 0, dy: -5},   // obj4 ↑ up
-        {dx: 5, dy: 5},    // obj5 ↘ diagonal
-        {dx: -5, dy: -5},  // obj6 ↖ diagonal
-        {dx: -5, dy: 5},   // obj7 ↙ diagonal
-        {dx: 5, dy: -5}    // obj8 ↗ diagonal
-      ];
+    // store positions
+    let positions = {
+      obj1: {x: 10, y: 50},
+      obj2: {x: 10, y: 120},
+      obj3: {x: 10, y: 200},
+      obj4: {x: 10, y: 300},
+      obj5: {x: 10, y: 400},
+      obj6: {x: 10, y: 500},
+      obj7: {x: 10, y: 600},
+      obj8: {x: 10, y: 700},
     };
 
-    // Move all objects 10 times (or more)
-    function moveAll(times) {
-      if (paused) return;
-      let count = 0;
+    // move function
+    function moveObject(id, type) {
+      const el = document.getElementById(id);
+      let pos = positions[id];
+
+      let steps = 10;
       let interval = setInterval(() => {
-        if (paused) return;
-        count++;
-        objects.forEach((obj, i) => {
-          let x = parseInt(obj.style.left) || 0;
-          let y = parseInt(obj.style.top) || 0;
-          obj.style.left = (x + directions[i].dx) + 'px';
-          obj.style.top = (y + directions[i].dy) + 'px';
-        });
-        if (count >= times) clearInterval(interval);
+        if (steps <= 0) {
+          clearInterval(interval);
+          return;
+        }
+        steps--;
+
+        switch (type) {
+          case 'right':
+            pos.x += 10;
+            break;
+          case 'left':
+            pos.x -= 10;
+            break;
+          case 'up':
+            pos.y -= 10;
+            break;
+          case 'down':
+            pos.y += 10;
+            break;
+          case 'diagonal1': // ↘
+            pos.x += 8;
+            pos.y += 8;
+            break;
+          case 'diagonal2': // ↙
+            pos.x -= 8;
+            pos.y += 8;
+            break;
+          case 'circle': // move around center point
+            let time = Date.now() / 100;
+            pos.x = 300 + Math.cos(time) * 80;
+            pos.y = 300 + Math.sin(time) * 80;
+            break;
+          case 'random':
+            pos.x = Math.random() * (window.innerWidth - 60);
+            pos.y = Math.random() * (window.innerHeight - 60);
+            break;
+        }
+
+        el.style.left = pos.x + 'px';
+        el.style.top = pos.y + 'px';
       }, 100);
     }
 
-    // Pause or resume all movement
-    function pauseResume() {
-      paused = !paused;
-    }
-
-    // Reset positions
     function resetPositions() {
-      const defaults = [
-        {x: 10, y: 50},
-        {x: 10, y: 120},
-        {x: 10, y: 200},
-        {x: 10, y: 300},
-        {x: 10, y: 400},
-        {x: 10, y: 500},
-        {x: 10, y: 600},
-        {x: 10, y: 700}
-      ];
-      objects.forEach((obj, i) => {
-        obj.style.left = defaults[i].x + 'px';
-        obj.style.top = defaults[i].y + 'px';
-      });
+      for (let id in positions) {
+        const el = document.getElementById(id);
+        el.style.left = positions[id].x + 'px';
+        el.style.top = positions[id].y + 'px';
+      }
     }
   </script>
 

@@ -55,17 +55,17 @@ function move4() { // oscillate horizontally
     t.style.left = (50*Math.cos(angle6)) + 'px';
     t.style.top = (10*Math.sin(angle6)) + 'px';
   }
-  function move7() { // random shake in place
+ let text7Start = { left: 480, top: 0 }; // store starting position of text7
+
+function move7() { // shake around original position
   const t = document.getElementById('text7');
-  let left = parseInt(t.style.left) || 0;
-  let top = parseInt(t.style.top) || 0;
 
-  // add random movement between -2 and +2 px
-  left += (Math.random() * 4 - 2);
-  top += (Math.random() * 4 - 2);
+  // random offset between -2 and +2 pixels
+  let offsetX = Math.random() * 4 - 2;
+  let offsetY = Math.random() * 4 - 2;
 
-  t.style.left = left + 'px';
-  t.style.top = top + 'px';
+  t.style.left = (text7Start.left + offsetX) + 'px';
+  t.style.top = (text7Start.top + offsetY) + 'px';
 }
 
   function move8() { // slow right

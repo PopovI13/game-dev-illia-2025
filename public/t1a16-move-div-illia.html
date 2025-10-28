@@ -15,67 +15,66 @@
       alert(`You pressed: ${event.key}`);
     }
 
-    // -----------------------------
-    // 8 Different Box Movements
-    // -----------------------------
+    // 8 simple text movements
     let t1, t2, t3, t4, t5, t6, t7, t8;
     let dir4 = 1, dir5 = 1, angle6 = 0;
 
     function move1() {
-      const box = document.getElementById('box1');
-      box.style.left = (parseInt(box.style.left) || 0) + 5 + 'px';
-      if (parseInt(box.style.left) > 600) box.style.left = '0px';
+      const t = document.getElementById('text1');
+      t.style.left = (parseInt(t.style.left) || 0) + 5 + 'px';
+      if (parseInt(t.style.left) > 600) t.style.left = '0px';
     }
 
     function move2() {
-      const box = document.getElementById('box2');
-      box.style.top = (parseInt(box.style.top) || 0) + 5 + 'px';
-      if (parseInt(box.style.top) > 300) box.style.top = '0px';
+      const t = document.getElementById('text2');
+      t.style.top = (parseInt(t.style.top) || 0) + 5 + 'px';
+      if (parseInt(t.style.top) > 300) t.style.top = '0px';
     }
 
     function move3() {
-      const box = document.getElementById('box3');
-      box.style.left = (parseInt(box.style.left) || 0) + 5 + 'px';
-      box.style.top = (parseInt(box.style.top) || 0) + 3 + 'px';
-      if (parseInt(box.style.left) > 600) box.style.left = '0px';
-      if (parseInt(box.style.top) > 300) box.style.top = '0px';
+      const t = document.getElementById('text3');
+      t.style.left = (parseInt(t.style.left) || 0) + 5 + 'px';
+      t.style.top = (parseInt(t.style.top) || 0) + 3 + 'px';
+      if (parseInt(t.style.left) > 600) t.style.left = '0px';
+      if (parseInt(t.style.top) > 300) t.style.top = '0px';
     }
 
     function move4() {
-      const box = document.getElementById('box4');
-      let x = (parseInt(box.style.left) || 0) + 5 * dir4;
+      const t = document.getElementById('text4');
+      let x = (parseInt(t.style.left) || 0) + 5 * dir4;
       if (x > 600 || x < 0) dir4 *= -1;
-      box.style.left = x + 'px';
+      t.style.left = x + 'px';
     }
 
     function move5() {
-      const box = document.getElementById('box5');
-      let y = (parseInt(box.style.top) || 0) + 4 * dir5;
+      const t = document.getElementById('text5');
+      let y = (parseInt(t.style.top) || 0) + 4 * dir5;
       if (y > 300 || y < 0) dir5 *= -1;
-      box.style.top = y + 'px';
+      t.style.top = y + 'px';
     }
 
     function move6() {
-      const box = document.getElementById('box6');
+      const t = document.getElementById('text6');
       angle6 += 0.1;
-      box.style.left = 300 + 100 * Math.cos(angle6) + 'px';
-      box.style.top = 150 + 100 * Math.sin(angle6) + 'px';
+      t.style.left = 300 + 100 * Math.cos(angle6) + 'px';
+      t.style.top = 150 + 100 * Math.sin(angle6) + 'px';
     }
 
     function move7() {
-      const box = document.getElementById('box7');
-      let left = (parseInt(box.style.left) || 0) + 5;
-      box.style.left = (left % 600) + 'px';
-      box.style.top = (Math.sin(left / 30) * 40 + 150) + 'px';
+      const t = document.getElementById('text7');
+      let left = (parseInt(t.style.left) || 0) + 5;
+      t.style.left = (left % 600) + 'px';
+      t.style.top = (Math.sin(left / 30) * 40 + 150) + 'px';
     }
 
     function move8() {
-      const box = document.getElementById('box8');
-      let x = (parseInt(box.style.left) || 0) + (Math.random() * 10 - 5);
-      let y = (parseInt(box.style.top) || 0) + (Math.random() * 10 - 5);
-      box.style.left = Math.max(0, Math.min(600, x)) + 'px';
-      box.style.top = Math.max(0, Math.min(300, y)) + 'px';
+      const t = document.getElementById('text8');
+      let x = (parseInt(t.style.left) || 0) + (Math.random() * 10 - 5);
+      let y = (parseInt(t.style.top) || 0) + (Math.random() * 10 - 5);
+      t.style.left = Math.max(0, Math.min(600, x)) + 'px';
+      t.style.top = Math.max(0, Math.min(300, y)) + 'px';
     }
+
   </script>
 
   <h1 align="center">t1a16-move-div-illia.html</h1>
@@ -102,27 +101,26 @@
 
   <hr>
 
-  <!-- 8 new simple moving boxes -->
-  <div id="box1" style="position:absolute; left:0px; top:350px; width:30px; height:30px; background:red;"></div>
-  <div id="box2" style="position:absolute; left:50px; top:0px; width:30px; height:30px; background:orange;"></div>
-  <div id="box3" style="position:absolute; left:100px; top:0px; width:30px; height:30px; background:yellow;"></div>
-  <div id="box4" style="position:absolute; left:150px; top:50px; width:30px; height:30px; background:green;"></div>
-  <div id="box5" style="position:absolute; left:200px; top:100px; width:30px; height:30px; background:blue;"></div>
-  <div id="box6" style="position:absolute; left:250px; top:150px; width:30px; height:30px; background:purple;"></div>
-  <div id="box7" style="position:absolute; left:300px; top:200px; width:30px; height:30px; background:pink;"></div>
-  <div id="box8" style="position:absolute; left:350px; top:250px; width:30px; height:30px; background:black;"></div>
+  <!-- 8 moving text elements -->
+  <div id="text1" style="position:absolute; left:0px; top:350px;">Text1</div>
+  <div id="text2" style="position:absolute; left:50px; top:0px;">Text2</div>
+  <div id="text3" style="position:absolute; left:100px; top:0px;">Text3</div>
+  <div id="text4" style="position:absolute; left:150px; top:50px;">Text4</div>
+  <div id="text5" style="position:absolute; left:200px; top:100px;">Text5</div>
+  <div id="text6" style="position:absolute; left:250px; top:150px;">Text6</div>
+  <div id="text7" style="position:absolute; left:300px; top:200px;">Text7</div>
+  <div id="text8" style="position:absolute; left:350px; top:250px;">Text8</div>
 
   <br><br>
 
-  <!-- Buttons to start each box movement -->
-  <button onclick="t1=setInterval(move1,50)">Move Box 1</button>
-  <button onclick="t2=setInterval(move2,50)">Move Box 2</button>
-  <button onclick="t3=setInterval(move3,50)">Move Box 3</button>
-  <button onclick="t4=setInterval(move4,50)">Move Box 4</button>
-  <button onclick="t5=setInterval(move5,50)">Move Box 5</button>
-  <button onclick="t6=setInterval(move6,50)">Move Box 6</button>
-  <button onclick="t7=setInterval(move7,50)">Move Box 7</button>
-  <button onclick="t8=setInterval(move8,50)">Move Box 8</button>
+  <!-- Buttons to start each text movement -->
+  <button onclick="t1=setInterval(move1,50)">Move Text1</button>
+  <button onclick="t2=setInterval(move2,50)">Move Text2</button>
+  <button onclick="t3=setInterval(move3,50)">Move Text3</button>
+  <button onclick="t4=setInterval(move4,50)">Move Text4</button>
+  <button onclick="t5=setInterval(move5,50)">Move Text5</button>
+  <button onclick="t6=setInterval(move6,50)">Move Text6</button>
+  <button onclick="t7=setInterval(move7,50)">Move Text7</button>
+  <button onclick="t8=setInterval(move8,50)">Move Text8</button>
 
 </body>
-

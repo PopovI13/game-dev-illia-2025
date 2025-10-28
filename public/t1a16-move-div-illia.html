@@ -1,185 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Moving Texts Demo</title>
-<style>
-  body {
-    font-family: "Inter", sans-serif;
-    background: #fafafa;
-    color: #222;
-    margin: 0;
-    padding: 20px;
-    overflow: hidden;
-  }
+<body onkeypress="myKetPress(event)">
 
-  .text-block {
-    margin: 50px 0;
-    position: relative;
-    height: 50px;
-  }
+  <script>
+    let myTimer01
 
-  .moving-text {
-    font-size: 20px;
-    font-weight: bold;
-    position: absolute;
-  }
+    function myAuto(){
+      const myIm = document.getElementById('myImage01')
+      myIm.style.left = parseInt(myIm.style.left) + 5 + 'px'
+      if (parseInt(myIm.style.left) > 600){
+        myIm.style.left = '10px'
+      }
+    }
+    function myKeyPress(event) {
+      alert('You pressed: ${event.key}`);
+            }
+  </script>
 
-  .control-btn {
-    margin-top: 35px;
-    padding: 6px 12px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-</style>
-</head>
-<body>
+  <h1 align=centre>t1a16-move-div-illia.html</h1>
 
-<h2>🎬 Moving Text Examples (Click buttons to Start/Stop)</h2>
-<div id="container"></div>
+  have 8 different types of objects move in different ways 
 
-<script>
-const container = document.getElementById("container");
-const movements = [
-  "Move Right",
-  "Move Left",
-  "Bounce",
-  "Move Down",
-  "Move Up",
-  "Circular",
-  "Follow Mouse",
-  "Random",
-  "Accelerate",
-  "Arrow Keys"
-];
+  <div style="position:relative; left:0; right:0" id="myDiv01">...</div>
 
-const moving = {};
-const texts = {};
+  <button onclick="{
+    const myDiv = document.getElementById('myDiv01')
+    myDiv.style.left = '100px'
+  }">Move to 100px</button><br>
+   
 
-movements.forEach((moveType, i) => {
-  const id = "text" + (i + 1);
-  moving[id] = false;
+  <button id="myButton02" onclick="{
+    const myDiv = document.getElementById('myDiv01')
+    myDiv.style.left = pasleInt(myDiv.style.lest) + 20 + 'px'
+  }">Move Right</button><br>
 
-  // Create HTML
-  const block = document.createElement("div");
-  block.className = "text-block";
-  block.innerHTML = `
-    <div class="moving-text" id="${id}">${moveType}</div>
-    <button class="control-btn" onclick="toggleMovement('${id}')">${moveType}</button>
-  `;
-  container.appendChild(block);
-  texts[id] = block.querySelector(".moving-text");
-});
 
-// Toggle start/stop
-function toggleMovement(id) {
-  moving[id] = !moving[id];
-}
+  <b onclick="{
+    myTimer01 = setInterval(myAuto, 50)
+  }">Move auto</b><br>
 
-/* -------------------- Movements -------------------- */
-
-// 1. Move Right
-let x1 = 0;
-setInterval(() => {
-  if (moving.text1) {
-    x1 += 2;
-    if (x1 > window.innerWidth) x1 = -150;
-    texts.text1.style.left = x1 + "px";
-  }
-}, 20);
-
-// 2. Move Left
-let x2 = window.innerWidth - 150;
-setInterval(() => {
-  if (moving.text2) {
-    x2 -= 2;
-    if (x2 < -150) x2 = window.innerWidth;
-    texts.text2.style.left = x2 + "px";
-  }
-}, 20);
-
-// 3. Bounce
-let x3 = 0, dx3 = 3;
-setInterval(() => {
-  if (moving.text3) {
-    x3 += dx3;
-    if (x3 < 0 || x3 > window.innerWidth - 150) dx3 *= -1;
-    texts.text3.style.left = x3 + "px";
-  }
-}, 20);
-
-// 4. Move Down
-let y4 = 0;
-setInterval(() => {
-  if (moving.text4) {
-    y4 += 2;
-    if (y4 > window.innerHeight - 50) y4 = 0;
-    texts.text4.style.top = y4 + "px";
-  }
-}, 20);
-
-// 5. Move Up (fixed)
-let y5 = window.innerHeight - 100;
-setInterval(() => {
-  if (moving.text5) {
-    y5 -= 2;
-    if (y5 < 0) y5 = window.innerHeight - 100;
-    texts.text5.style.top = y5 + "px";
-  }
-}, 20);
-
-// 6. Circular (fixed)
-let angle6 = 0;
-setInterval(() => {
-  if (moving.text6) {
-    angle6 += 0.05;
-    const cx = 400, cy = 400, r = 100;
-    texts.text6.style.left = cx + r * Math.cos(angle6) + "px";
-    texts.text6.style.top = cy + r * Math.sin(angle6) + "px";
-  }
-}, 20);
-
-// 7. Follow Mouse (fixed)
-document.addEventListener("mousemove", e => {
-  if (moving.text7) {
-    texts.text7.style.left = (e.clientX + 15) + "px";
-    texts.text7.style.top = (e.clientY + 15) + "px";
-  }
-});
-
-// 8. Random (fixed)
-setInterval(() => {
-  if (moving.text8) {
-    texts.text8.style.left = Math.random() * (window.innerWidth - 200) + "px";
-    texts.text8.style.top = Math.random() * (window.innerHeight - 100) + "px";
-  }
-}, 1000);
-
-// 9. Accelerate (fixed)
-let x9 = 0, speed9 = 1;
-setInterval(() => {
-  if (moving.text9) {
-    x9 += speed9;
-    speed9 += 0.1;
-    if (x9 > window.innerWidth - 200) { x9 = 0; speed9 = 1; }
-    texts.text9.style.left = x9 + "px";
-  }
-}, 20);
-
-// 10. Arrow Keys (fixed)
-let x10 = 300, y10 = 600;
-document.addEventListener("keydown", e => {
-  if (moving.text10) {
-    const step = 15;
-    if (e.key === "ArrowRight") x10 += step;
-    if (e.key === "ArrowLeft") x10 -= step;
-    if (e.key === "ArrowUp") y10 -= step;
-    if (e.key === "ArrowDown") y10 += step;
-    texts.text10.style.left = x10 + "px";
-    texts.text10.style.top = y10 + "px";
-  }
-});
-</script>
-
-</body>
-</html>
+  <img scr="myImage01.jpg" id="myimage01" width=40 style="position:relative; left:0; right:0">
+  
+    
+  

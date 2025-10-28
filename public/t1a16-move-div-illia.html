@@ -15,68 +15,70 @@
     alert(`You pressed: ${event.key}`);
   }
 
-  // 8 simple inline text movements
-  let t1, t2, t3, t4, t5, t6, t7, t8;
-  let dir4 = 1, dir5 = 1, angle6 = 0;
+  // timers for 10 texts
+  let t1,t2,t3,t4,t5,t6,t7,t8,t9,t10;
+  let dir4=1, dir5=1, angle6=0, dir9=1, dir10=1;
 
-  function move1() { // move right
+  // Movements
+  function move1() { // right
     const t = document.getElementById('text1');
-    t.style.marginLeft = (parseInt(t.style.marginLeft) || 0) + 2 + 'px';
+    t.style.left = (parseInt(t.style.left) || 0) + 2 + 'px';
   }
-
-  function move2() { // move left
+  function move2() { // left
     const t = document.getElementById('text2');
-    t.style.marginLeft = (parseInt(t.style.marginLeft) || 0) - 2 + 'px';
+    t.style.left = (parseInt(t.style.left) || 0) - 2 + 'px';
   }
-
-  function move3() { // move in sine wave
+  function move3() { // sine wave
     const t = document.getElementById('text3');
-    let left = (parseInt(t.style.marginLeft) || 0) + 3;
-    t.style.marginLeft = left + 'px';
-    t.style.position = 'relative';
-    t.style.top = (Math.sin(left / 10) * 10) + 'px';
+    let left = (parseInt(t.style.left) || 0) + 3;
+    t.style.left = left + 'px';
+    t.style.top = (10*Math.sin(left/10)) + 'px';
   }
-
-  function move4() { // oscillate
+  function move4() { // oscillate horizontally
     const t = document.getElementById('text4');
-    let left = (parseInt(t.style.marginLeft) || 0) + 2 * dir4;
-    if (left > 200 || left < 0) dir4 *= -1;
-    t.style.marginLeft = left + 'px';
+    let left = (parseInt(t.style.left) || 0) + 2*dir4;
+    if(left>200 || left<0) dir4*=-1;
+    t.style.left = left + 'px';
   }
-
-  function move5() { // small up-down
+  function move5() { // small vertical up-down
     const t = document.getElementById('text5');
-    let top = (parseInt(t.style.top) || 0) + 1 * dir5;
-    if (top > 10 || top < -10) dir5 *= -1;
-    t.style.position = 'relative';
+    let top = (parseInt(t.style.top) || 0) + 1*dir5;
+    if(top>10 || top<-10) dir5*=-1;
     t.style.top = top + 'px';
   }
-
-  function move6() { // circular motion
+  function move6() { // circular
     const t = document.getElementById('text6');
     angle6 += 0.1;
-    t.style.position = 'relative';
-    t.style.left = (50 * Math.cos(angle6)) + 'px';
-    t.style.top = (10 * Math.sin(angle6)) + 'px';
+    t.style.left = (50*Math.cos(angle6)) + 'px';
+    t.style.top = (10*Math.sin(angle6)) + 'px';
   }
-
   function move7() { // random shake
     const t = document.getElementById('text7');
-    t.style.position = 'relative';
-    t.style.left = (Math.random() * 4 - 2) + 'px';
-    t.style.top = (Math.random() * 4 - 2) + 'px';
+    t.style.left = (Math.random()*4-2) + 'px';
+    t.style.top = (Math.random()*4-2) + 'px';
   }
-
-  function move8() { // slow move right
+  function move8() { // slow right
     const t = document.getElementById('text8');
-    t.style.marginLeft = (parseInt(t.style.marginLeft) || 0) + 1 + 'px';
+    t.style.left = (parseInt(t.style.left) || 0) + 1 + 'px';
+  }
+  function move9() { // up and down
+    const t = document.getElementById('text9');
+    let top = (parseInt(t.style.top) || 0) + 2*dir9;
+    if(top>20 || top<0) dir9*=-1;
+    t.style.top = top + 'px';
+  }
+  function move10() { // up and down faster
+    const t = document.getElementById('text10');
+    let top = (parseInt(t.style.top) || 0) + 3*dir10;
+    if(top>30 || top<0) dir10*=-1;
+    t.style.top = top + 'px';
   }
 
 </script>
 
 <h1 align="center">t1a16-move-div-illia.html</h1>
 
-<p>Have 8 different types of objects move in different ways</p>
+<p>Have 10 different texts move in different ways</p>
 
 <div style="position:relative; left:0px;" id="myDiv01">...</div>
 
@@ -98,21 +100,23 @@
 
 <hr>
 
-<!-- 8 inline moving texts -->
-<div>
-  <span id="text1" style="margin-left:0px;">Text1 </span>
-  <span id="text2" style="margin-left:0px;">Text2 </span>
-  <span id="text3" style="margin-left:0px;">Text3 </span>
-  <span id="text4" style="margin-left:0px;">Text4 </span>
-  <span id="text5" style="margin-left:0px;">Text5 </span>
-  <span id="text6" style="margin-left:0px;">Text6 </span>
-  <span id="text7" style="margin-left:0px;">Text7 </span>
-  <span id="text8" style="margin-left:0px;">Text8 </span>
+<!-- 10 inline texts, absolutely positioned so they move independently -->
+<div style="position:relative; height:50px; width:1000px;">
+  <span id="text1" style="position:absolute; left:0px; top:0px;">Text1 </span>
+  <span id="text2" style="position:absolute; left:80px; top:0px;">Text2 </span>
+  <span id="text3" style="position:absolute; left:160px; top:0px;">Text3 </span>
+  <span id="text4" style="position:absolute; left:240px; top:0px;">Text4 </span>
+  <span id="text5" style="position:absolute; left:320px; top:0px;">Text5 </span>
+  <span id="text6" style="position:absolute; left:400px; top:0px;">Text6 </span>
+  <span id="text7" style="position:absolute; left:480px; top:0px;">Text7 </span>
+  <span id="text8" style="position:absolute; left:560px; top:0px;">Text8 </span>
+  <span id="text9" style="position:absolute; left:640px; top:0px;">Text9 </span>
+  <span id="text10" style="position:absolute; left:720px; top:0px;">Text10 </span>
 </div>
 
 <br>
 
-<!-- Buttons to start each text movement -->
+<!-- Buttons to move each text -->
 <button onclick="t1=setInterval(move1,50)">Move Text1</button>
 <button onclick="t2=setInterval(move2,50)">Move Text2</button>
 <button onclick="t3=setInterval(move3,50)">Move Text3</button>
@@ -121,5 +125,7 @@
 <button onclick="t6=setInterval(move6,50)">Move Text6</button>
 <button onclick="t7=setInterval(move7,50)">Move Text7</button>
 <button onclick="t8=setInterval(move8,50)">Move Text8</button>
+<button onclick="t9=setInterval(move9,50)">Move Text9</button>
+<button onclick="t10=setInterval(move10,50)">Move Text10</button>
 
 </body>

@@ -57,16 +57,19 @@ function move4() { // oscillate horizontally
   }
  let text7Start = { left: 480, top: 0 }; // store starting position of text7
 
-function move7() { // shake around original position
+let text7Start = { left: 480, top: -20 }; // start above the line
+
+function move7() { // shake around elevated position
   const t = document.getElementById('text7');
 
-  // random offset between -2 and +2 pixels
+  // small random offset for shaking
   let offsetX = Math.random() * 4 - 2;
   let offsetY = Math.random() * 4 - 2;
 
   t.style.left = (text7Start.left + offsetX) + 'px';
   t.style.top = (text7Start.top + offsetY) + 'px';
 }
+
 
   function move8() { // slow right
     const t = document.getElementById('text8');

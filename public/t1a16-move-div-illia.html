@@ -72,13 +72,13 @@ function move4() { // oscillate horizontally
   t.style.top = top + 'px';
 }
 
-function move10() { // up and down faster across the page
+function move10() { // move straight up
   const t = document.getElementById('text10');
-  let top = (parseInt(t.style.top) || 0) + 3 * dir10;
-  let maxTop = window.innerHeight - t.offsetHeight;
-  if (top > maxTop || top < 0) dir10 *= -1;
+  let top = (parseInt(t.style.top) || window.innerHeight - 30) - 3; // move up
+  if(top < -t.offsetHeight) top = window.innerHeight; // reset to bottom if off-page
   t.style.top = top + 'px';
 }
+
 
 
 </script>

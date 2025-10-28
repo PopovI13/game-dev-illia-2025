@@ -1,126 +1,125 @@
 <body onkeypress="myKeyPress(event)">
 
-  <script>
-    let myTimer01;
+<script>
+  let myTimer01;
 
-    function myAuto() {
-      const myIm = document.getElementById('myImage01');
-      myIm.style.left = (parseInt(myIm.style.left) || 0) + 5 + 'px';
-      if (parseInt(myIm.style.left) > 600) {
-        myIm.style.left = '10px';
-      }
+  function myAuto() {
+    const myIm = document.getElementById('myImage01');
+    myIm.style.left = (parseInt(myIm.style.left) || 0) + 5 + 'px';
+    if (parseInt(myIm.style.left) > 600) {
+      myIm.style.left = '10px';
     }
+  }
 
-    function myKeyPress(event) {
-      alert(`You pressed: ${event.key}`);
-    }
+  function myKeyPress(event) {
+    alert(`You pressed: ${event.key}`);
+  }
 
-    // 8 simple text movements
-    let t1, t2, t3, t4, t5, t6, t7, t8;
-    let dir4 = 1, dir5 = 1, angle6 = 0;
+  // 8 simple inline text movements
+  let t1, t2, t3, t4, t5, t6, t7, t8;
+  let dir4 = 1, dir5 = 1, angle6 = 0;
 
-    function move1() {
-      const t = document.getElementById('text1');
-      t.style.left = (parseInt(t.style.left) || 0) + 5 + 'px';
-      if (parseInt(t.style.left) > 600) t.style.left = '0px';
-    }
+  function move1() { // move right
+    const t = document.getElementById('text1');
+    t.style.marginLeft = (parseInt(t.style.marginLeft) || 0) + 2 + 'px';
+  }
 
-    function move2() {
-      const t = document.getElementById('text2');
-      t.style.top = (parseInt(t.style.top) || 0) + 5 + 'px';
-      if (parseInt(t.style.top) > 300) t.style.top = '0px';
-    }
+  function move2() { // move left
+    const t = document.getElementById('text2');
+    t.style.marginLeft = (parseInt(t.style.marginLeft) || 0) - 2 + 'px';
+  }
 
-    function move3() {
-      const t = document.getElementById('text3');
-      t.style.left = (parseInt(t.style.left) || 0) + 5 + 'px';
-      t.style.top = (parseInt(t.style.top) || 0) + 3 + 'px';
-      if (parseInt(t.style.left) > 600) t.style.left = '0px';
-      if (parseInt(t.style.top) > 300) t.style.top = '0px';
-    }
+  function move3() { // move in sine wave
+    const t = document.getElementById('text3');
+    let left = (parseInt(t.style.marginLeft) || 0) + 3;
+    t.style.marginLeft = left + 'px';
+    t.style.position = 'relative';
+    t.style.top = (Math.sin(left / 10) * 10) + 'px';
+  }
 
-    function move4() {
-      const t = document.getElementById('text4');
-      let x = (parseInt(t.style.left) || 0) + 5 * dir4;
-      if (x > 600 || x < 0) dir4 *= -1;
-      t.style.left = x + 'px';
-    }
+  function move4() { // oscillate
+    const t = document.getElementById('text4');
+    let left = (parseInt(t.style.marginLeft) || 0) + 2 * dir4;
+    if (left > 200 || left < 0) dir4 *= -1;
+    t.style.marginLeft = left + 'px';
+  }
 
-    function move5() {
-      const t = document.getElementById('text5');
-      let y = (parseInt(t.style.top) || 0) + 4 * dir5;
-      if (y > 300 || y < 0) dir5 *= -1;
-      t.style.top = y + 'px';
-    }
+  function move5() { // small up-down
+    const t = document.getElementById('text5');
+    let top = (parseInt(t.style.top) || 0) + 1 * dir5;
+    if (top > 10 || top < -10) dir5 *= -1;
+    t.style.position = 'relative';
+    t.style.top = top + 'px';
+  }
 
-    function move6() {
-      const t = document.getElementById('text6');
-      angle6 += 0.1;
-      t.style.left = 300 + 100 * Math.cos(angle6) + 'px';
-      t.style.top = 150 + 100 * Math.sin(angle6) + 'px';
-    }
+  function move6() { // circular motion
+    const t = document.getElementById('text6');
+    angle6 += 0.1;
+    t.style.position = 'relative';
+    t.style.left = (50 * Math.cos(angle6)) + 'px';
+    t.style.top = (10 * Math.sin(angle6)) + 'px';
+  }
 
-    function move7() {
-      const t = document.getElementById('text7');
-      let left = (parseInt(t.style.left) || 0) + 5;
-      t.style.left = (left % 600) + 'px';
-      t.style.top = (Math.sin(left / 30) * 40 + 150) + 'px';
-    }
+  function move7() { // random shake
+    const t = document.getElementById('text7');
+    t.style.position = 'relative';
+    t.style.left = (Math.random() * 4 - 2) + 'px';
+    t.style.top = (Math.random() * 4 - 2) + 'px';
+  }
 
-    function move8() {
-      const t = document.getElementById('text8');
-      let x = (parseInt(t.style.left) || 0) + (Math.random() * 10 - 5);
-      let y = (parseInt(t.style.top) || 0) + (Math.random() * 10 - 5);
-      t.style.left = Math.max(0, Math.min(600, x)) + 'px';
-      t.style.top = Math.max(0, Math.min(300, y)) + 'px';
-    }
+  function move8() { // slow move right
+    const t = document.getElementById('text8');
+    t.style.marginLeft = (parseInt(t.style.marginLeft) || 0) + 1 + 'px';
+  }
 
-  </script>
+</script>
 
-  <h1 align="center">t1a16-move-div-illia.html</h1>
+<h1 align="center">t1a16-move-div-illia.html</h1>
 
-  <p>Have 8 different types of objects move in different ways</p>
+<p>Have 8 different types of objects move in different ways</p>
 
-  <div style="position:relative; left:0px;" id="myDiv01">...</div>
+<div style="position:relative; left:0px;" id="myDiv01">...</div>
 
-  <button onclick="{
-    const myDiv = document.getElementById('myDiv01');
-    myDiv.style.left = '100px';
-  }">Move to 100px</button><br>
+<button onclick="{
+  const myDiv = document.getElementById('myDiv01');
+  myDiv.style.left = '100px';
+}">Move to 100px</button><br>
 
-  <button id="myButton02" onclick="{
-    const myDiv = document.getElementById('myDiv01');
-    myDiv.style.left = (parseInt(myDiv.style.left) || 0) + 20 + 'px';
-  }">Move Right</button><br>
+<button id="myButton02" onclick="{
+  const myDiv = document.getElementById('myDiv01');
+  myDiv.style.left = (parseInt(myDiv.style.left) || 0) + 20 + 'px';
+}">Move Right</button><br>
 
-  <button onclick="{
-    myTimer01 = setInterval(myAuto, 50);
-  }">Move auto</button><br>
+<button onclick="{
+  myTimer01 = setInterval(myAuto, 50);
+}">Move auto</button><br>
 
-  <img src="car image.png" id="myImage01" width="40" style="position:relative; left:0px;">
+<img src="car image.png" id="myImage01" width="40" style="position:relative; left:0px;">
 
-  <hr>
+<hr>
 
-  <!-- 8 moving text elements -->
-  <div id="text1" style="position:absolute; left:0px; top:350px;">Text1</div>
-  <div id="text2" style="position:absolute; left:50px; top:0px;">Text2</div>
-  <div id="text3" style="position:absolute; left:100px; top:0px;">Text3</div>
-  <div id="text4" style="position:absolute; left:150px; top:50px;">Text4</div>
-  <div id="text5" style="position:absolute; left:200px; top:100px;">Text5</div>
-  <div id="text6" style="position:absolute; left:250px; top:150px;">Text6</div>
-  <div id="text7" style="position:absolute; left:300px; top:200px;">Text7</div>
-  <div id="text8" style="position:absolute; left:350px; top:250px;">Text8</div>
+<!-- 8 inline moving texts -->
+<div>
+  <span id="text1" style="margin-left:0px;">Text1 </span>
+  <span id="text2" style="margin-left:0px;">Text2 </span>
+  <span id="text3" style="margin-left:0px;">Text3 </span>
+  <span id="text4" style="margin-left:0px;">Text4 </span>
+  <span id="text5" style="margin-left:0px;">Text5 </span>
+  <span id="text6" style="margin-left:0px;">Text6 </span>
+  <span id="text7" style="margin-left:0px;">Text7 </span>
+  <span id="text8" style="margin-left:0px;">Text8 </span>
+</div>
 
-  <br><br>
+<br>
 
-  <!-- Buttons to start each text movement -->
-  <button onclick="t1=setInterval(move1,50)">Move Text1</button>
-  <button onclick="t2=setInterval(move2,50)">Move Text2</button>
-  <button onclick="t3=setInterval(move3,50)">Move Text3</button>
-  <button onclick="t4=setInterval(move4,50)">Move Text4</button>
-  <button onclick="t5=setInterval(move5,50)">Move Text5</button>
-  <button onclick="t6=setInterval(move6,50)">Move Text6</button>
-  <button onclick="t7=setInterval(move7,50)">Move Text7</button>
-  <button onclick="t8=setInterval(move8,50)">Move Text8</button>
+<!-- Buttons to start each text movement -->
+<button onclick="t1=setInterval(move1,50)">Move Text1</button>
+<button onclick="t2=setInterval(move2,50)">Move Text2</button>
+<button onclick="t3=setInterval(move3,50)">Move Text3</button>
+<button onclick="t4=setInterval(move4,50)">Move Text4</button>
+<button onclick="t5=setInterval(move5,50)">Move Text5</button>
+<button onclick="t6=setInterval(move6,50)">Move Text6</button>
+<button onclick="t7=setInterval(move7,50)">Move Text7</button>
+<button onclick="t8=setInterval(move8,50)">Move Text8</button>
 
 </body>

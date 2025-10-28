@@ -64,18 +64,22 @@ function move4() { // oscillate horizontally
     const t = document.getElementById('text8');
     t.style.left = (parseInt(t.style.left) || 0) + 1 + 'px';
   }
-  function move9() { // up and down
-    const t = document.getElementById('text9');
-    let top = (parseInt(t.style.top) || 0) + 2*dir9;
-    if(top>20 || top<0) dir9*=-1;
-    t.style.top = top + 'px';
-  }
-  function move10() { // up and down faster
-    const t = document.getElementById('text10');
-    let top = (parseInt(t.style.top) || 0) + 3*dir10;
-    if(top>30 || top<0) dir10*=-1;
-    t.style.top = top + 'px';
-  }
+ function move9() { // up and down across the page
+  const t = document.getElementById('text9');
+  let top = (parseInt(t.style.top) || 0) + 2 * dir9;
+  let maxTop = window.innerHeight - t.offsetHeight; // maximum vertical position
+  if (top > maxTop || top < 0) dir9 *= -1;
+  t.style.top = top + 'px';
+}
+
+function move10() { // up and down faster across the page
+  const t = document.getElementById('text10');
+  let top = (parseInt(t.style.top) || 0) + 3 * dir10;
+  let maxTop = window.innerHeight - t.offsetHeight;
+  if (top > maxTop || top < 0) dir10 *= -1;
+  t.style.top = top + 'px';
+}
+
 
 </script>
 

@@ -14,8 +14,9 @@
   }
 
   .text-block {
-    margin: 40px 0;
+    margin: 50px 0;
     position: relative;
+    height: 50px;
   }
 
   .moving-text {
@@ -25,7 +26,7 @@
   }
 
   .control-btn {
-    margin-top: 30px;
+    margin-top: 35px;
     padding: 6px 12px;
     font-size: 14px;
     cursor: pointer;
@@ -35,7 +36,6 @@
 <body>
 
 <h2>🎬 Moving Text Examples (Click buttons to Start/Stop)</h2>
-
 <div id="container"></div>
 
 <script>
@@ -55,7 +55,6 @@ const movements = [
 
 const moving = {};
 const texts = {};
-const intervals = {};
 
 movements.forEach((moveType, i) => {
   const id = "text" + (i + 1);
@@ -77,7 +76,7 @@ function toggleMovement(id) {
   moving[id] = !moving[id];
 }
 
-// ================= Movements =================
+/* -------------------- Movements -------------------- */
 
 // 1. Move Right
 let x1 = 0;
@@ -119,59 +118,59 @@ setInterval(() => {
   }
 }, 20);
 
-// 5. Move Up
-let y5 = window.innerHeight - 50;
+// 5. Move Up (fixed)
+let y5 = window.innerHeight - 100;
 setInterval(() => {
   if (moving.text5) {
     y5 -= 2;
-    if (y5 < 0) y5 = window.innerHeight - 50;
+    if (y5 < 0) y5 = window.innerHeight - 100;
     texts.text5.style.top = y5 + "px";
   }
 }, 20);
 
-// 6. Circular
+// 6. Circular (fixed)
 let angle6 = 0;
 setInterval(() => {
   if (moving.text6) {
     angle6 += 0.05;
-    const cx = 300, cy = 300, r = 100;
+    const cx = 400, cy = 400, r = 100;
     texts.text6.style.left = cx + r * Math.cos(angle6) + "px";
     texts.text6.style.top = cy + r * Math.sin(angle6) + "px";
   }
 }, 20);
 
-// 7. Follow Mouse
+// 7. Follow Mouse (fixed)
 document.addEventListener("mousemove", e => {
   if (moving.text7) {
-    texts.text7.style.left = (e.clientX + 10) + "px";
-    texts.text7.style.top = (e.clientY + 10) + "px";
+    texts.text7.style.left = (e.clientX + 15) + "px";
+    texts.text7.style.top = (e.clientY + 15) + "px";
   }
 });
 
-// 8. Random
+// 8. Random (fixed)
 setInterval(() => {
   if (moving.text8) {
-    texts.text8.style.left = Math.random() * (window.innerWidth - 150) + "px";
-    texts.text8.style.top = Math.random() * (window.innerHeight - 50) + "px";
+    texts.text8.style.left = Math.random() * (window.innerWidth - 200) + "px";
+    texts.text8.style.top = Math.random() * (window.innerHeight - 100) + "px";
   }
-}, 800);
+}, 1000);
 
-// 9. Accelerate
+// 9. Accelerate (fixed)
 let x9 = 0, speed9 = 1;
 setInterval(() => {
   if (moving.text9) {
-    speed9 *= 1.02;
     x9 += speed9;
-    if (x9 > window.innerWidth - 150) { x9 = 0; speed9 = 1; }
+    speed9 += 0.1;
+    if (x9 > window.innerWidth - 200) { x9 = 0; speed9 = 1; }
     texts.text9.style.left = x9 + "px";
   }
 }, 20);
 
-// 10. Arrow Keys
-let x10 = 100, y10 = 100;
+// 10. Arrow Keys (fixed)
+let x10 = 300, y10 = 600;
 document.addEventListener("keydown", e => {
   if (moving.text10) {
-    const step = 10;
+    const step = 15;
     if (e.key === "ArrowRight") x10 += step;
     if (e.key === "ArrowLeft") x10 -= step;
     if (e.key === "ArrowUp") y10 -= step;

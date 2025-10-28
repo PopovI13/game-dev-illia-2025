@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -37,7 +37,6 @@
             border-radius: 10px;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
             padding: 15px;
-            overflow: hidden; /* Prevents overflow from screen shake */
         }
 
         canvas {
@@ -49,22 +48,6 @@
             height: auto;
             aspect-ratio: 9 / 16;
             touch-action: none;
-            transition: transform 0.1s ease;
-        }
-        
-        /* CSS for the screen shake effect */
-        .shake {
-            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-            transform: translate3d(0, 0, 0);
-            backface-visibility: hidden;
-            perspective: 1000px;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
         #ui-container {
@@ -204,10 +187,8 @@
             window.addEventListener('resize', resizeCanvas);
             resizeCanvas();
 
-            // Tone.js Music and Sound Effects Setup
+            // Tone.js Music Setup
             let musicLoop = null;
-            let crashSynth = null;
-
             function setupMusic() {
                 if (musicLoop) {
                     musicLoop.stop();
@@ -236,27 +217,8 @@
                     synth.triggerAttackRelease(note, "8n", time);
                     index++;
                 }, "4n");
-
-                // Setup crash sound effect
-                crashSynth = new Tone.NoiseSynth({
-                    volume: -10,
-                    noise: { type: "white" },
-                    envelope: {
-                        attack: 0.001,
-                        decay: 0.2,
-                        sustain: 0.1,
-                        release: 0.3
-                    }
-                }).toDestination();
             }
-
-            function playSound(type) {
-                Tone.start();
-                if (type === 'crash' && crashSynth) {
-                    crashSynth.triggerAttackRelease("4n");
-                }
-            }
-
+            
             let car = {
                 x: canvas.width / 2,
                 y: canvas.height * 0.8,
@@ -266,21 +228,24 @@
                 velocityX: 0,
                 tilt: 0,
                 maxTilt: 15,
-                color: '#ef4444',
-                particles: [] // Array to hold smoke trail particles
+                color: '#ef4444'
             };
 
             let obstacles = [];
+            let trees = [];
             let score = 0;
             let isGameOver = false;
             let obstacleSpeed = 4;
             let lastObstacleTime = 0;
-            let obstacleSpawnInterval = 1000; // Increased interval for easier play
+            let obstacleSpawnInterval = 750;
             let roadScrollY = 0;
             let fireworks = [];
             let fireworksIntervalId = null;
             const WIN_SCORE = 2000;
-            
+            let lastTreeTime = 0;
+            const treeSpawnInterval = 1500;
+            const treeSpeedMultiplier = 0.5;
+
             // Class for firework particles
             class FireworkParticle {
                 constructor(x, y, color) {
@@ -336,6 +301,64 @@
                 }
             }
             
+            // Function to draw a single tree
+            function drawTree(tree) {
+                // Draw foliage (triangle)
+                ctx.fillStyle = tree.color;
+                ctx.beginPath();
+                ctx.moveTo(tree.x, tree.y - tree.height);
+                ctx.lineTo(tree.x - tree.width / 2, tree.y);
+                ctx.lineTo(tree.x + tree.width / 2, tree.y);
+                ctx.fill();
+
+                // Draw trunk (rectangle)
+                ctx.fillStyle = '#6d4c41'; // Dark brown color for the trunk
+                const trunkWidth = tree.width * 0.2;
+                const trunkHeight = tree.height * 0.3;
+                ctx.fillRect(tree.x - trunkWidth / 2, tree.y, trunkWidth, trunkHeight);
+            }
+
+            // Function to draw all trees
+            function drawTrees() {
+                for (let tree of trees) {
+                    drawTree(tree);
+                }
+            }
+
+            // Function to generate a new tree
+            function generateTree() {
+                const side = Math.random() > 0.5 ? 'left' : 'right';
+                const treeWidth = Math.random() * 20 + 20;
+                const treeHeight = Math.random() * 30 + 40;
+                const x = side === 'left' ? Math.random() * (canvas.width / 2 - 50) : canvas.width / 2 + 50 + Math.random() * (canvas.width / 2 - 50);
+                const y = -treeHeight;
+                const colors = ['#16a34a', '#22c55e', '#4ade80'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                trees.push({
+                    x,
+                    y,
+                    width: treeWidth,
+                    height: treeHeight,
+                    color
+                });
+            }
+
+            // Function to update the position of trees
+            function updateTrees() {
+                const treeMovement = obstacleSpeed * treeSpeedMultiplier;
+                for (let i = 0; i < trees.length; i++) {
+                    let tree = trees[i];
+                    tree.y += treeMovement;
+
+                    // Remove tree if it's off-screen
+                    if (tree.y > canvas.height) {
+                        trees.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+
             // Function to draw the player's car
             function drawPlayerCar(carObj) {
                 ctx.save();
@@ -488,59 +511,6 @@
                 }
             }
 
-            // --- Smoke Trail Particles ---
-            class SmokeParticle {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.size = Math.random() * 2 + 1;
-                    this.alpha = 1;
-                    this.fadeRate = Math.random() * 0.02 + 0.01;
-                    this.vy = -0.5; // Slight upward drift
-                }
-
-                update() {
-                    this.y += this.vy;
-                    this.alpha -= this.fadeRate;
-                }
-
-                draw() {
-                    ctx.save();
-                    ctx.globalAlpha = Math.max(0, this.alpha);
-                    ctx.fillStyle = `rgba(200, 200, 200, ${this.alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-
-            function generateParticle() {
-                if (car.velocityX !== 0) {
-                    const particleCount = 2;
-                    for(let i=0; i < particleCount; i++) {
-                        const offset = (Math.random() - 0.5) * car.width * 0.8;
-                        car.particles.push(new SmokeParticle(car.x + offset, car.y + car.height/2));
-                    }
-                }
-            }
-
-            function updateParticles() {
-                for (let i = car.particles.length - 1; i >= 0; i--) {
-                    car.particles[i].update();
-                    if (car.particles[i].alpha <= 0) {
-                        car.particles.splice(i, 1);
-                    }
-                }
-            }
-
-            function drawParticles() {
-                for (let particle of car.particles) {
-                    particle.draw();
-                }
-            }
-
-            // --- Other game functions ---
             function updateFireworks() {
                 for (let i = 0; i < fireworks.length; i++) {
                     fireworks[i].update();
@@ -595,19 +565,24 @@
                     lastObstacleTime = currentTime;
                 }
                 
+                // Spawn new trees
+                if (currentTime - lastTreeTime > treeSpawnInterval) {
+                    generateTree();
+                    lastTreeTime = currentTime;
+                }
+
                 // Increase score and difficulty over time
                 score += 1;
-                obstacleSpeed = 4 + Math.floor(score / 300) * 0.4; // Reduced obstacle speed increase
-                car.speed = 20 + Math.floor(score / 300) * 1.5; // Reduced car speed increase
+                obstacleSpeed = 4 + Math.floor(score / 300) * 0.5;
+                car.speed = 20 + Math.floor(score / 300) * 2;
 
                 updateObstacles();
-                updateParticles();
-                generateParticle();
+                updateTrees();
             }
 
             function draw() {
+                drawTrees();
                 drawRoad();
-                drawParticles();
                 drawPlayerCar(car);
                 drawObstacles();
                 scoreDisplay.textContent = `Score: ${score}`;
@@ -640,13 +615,6 @@
                     if (fireworksIntervalId) clearInterval(fireworksIntervalId);
                     fireworksIntervalId = setInterval(generateFirework, 500);
                 } else {
-                    playSound('crash');
-                    // Add screen shake effect
-                    canvas.classList.add('shake');
-                    setTimeout(() => {
-                        canvas.classList.remove('shake');
-                    }, 300);
-
                     if (fireworksIntervalId) clearInterval(fireworksIntervalId);
                     messageTitle.textContent = "Game Over";
                     messageText.textContent = `You crashed! Score: ${score}`;
@@ -658,17 +626,16 @@
                 isGameOver = false;
                 score = 0;
                 obstacleSpeed = 4;
-                obstacleSpawnInterval = 1000;
+                obstacleSpawnInterval = 750;
                 obstacles = [];
+                trees = [];
                 fireworks = [];
-                car.particles = []; // Clear particles
                 car.x = canvas.width / 2;
                 car.y = canvas.height * 0.8;
                 car.velocityX = 0;
                 car.tilt = 0;
                 roadScrollY = 0;
                 messageBox.style.display = 'none';
-                canvas.classList.remove('shake'); // Ensure no shake on start
 
                 // Restart audio playback
                 Tone.start();

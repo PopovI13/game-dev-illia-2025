@@ -2,178 +2,185 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Moving Text with Controls</title>
+<title>Moving Texts Demo</title>
 <style>
   body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: #fdfdfd;
+    font-family: "Inter", sans-serif;
+    background: #fafafa;
     color: #222;
-    height: 100vh;
+    margin: 0;
+    padding: 20px;
     overflow: hidden;
   }
 
+  .text-block {
+    margin: 40px 0;
+    position: relative;
+  }
+
   .moving-text {
-    position: absolute;
     font-size: 20px;
     font-weight: bold;
-    user-select: none;
-    text-align: center;
+    position: absolute;
   }
 
   .control-btn {
-    margin-top: 4px;
-    padding: 2px 8px;
-    font-size: 12px;
+    margin-top: 30px;
+    padding: 6px 12px;
+    font-size: 14px;
     cursor: pointer;
   }
-
 </style>
 </head>
 <body>
 
-<!-- Moving Text with Buttons -->
-<div id="container1" style="top:50px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt1">Text1 → Slide Right</div>
-  <button class="control-btn" onclick="toggleMovement('txt1')">Start/Stop</button>
-</div>
+<h2>🎬 Moving Text Examples (Click buttons to Start/Stop)</h2>
 
-<div id="container2" style="top:120px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt2">Text2 → Continuous</div>
-  <button class="control-btn" onclick="toggleMovement('txt2')">Start/Stop</button>
-</div>
-
-<div id="container3" style="top:200px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt3">Text3 → Bounce</div>
-  <button class="control-btn" onclick="toggleMovement('txt3')">Start/Stop</button>
-</div>
-
-<div id="container4" style="top:300px; left:200px; position:absolute;">
-  <div class="moving-text" id="txt4">Text4 → Circular</div>
-  <button class="control-btn" onclick="toggleMovement('txt4')">Start/Stop</button>
-</div>
-
-<div id="container5" style="top:400px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt5">Text5 → Arrow Keys</div>
-  <button class="control-btn" onclick="toggleMovement('txt5')">Enable/Disable Keys</button>
-</div>
-
-<div id="container6" style="top:500px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt6">Text6 → Follows Mouse</div>
-  <button class="control-btn" onclick="toggleMovement('txt6')">Start/Stop</button>
-</div>
-
-<div id="container7" style="top:600px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt7">Text7 → Acceleration</div>
-  <button class="control-btn" onclick="toggleMovement('txt7')">Start/Stop</button>
-</div>
-
-<div id="container8" style="top:700px; left:10px; position:absolute;">
-  <div class="moving-text" id="txt8">Text8 → Random</div>
-  <button class="control-btn" onclick="toggleMovement('txt8')">Start/Stop</button>
-</div>
+<div id="container"></div>
 
 <script>
-  const moving = {
-    txt1: false, txt2: true, txt3: true, txt4: true,
-    txt5: true, txt6: true, txt7: true, txt8: true
-  };
+const container = document.getElementById("container");
+const movements = [
+  "Move Right",
+  "Move Left",
+  "Bounce",
+  "Move Down",
+  "Move Up",
+  "Circular",
+  "Follow Mouse",
+  "Random",
+  "Accelerate",
+  "Arrow Keys"
+];
 
-  function toggleMovement(id) {
-    moving[id] = !moving[id];
+const moving = {};
+const texts = {};
+const intervals = {};
+
+movements.forEach((moveType, i) => {
+  const id = "text" + (i + 1);
+  moving[id] = false;
+
+  // Create HTML
+  const block = document.createElement("div");
+  block.className = "text-block";
+  block.innerHTML = `
+    <div class="moving-text" id="${id}">${moveType}</div>
+    <button class="control-btn" onclick="toggleMovement('${id}')">${moveType}</button>
+  `;
+  container.appendChild(block);
+  texts[id] = block.querySelector(".moving-text");
+});
+
+// Toggle start/stop
+function toggleMovement(id) {
+  moving[id] = !moving[id];
+}
+
+// ================= Movements =================
+
+// 1. Move Right
+let x1 = 0;
+setInterval(() => {
+  if (moving.text1) {
+    x1 += 2;
+    if (x1 > window.innerWidth) x1 = -150;
+    texts.text1.style.left = x1 + "px";
   }
+}, 20);
 
-  // --- Text1 Slide Right ---
-  const txt1 = document.getElementById('txt1');
-  let x1 = 0;
-  setInterval(() => {
-    if(moving.txt1) {
-      x1 += 2;
-      if(x1 > window.innerWidth) x1 = -txt1.offsetWidth;
-      txt1.style.left = x1 + 'px';
-    }
-  }, 20);
+// 2. Move Left
+let x2 = window.innerWidth - 150;
+setInterval(() => {
+  if (moving.text2) {
+    x2 -= 2;
+    if (x2 < -150) x2 = window.innerWidth;
+    texts.text2.style.left = x2 + "px";
+  }
+}, 20);
 
-  // --- Text2 Continuous ---
-  const txt2 = document.getElementById('txt2');
-  let x2 = 0;
-  setInterval(() => {
-    if(moving.txt2) {
-      x2 += 1;
-      if(x2 > window.innerWidth) x2 = -txt2.offsetWidth;
-      txt2.style.left = x2 + 'px';
-    }
-  }, 10);
+// 3. Bounce
+let x3 = 0, dx3 = 3;
+setInterval(() => {
+  if (moving.text3) {
+    x3 += dx3;
+    if (x3 < 0 || x3 > window.innerWidth - 150) dx3 *= -1;
+    texts.text3.style.left = x3 + "px";
+  }
+}, 20);
 
-  // --- Text3 Bounce ---
-  const txt3 = document.getElementById('txt3');
-  let x3 = 0, dx3 = 2;
-  setInterval(() => {
-    if(moving.txt3) {
-      x3 += dx3;
-      if(x3 > window.innerWidth - 150 || x3 < 0) dx3 *= -1;
-      txt3.style.left = x3 + 'px';
-    }
-  }, 10);
+// 4. Move Down
+let y4 = 0;
+setInterval(() => {
+  if (moving.text4) {
+    y4 += 2;
+    if (y4 > window.innerHeight - 50) y4 = 0;
+    texts.text4.style.top = y4 + "px";
+  }
+}, 20);
 
-  // --- Text4 Circular ---
-  const txt4 = document.getElementById('txt4');
-  let angle4 = 0;
-  setInterval(() => {
-    if(moving.txt4) {
-      angle4 += 0.05;
-      const centerX = 300, centerY = 350, radius = 100;
-      txt4.style.left = centerX + radius * Math.cos(angle4) + 'px';
-      txt4.style.top = centerY + radius * Math.sin(angle4) + 'px';
-    }
-  }, 20);
+// 5. Move Up
+let y5 = window.innerHeight - 50;
+setInterval(() => {
+  if (moving.text5) {
+    y5 -= 2;
+    if (y5 < 0) y5 = window.innerHeight - 50;
+    texts.text5.style.top = y5 + "px";
+  }
+}, 20);
 
-  // --- Text5 Arrow Keys ---
-  const txt5 = document.getElementById('txt5');
-  let x5 = 0, y5 = 0;
-  document.addEventListener('keydown', (e) => {
-    if(moving.txt5) {
-      const step = 10;
-      if (e.key === 'ArrowRight') x5 += step;
-      if (e.key === 'ArrowLeft') x5 -= step;
-      if (e.key === 'ArrowUp') y5 -= step;
-      if (e.key === 'ArrowDown') y5 += step;
-      txt5.style.left = x5 + 'px';
-      txt5.style.top = y5 + 'px';
-    }
-  });
+// 6. Circular
+let angle6 = 0;
+setInterval(() => {
+  if (moving.text6) {
+    angle6 += 0.05;
+    const cx = 300, cy = 300, r = 100;
+    texts.text6.style.left = cx + r * Math.cos(angle6) + "px";
+    texts.text6.style.top = cy + r * Math.sin(angle6) + "px";
+  }
+}, 20);
 
-  // --- Text6 Follows Mouse ---
-  const txt6 = document.getElementById('txt6');
-  document.addEventListener('mousemove', (e) => {
-    if(moving.txt6) {
-      txt6.style.left = (e.clientX + 10) + 'px';
-      txt6.style.top = (e.clientY + 10) + 'px';
-    }
-  });
+// 7. Follow Mouse
+document.addEventListener("mousemove", e => {
+  if (moving.text7) {
+    texts.text7.style.left = (e.clientX + 10) + "px";
+    texts.text7.style.top = (e.clientY + 10) + "px";
+  }
+});
 
-  // --- Text7 Acceleration ---
-  const txt7 = document.getElementById('txt7');
-  let x7 = 0, speed7 = 1;
-  setInterval(() => {
-    if(moving.txt7) {
-      speed7 *= 1.01;
-      x7 += speed7;
-      if(x7 > window.innerWidth - 200) { x7 = 0; speed7 = 1; }
-      txt7.style.left = x7 + 'px';
-    }
-  }, 20);
+// 8. Random
+setInterval(() => {
+  if (moving.text8) {
+    texts.text8.style.left = Math.random() * (window.innerWidth - 150) + "px";
+    texts.text8.style.top = Math.random() * (window.innerHeight - 50) + "px";
+  }
+}, 800);
 
-  // --- Text8 Random ---
-  const txt8 = document.getElementById('txt8');
-  setInterval(() => {
-    if(moving.txt8) {
-      const randX = Math.random() * (window.innerWidth - 150);
-      const randY = Math.random() * (window.innerHeight - 50);
-      txt8.style.left = randX + 'px';
-      txt8.style.top = randY + 'px';
-    }
-  }, 1000);
+// 9. Accelerate
+let x9 = 0, speed9 = 1;
+setInterval(() => {
+  if (moving.text9) {
+    speed9 *= 1.02;
+    x9 += speed9;
+    if (x9 > window.innerWidth - 150) { x9 = 0; speed9 = 1; }
+    texts.text9.style.left = x9 + "px";
+  }
+}, 20);
+
+// 10. Arrow Keys
+let x10 = 100, y10 = 100;
+document.addEventListener("keydown", e => {
+  if (moving.text10) {
+    const step = 10;
+    if (e.key === "ArrowRight") x10 += step;
+    if (e.key === "ArrowLeft") x10 -= step;
+    if (e.key === "ArrowUp") y10 -= step;
+    if (e.key === "ArrowDown") y10 += step;
+    texts.text10.style.left = x10 + "px";
+    texts.text10.style.top = y10 + "px";
+  }
+});
 </script>
+
 </body>
 </html>

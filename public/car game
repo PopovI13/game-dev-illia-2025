@@ -1,388 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Road Rage – Car Dodging Game</title>
-
-  <!-- Modern clean look -->
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #1a202c;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #fca5a5;
-      margin-bottom: 20px;
-    }
-
-    #game-container {
-      position: relative;
-      width: 90%;
-      max-width: 400px;
-      background-color: #2d3748;
-      border-radius: 10px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-      padding: 15px;
-    }
-
-    canvas {
-      background-color: #4a5568;
-      border: 2px solid #a0aec0;
-      border-radius: 8px;
-      display: block;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 9 / 16;
-      touch-action: none;
-    }
-
-    #ui-container {
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    #score-display {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #90cdf4;
-    }
-
-    .message-box {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(45, 55, 72, 0.95);
-      border: 2px solid #a0aec0;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
-      z-index: 10;
-      display: none;
-      flex-direction: column;
-      gap: 15px;
-      width: 80%;
-      max-width: 300px;
-      animation: fadeIn 0.5s ease-out;
-    }
-
-    .message-box h2 {
-      font-size: 2rem;
-      color: #fca5a5;
-      margin: 0;
-    }
-
-    .message-box p {
-      font-size: 1rem;
-      color: #cbd5e0;
-      margin: 0;
-    }
-
-    .restart-btn {
-      background-color: #63b3ed;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 9999px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    }
-
-    .restart-btn:hover {
-      background-color: #4299e1;
-      transform: translateY(-2px);
-    }
-
-    .controls {
-      display: flex;
-      gap: 20px;
-      margin-top: 10px;
-    }
-
-    .control-btn {
-      background-color: #4a5568;
-      color: white;
-      border: 2px solid #a0aec0;
-      padding: 15px 30px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-
-    .control-btn:hover {
-      background-color: #6b7280;
-      transform: scale(1.05);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-  </style>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click the Circle Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f8ff;
+        }
+        #gameArea {
+            position: relative;
+            width: 500px;
+            height: 400px;
+            border: 2px solid #333;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        .circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: red;
+            cursor: pointer;
+        }
+        #score {
+            font-size: 24px;
+            margin: 20px;
+        }
+        #startBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>🚗 Road Rage</h1>
+<h1>Click the Circle Game</h1>
+<div id="score">Score: 0</div>
+<button id="startBtn">Start Game</button>
+<div id="gameArea"></div>
 
-  <div id="game-container">
-    <canvas id="gameCanvas"></canvas>
+<script>
+    const gameArea = document.getElementById('gameArea');
+    const scoreDisplay = document.getElementById('score');
+    const startBtn = document.getElementById('startBtn');
 
-    <!-- Game Over / Win Popup -->
-    <div id="messageBox" class="message-box">
-      <h2 id="messageTitle">Game Over</h2>
-      <p id="messageText">You crashed! Score: <span id="finalScore">0</span></p>
-      <button id="restartButton" class="restart-btn">Restart</button>
-    </div>
-  </div>
+    let score = 0;
+    let gameInterval;
 
-  <div id="ui-container">
-    <p>Use arrow keys or buttons to move.</p>
-    <p id="score-display">Score: 0</p>
-    <div class="controls">
-      <button id="left-btn" class="control-btn">←</button>
-      <button id="right-btn" class="control-btn">→</button>
-    </div>
-  </div>
+    function createCircle() {
+        const circle = document.createElement('div');
+        circle.classList.add('circle');
 
-  <script>
-    window.onload = function() {
-      const canvas = document.getElementById('gameCanvas');
-      const ctx = canvas.getContext('2d');
-      const scoreDisplay = document.getElementById('score-display');
-      const messageBox = document.getElementById('messageBox');
-      const finalScoreSpan = document.getElementById('finalScore');
-      const messageTitle = document.getElementById('messageTitle');
-      const messageText = document.getElementById('messageText');
-      const restartButton = document.getElementById('restartButton');
-      const leftBtn = document.getElementById('left-btn');
-      const rightBtn = document.getElementById('right-btn');
+        // Random position inside game area
+        const maxX = gameArea.clientWidth - 50;
+        const maxY = gameArea.clientHeight - 50;
+        const x = Math.floor(Math.random() * maxX);
+        const y = Math.floor(Math.random() * maxY);
 
-      // Resize canvas dynamically
-      function resizeCanvas() {
-        const container = document.getElementById('game-container');
-        canvas.width = container.offsetWidth - 30;
-        canvas.height = (canvas.width / 9) * 16;
-      }
-      window.addEventListener('resize', resizeCanvas);
-      resizeCanvas();
+        circle.style.left = x + 'px';
+        circle.style.top = y + 'px';
 
-      // Background music with Tone.js
-      let musicLoop = null;
-      function setupMusic() {
-        if (musicLoop) musicLoop.stop();
-
-        const synth = new Tone.PolySynth(Tone.Synth, {
-          oscillator: { type: 'triangle' },
-          envelope: { attack: 0.2, decay: 0.1, sustain: 0.3, release: 1 }
-        }).toDestination();
-
-        const filter = new Tone.Filter(200, "lowpass").toDestination();
-        synth.connect(filter);
-
-        const notes = ["C3", "E3", "G3", "A3"];
-        let index = 0;
-        musicLoop = new Tone.Loop(time => {
-          synth.triggerAttackRelease(notes[index % notes.length], "8n", time);
-          index++;
-        }, "4n");
-      }
-
-      // Game objects
-      let car = { x: 0, y: 0, width: 30, height: 50, speed: 20, velocityX: 0, tilt: 0, maxTilt: 15, color: '#ef4444' };
-      let obstacles = [];
-      let trees = [];
-      let fireworks = [];
-      let score = 0;
-      let isGameOver = false;
-      let obstacleSpeed = 4;
-      let lastObstacleTime = 0;
-      let obstacleSpawnInterval = 750;
-      let roadScrollY = 0;
-      const WIN_SCORE = 2000;
-
-      // Particle system for win fireworks
-      class FireworkParticle {
-        constructor(x, y, color) {
-          this.x = x; this.y = y; this.color = color;
-          this.size = Math.random() * 2 + 1;
-          this.vx = Math.cos(Math.random() * 2 * Math.PI) * (Math.random() * 3 + 1);
-          this.vy = Math.sin(Math.random() * 2 * Math.PI) * (Math.random() * 3 + 1);
-          this.alpha = 1;
-          this.decay = Math.random() * 0.015 + 0.005;
-        }
-        update() { this.x += this.vx; this.y += this.vy; this.alpha -= this.decay; }
-        draw() {
-          ctx.save();
-          ctx.globalAlpha = this.alpha;
-          ctx.fillStyle = this.color;
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        }
-      }
-
-      function drawRoad() {
-        const laneWidth = 10, laneGap = 30, laneHeight = 60, total = laneHeight + laneGap;
-        ctx.fillStyle = '#6b7280';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#e5e7eb';
-        const laneX = canvas.width / 2 - laneWidth / 2;
-        for (let y = -total; y < canvas.height; y += total)
-          ctx.fillRect(laneX, y + roadScrollY, laneWidth, laneHeight);
-        roadScrollY = (roadScrollY + obstacleSpeed) % total;
-      }
-
-      function drawPlayerCar(c) {
-        ctx.save();
-        ctx.translate(c.x, c.y);
-        ctx.rotate(c.tilt * Math.PI / 180);
-        ctx.fillStyle = c.color;
-        ctx.beginPath();
-        ctx.roundRect(-c.width/2, -c.height/2, c.width, c.height, 5);
-        ctx.fill();
-        ctx.restore();
-      }
-
-      function generateObstacle() {
-        const w = Math.random() * (car.width * 1.5) + 20;
-        const h = Math.random() * (car.height * 1.2) + 30;
-        obstacles.push({
-          x: Math.random() * (canvas.width - w),
-          y: -h,
-          width: w, height: h,
-          color: ['#f59e0b','#10b981','#3b82f6','#90cdf4','#f687b3'][Math.floor(Math.random()*5)]
+        circle.addEventListener('click', () => {
+            score++;
+            scoreDisplay.textContent = `Score: ${score}`;
+            circle.remove();
         });
-      }
 
-      function updateObstacles() {
-        for (let i = 0; i < obstacles.length; i++) {
-          const o = obstacles[i];
-          o.y += obstacleSpeed;
-          if (car.x - car.width / 2 < o.x + o.width &&
-              car.x + car.width / 2 > o.x &&
-              car.y - car.height / 2 < o.y + o.height &&
-              car.y + car.height / 2 > o.y) {
-            endGame(false);
-          }
-          if (o.y > canvas.height) obstacles.splice(i--, 1);
-        }
-      }
+        gameArea.appendChild(circle);
 
-      function drawObstacles() {
-        for (const o of obstacles) {
-          ctx.fillStyle = o.color;
-          ctx.fillRect(o.x, o.y, o.width, o.height);
-        }
-      }
+        // Remove circle after 2 seconds if not clicked
+        setTimeout(() => {
+            if (circle.parentElement) circle.remove();
+        }, 2000);
+    }
 
-      function generateFirework() {
-        const colors = ['#fde047','#10b981','#3b82f6','#fca5a5','#ffffff'];
-        const color = colors[Math.floor(Math.random()*colors.length)];
-        const x = Math.random()*canvas.width;
-        const y = Math.random()*canvas.height*0.4;
-        for (let i=0; i<80; i++) fireworks.push(new FireworkParticle(x, y, color));
-      }
-
-      function update() {
-        if (isGameOver) return;
-        if (score >= WIN_SCORE) return endGame(true);
-
-        car.x += car.velocityX;
-        car.velocityX *= 0.9;
-        car.tilt = (car.velocityX / car.speed) * car.maxTilt;
-        car.x = Math.max(car.width/2, Math.min(canvas.width - car.width/2, car.x));
-
-        if (Date.now() - lastObstacleTime > obstacleSpawnInterval) {
-          generateObstacle(); lastObstacleTime = Date.now();
-        }
-
-        updateObstacles();
-        score++;
-        obstacleSpeed = 4 + Math.floor(score / 300) * 0.5;
-      }
-
-      function draw() {
-        drawRoad();
-        drawPlayerCar(car);
-        drawObstacles();
-        fireworks.forEach(f => f.update());
-        fireworks.forEach(f => f.draw());
-        scoreDisplay.textContent = `Score: ${score}`;
-      }
-
-      function gameLoop() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        update();
-        draw();
-        requestAnimationFrame(gameLoop);
-      }
-
-      function endGame(win) {
-        isGameOver = true;
-        finalScoreSpan.textContent = score;
-        messageBox.style.display = 'flex';
-        messageTitle.textContent = win ? "You Win!" : "Game Over";
-        messageText.textContent = win ? `You reached the goal! Final Score: ${score}` : `You crashed! Score: ${score}`;
-        if (win) setInterval(generateFirework, 500);
-      }
-
-      function restartGame() {
-        obstacles = [];
-        fireworks = [];
+    function startGame() {
         score = 0;
-        obstacleSpeed = 4;
-        isGameOver = false;
-        messageBox.style.display = 'none';
-        car.x = canvas.width / 2;
-        car.y = canvas.height * 0.8;
-        car.velocityX = 0;
-        car.tilt = 0;
-        roadScrollY = 0;
-        Tone.start();
-        setupMusic();
-        musicLoop.start(0);
-        gameLoop();
-      }
+        scoreDisplay.textContent = 'Score: 0';
+        clearInterval(gameInterval);
 
-      restartButton.onclick = restartGame;
-      leftBtn.onmousedown = () => car.velocityX = -car.speed;
-      rightBtn.onmousedown = () => car.velocityX = car.speed;
-      leftBtn.onmouseup = rightBtn.onmouseup = () => car.velocityX = 0;
+        gameInterval = setInterval(createCircle, 1000);
+    }
 
-      document.addEventListener('keydown', e => {
-        if (e.key === 'ArrowLeft') car.velocityX -= 2;
-        else if (e.key === 'ArrowRight') car.velocityX += 2;
-      });
+    startBtn.addEventListener('click', startGame);
+</script>
 
-      restartGame();
-    };
-  </script>
 </body>
 </html>

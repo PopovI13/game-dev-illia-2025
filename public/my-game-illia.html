@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Star Wars Shooter - Mobile Update</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    color: white;
+    font-family: 'Inter', 'Arial', sans-serif;
+    user-select: none;
+    -webkit-user-select: none; /* For Safari */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+  }
+  canvas {
+    display: block;
+    background: black;
+  }
+  #ui-container {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      pointer-events: none;
+  }
+  #score, #lives {
+    font-size: 20px;
+    letter-spacing: 2px;
+    background-color: rgba(0,0,0,0.4);
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-shadow: 0 0 5px black;
+  }
+  #bonus-timers {
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .bonus-timer {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 16px;
+      color: white;
+      backdrop-filter: blur(5px);
+  }
+  .bonus-icon {
+      margin-right: 8px;
+  }
+  #startBtn {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    padding: 15px 30px;
+    background: #007acc;
+    border: 2px solid #00c3ff;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    user-select: none;
+    z-index: 100;
+    white-space: nowrap;
+    text-shadow: 0 0 10px #00c3ff;
+    box-shadow: 0 0 20px rgba(0, 195, 255, 0.5);
+    transition: all 0.2s ease;
+  }
+  #startBtn:hover {
+    background: #005f99;
+    box-shadow: 0 0 30px rgba(0, 195, 255, 0.8);
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+
+  /* --- Mobile Controls --- */
+  #mobile-controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 25%;
+      z-index: 20;
+      display: none; /* Hidden by default */
+      pointer-events: none; /* Allows clicks to go through to canvas if needed */
+  }
+  
+  .touch-control {
+      position: absolute;
+      bottom: 20px;
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
+      color: white;
+      pointer-events: auto; /* Make buttons clickable */
+      -webkit-tap-highlight-color: rgba(255,255,255,0.5);
+  }
+  
+  #touch-left { left: 20px; }
+  #touch-right { left: 120px; }
+  #touch-shoot { right: 20px; width: 100px; height: 100px; }
+
+  /* Show controls only on touch devices */
+  @media (pointer: coarse) {
+    #mobile-controls {
+        display: block;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div id="ui-container">
+    <div id="score">SCORE: 0</div>
+    <div id="lives">LIVES: 3</div>
+</div>
+<div id="bonus-timers"></div>
+<button id="startBtn">START GAME</button>
+
+<canvas id="gameCanvas"></canvas>
+
+<!-- Mobile Controls -->
+<div id="mobile-controls">
+    <div class="touch-control" id="touch-left">⇦</div>
+    <div class="touch-control" id="touch-right">⇨</div>
+    <div class="touch-control" id="touch-shoot">💥</div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let width = window.innerWidth;
+  let height = window.innerHeight;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const scoreEl = document.getElementById('score');
+  const livesEl = document.getElementById('lives');
+  const startBtn = document.getElementById('startBtn');
+  const bonusTimersEl = document.getElementById('bonus-timers');
+  
+  // Mobile controls
+  const touchLeft = document.getElementById('touch-left');
+  const touchRight = document.getElementById('touch-right');
+  const touchShoot = document.getElementById('touch-shoot');
+
+
+  let gameRunning = false;
+  let difficultyIncreaseInterval = 250; // Score needed to increase difficulty
+
+  // --- Starfield background ---
+  let stars = [];
+  const starCount = 250;
+
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < starCount; i++) {
+      stars.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: Math.random() * 1.5 + 0.3,
+        speed: Math.random() * 1.1 + 0.5,
+        opacity: Math.random() * 0.9 + 0.1
+      });
+    }
+  }
+  initStars();
+
+  function drawStarfield() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, width, height);
+    stars.forEach(star => {
+      star.y += star.speed;
+      if (star.y > height) {
+          star.y = 0;
+          star.x = Math.random() * width;
+      }
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+      ctx.fill();
+    });
+  }
+
+  // --- Player ---
+  class Player {
+    constructor() {
+      this.width = 50;
+      this.height = 40;
+      this.x = width / 2 - this.width / 2;
+      this.y = height - this.height - 20;
+      this.speed = 12;
+      this.moveLeft = false;
+      this.moveRight = false;
+      this.canShoot = true;
+      this.shootCooldown = 12; // slightly slower base fire rate
+      this.shootTimer = 0;
+      this.color = '#00bfff';
+
+      // Bonuses states
+      this.tripleShotActive = false;
+      this.tripleShotDuration = 0;
+      this.shieldActive = false;
+    }
+    update() {
+      if (this.moveLeft && this.x > 0) this.x -= this.speed;
+      if (this.moveRight && this.x + this.width < width) this.x += this.speed;
+
+      if (!this.canShoot) {
+        this.shootTimer++;
+        if (this.shootTimer >= this.shootCooldown) {
+          this.shootTimer = 0;
+          this.canShoot = true;
+        }
+      }
+
+      // Decrease triple shot timer
+      if (this.tripleShotActive) {
+        this.tripleShotDuration--;
+        if (this.tripleShotDuration <= 0) {
+          this.tripleShotActive = false;
+        }
+      }
+    }
+    draw() {
+      ctx.save();
+      
+      // Draw shield if active
+      if (this.shieldActive) {
+        ctx.strokeStyle = '#00ffdd';
+        ctx.lineWidth = 4;
+        ctx.shadowColor = '#00ffdd';
+        ctx.shadowBlur = 25;
+        ctx.beginPath();
+        ctx.ellipse(this.x + this.width / 2, this.y + this.height / 2, this.width * 0.7, this.height, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = this.color;
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 20;
+
+      // Main ship body
+      ctx.beginPath();
+      ctx.moveTo(this.x + this.width / 2, this.y);
+      ctx.lineTo(this.x + this.width, this.y + this.height);
+      ctx.lineTo(this.x, this.y + this.height);
+      ctx.closePath();
+      ctx.fill();
+
+      // Cockpit
+      ctx.beginPath();
+      ctx.fillStyle = '#87ceeb';
+      ctx.arc(this.x + this.width / 2, this.y + this.height / 1.8, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+    shoot() {
+      if (!this.canShoot) return;
+
+      if (this.tripleShotActive) {
+        bullets.push(new Bullet(this.x + this.width / 2, this.y));
+        bullets.push(new Bullet(this.x + this.width / 4, this.y + 10, -3)); 
+        bullets.push(new Bullet(this.x + this.width * 0.75, this.y + 10, 3)); 
+      } else {
+        bullets.push(new Bullet(this.x + this.width / 2, this.y));
+      }
+
+      this.canShoot = false;
+      this.shootTimer = 0;
+    }
+  }
+
+  // --- Player Bullet (blue laser beam) ---
+  class Bullet {
+    constructor(x, y, xVel = 0) {
+      this.x = x;
+      this.y = y;
+      this.width = 4;
+      this.height = 20;
+      this.speed = 25;
+      this.color = '#00bfff';
+      this.xVel = xVel; 
+      this.active = true;
+    }
+    update() {
+      this.y -= this.speed;
+      this.x += this.xVel;
+      if (this.y + this.height < 0 || this.x < 0 || this.x > width) this.active = false;
+    }
+    draw() {
+      ctx.save();
+      ctx.fillStyle = this.color;
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 20;
+      ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height);
+      ctx.restore();
+    }
+  }
+
+  // --- Enemy ---
+  class Enemy {
+    constructor(x, y, speedMultiplier = 1, canShoot = false) {
+      this.x = x;
+      this.y = y;
+      this.speed = (2.0 + Math.random() * 1.5) * speedMultiplier;
+      this.canShoot = canShoot;
+      this.type = Math.random() < 0.6 ? 'tie' : 'destroyer';
+      this.width = this.type === 'tie' ? 40 : 60;
+      this.height = this.type === 'tie' ? 35 : 25;
+      this.color = '#cccccc';
+      this.active = true;
+      
+      this.shootCooldown = canShoot ? (120 + Math.random() * 50) : Infinity;
+      this.shootTimer = Math.random() * this.shootCooldown;
+    }
+    update() {
+      this.y += this.speed;
+      if (this.y > height) this.active = false;
+
+      if (this.canShoot) {
+        this.shootTimer++;
+        if (this.shootTimer >= this.shootCooldown) {
+          this.shootTimer = 0;
+          enemyBullets.push(new EnemyBullet(this.x + this.width / 2, this.y + this.height));
+        }
+      }
+    }
+    draw() {
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        
+        ctx.shadowColor = this.canShoot ? '#ff4500' : '#888';
+        ctx.shadowBlur = 10;
+        
+        if (this.type === 'tie') {
+            // TIE Fighter drawing
+            ctx.fillStyle = '#444';
+            // Wings
+            ctx.fillRect(-this.width / 2, -this.height/2, 8, this.height);
+            ctx.fillRect(this.width / 2 - 8, -this.height/2, 8, this.height);
+            // Body
+            ctx.fillStyle = '#888';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            // Cockpit
+            if(this.canShoot){
+                 ctx.fillStyle = '#ff6347';
+                 ctx.beginPath();
+                 ctx.arc(0, 0, 5, 0, Math.PI * 2);
+                 ctx.fill();
+            }
+        } else if (this.type === 'destroyer') {
+            // Star Destroyer drawing
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.moveTo(0, -this.height / 2);
+            ctx.lineTo(this.width / 2, this.height / 2);
+            ctx.lineTo(-this.width / 2, this.height / 2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Bridge
+            ctx.fillStyle = '#999';
+            ctx.fillRect(-5, -this.height/2 - 5, 10, 5);
+            if(this.canShoot){
+                ctx.fillStyle = '#ff6347';
+                ctx.fillRect(-2, -this.height/2 - 8, 4, 3);
+            }
+        }
+        ctx.restore();
+    }
+  }
+
+  // --- Enemy Bullet ---
+  class EnemyBullet {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.width = 5;
+      this.height = 12;
+      this.speed = 10;
+      this.color = '#ff4500';
+      this.active = true;
+    }
+    update() {
+      this.y += this.speed;
+      if (this.y > height) this.active = false;
+    }
+    draw() {
+      ctx.save();
+      ctx.fillStyle = this.color;
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 15;
+      ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height);
+      ctx.restore();
+    }
+  }
+
+  // --- Bonuses ---
+  class Bonus {
+    constructor(x, y, type) {
+      this.x = x;
+      this.y = y;
+      this.width = 30;
+      this.height = 30;
+      this.speed = 4;
+      this.active = true;
+      this.type = type;
+      this.rotation = 0;
+    }
+    update() {
+      this.y += this.speed;
+      this.rotation += 0.05;
+      if (this.y > height) this.active = false;
+    }
+    draw() {
+      ctx.save();
+      ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+      ctx.rotate(this.rotation);
+      ctx.font = '24px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      let icon = '';
+      let color = 'white';
+
+      if (this.type === 'life') {
+        icon = '❤️';
+        color = '#ff4757';
+      } else if (this.type === 'tripleShot') {
+        icon = '🔱';
+        color = '#00d2d3';
+      } else if (this.type === 'shield') {
+        icon = '🛡️';
+        color = '#54a0ff';
+      }
+
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = color;
+      ctx.fillText(icon, 0, 0);
+      
+      ctx.restore();
+    }
+  }
+
+  // --- Explosion ---
+  class Explosion {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.radius = 5;
+      this.alpha = 1;
+      this.active = true;
+    }
+    update() {
+      this.radius += 2.5;
+      this.alpha -= 0.06;
+      if (this.alpha <= 0) this.active = false;
+    }
+    draw() {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 165, 0, ${this.alpha})`;
+      ctx.shadowColor = `rgba(255, 100, 0, ${this.alpha})`;
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  // --- Game variables ---
+  let player = new Player();
+  let bullets = [];
+  let enemies = [];
+  let enemyBullets = [];
+  let explosions = [];
+  let bonuses = [];
+
+  let score = 0;
+  let lives = 3;
+  let baseEnemySpawnInterval = 60;
+  let enemySpawnTimer = 0;
+
+  // --- Input handling ---
+  window.addEventListener('keydown', e => {
+    if (!gameRunning) return;
+    if (e.code === 'ArrowLeft' || e.key.toLowerCase() === 'a') player.moveLeft = true;
+    if (e.code === 'ArrowRight' || e.key.toLowerCase() === 'd') player.moveRight = true;
+    if (e.code === 'Space') player.shoot();
+  });
+  window.addEventListener('keyup', e => {
+    if (e.code === 'ArrowLeft' || e.key.toLowerCase() === 'a') player.moveLeft = false;
+    if (e.code === 'ArrowRight' || e.key.toLowerCase() === 'd') player.moveRight = false;
+  });
+  
+  // Mobile touch handlers
+  touchLeft.addEventListener('touchstart', e => { e.preventDefault(); player.moveLeft = true; });
+  touchLeft.addEventListener('touchend', e => { e.preventDefault(); player.moveLeft = false; });
+  touchRight.addEventListener('touchstart', e => { e.preventDefault(); player.moveRight = true; });
+  touchRight.addEventListener('touchend', e => { e.preventDefault(); player.moveRight = false; });
+  touchShoot.addEventListener('touchstart', e => { e.preventDefault(); player.shoot(); });
+
+
+  // --- Utility ---
+  function rectIntersect(r1, r2) {
+    return !(r2.x > r1.x + r1.width || r2.x + r2.width < r1.x || r2.y > r1.y + r1.height || r2.y + r2.height < r1.y);
+  }
+
+  function spawnEnemy() {
+    let x = Math.random() * (width - 70);
+    // Difficulty increases chance of shooting enemies
+    let canShoot = Math.random() < (0.2 + score / 5000); 
+    let speedMul = 1 + score / 2000;
+    enemies.push(new Enemy(x, -50, speedMul, canShoot));
+  }
+
+  function spawnBonus(x, y) {
+    let typeRand = Math.random();
+    let type;
+    if (typeRand < 0.35) type = 'life';
+    else if (typeRand < 0.7) type = 'tripleShot';
+    else type = 'shield';
+    bonuses.push(new Bonus(x, y, type));
+  }
+
+  function updateUI() {
+    scoreEl.textContent = `SCORE: ${score}`;
+    livesEl.textContent = `LIVES: ${lives}`;
+
+    // Update Bonus Timers display
+    bonusTimersEl.innerHTML = '';
+    if(player.tripleShotActive){
+        const secondsLeft = Math.ceil(player.tripleShotDuration / 60);
+        bonusTimersEl.innerHTML += `<div class="bonus-timer"><span class="bonus-icon">🔱</span> Triple Shot: ${secondsLeft}s</div>`;
+    }
+    if(player.shieldActive){
+        bonusTimersEl.innerHTML += `<div class="bonus-timer"><span class="bonus-icon">🛡️</span> Shield Active</div>`;
+    }
+  }
+
+
+  // --- Game loop ---
+  function gameLoop() {
+    if (!gameRunning) return;
+
+    drawStarfield();
+
+    player.update();
+    player.draw();
+
+    // Update and draw all game objects
+    [bullets, enemies, enemyBullets, bonuses, explosions].forEach(arr => {
+        arr.forEach(item => {
+            item.update();
+            item.draw();
+        });
+    });
+    
+    // Filter out inactive objects
+    bullets = bullets.filter(b => b.active);
+    enemies = enemies.filter(e => e.active);
+    enemyBullets = enemyBullets.filter(eb => eb.active);
+    bonuses = bonuses.filter(b => b.active);
+    explosions = explosions.filter(exp => exp.active);
+
+    // Spawn enemies with increasing difficulty
+    enemySpawnTimer++;
+    const currentEnemySpawnInterval = Math.max(20, baseEnemySpawnInterval - Math.floor(score / difficultyIncreaseInterval));
+    if (enemySpawnTimer >= currentEnemySpawnInterval) {
+      enemySpawnTimer = 0;
+      spawnEnemy();
+    }
+
+    // --- Collision Detection ---
+    // Bullets vs Enemies
+    bullets.forEach(b => {
+      enemies.forEach(e => {
+        if (b.active && e.active && rectIntersect(b, e)) {
+          b.active = false;
+          e.active = false;
+          score += 10;
+          explosions.push(new Explosion(e.x + e.width / 2, e.y + e.height / 2));
+          // 15% chance to drop bonus on enemy death
+          if (Math.random() < 0.15) {
+            spawnBonus(e.x, e.y);
+          }
+        }
+      });
+    });
+
+    // Enemy bullets vs Player
+    const playerHitbox = {x: player.x, y: player.y, width: player.width, height: player.height};
+    enemyBullets.forEach(eb => {
+      if (eb.active && rectIntersect(eb, playerHitbox)) {
+        eb.active = false;
+        handlePlayerHit();
+      }
+    });
+
+    // Enemies vs Player (collision)
+    enemies.forEach(e => {
+      if (e.active && rectIntersect(e, playerHitbox)) {
+        e.active = false;
+        explosions.push(new Explosion(e.x + e.width / 2, e.y + e.height / 2));
+        handlePlayerHit();
+      }
+    });
+    
+    function handlePlayerHit() {
+        if (player.shieldActive) {
+            player.shieldActive = false;
+        } else {
+            lives--;
+            explosions.push(new Explosion(player.x + player.width / 2, player.y + player.height / 2));
+            if (lives <= 0) {
+                gameOver();
+            }
+        }
+    }
+
+    // Player vs Bonuses
+    bonuses.forEach(bonus => {
+      if (bonus.active && rectIntersect(bonus, playerHitbox)) {
+        bonus.active = false;
+        if (bonus.type === 'life') {
+          lives++;
+        } else if (bonus.type === 'tripleShot') {
+          player.tripleShotActive = true;
+          player.tripleShotDuration = 600; // 10 seconds at 60fps
+        } else if (bonus.type === 'shield') {
+          player.shieldActive = true;
+        }
+      }
+    });
+
+    updateUI();
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  function gameOver() {
+    gameRunning = false;
+    startBtn.textContent = `GAME OVER | SCORE: ${score} | RESTART`;
+    startBtn.style.display = 'block';
+  }
+
+  function startGame() {
+    player = new Player();
+    bullets = [];
+    enemies = [];
+    enemyBullets = [];
+    explosions = [];
+    bonuses = [];
+    score = 0;
+    lives = 3;
+    enemySpawnTimer = 0;
+    gameRunning = true;
+    startBtn.style.display = 'none';
+    gameLoop();
+  }
+
+  startBtn.addEventListener('click', startGame);
+
+  window.addEventListener('resize', () => {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    player.x = width / 2 - player.width / 2; // Recenter player
+    initStars();
+  });
+})();
+</script>
+
+</body>
+</html>

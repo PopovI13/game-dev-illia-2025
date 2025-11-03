@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crown Drawing with Speed Control</title>
+  <title>Smooth Crown Drawing with Fill</title>
   <style>
     body {
       background: #111;
@@ -51,7 +51,7 @@
     const ctx = canvas.getContext("2d");
     const speedBtn = document.getElementById("speedBtn");
 
-    // Crown shape points
+    // Crown shape points (including base)
     const points = [
       { x: 100, y: 350 },
       { x: 160, y: 180 },
@@ -74,43 +74,52 @@
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    // Drawing the crown
     function drawFrame() {
-      if (currentSegment >= points.length - 1) {
-        drawingDone = true;
-        fillCrown();
-        return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw full crown path up to current position
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+
+      // Draw all completed segments
+      for (let i = 1; i <= currentSegment; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
       }
 
-      const start = points[currentSegment];
-      const end = points[currentSegment + 1];
+      // Draw in-progress segment
+      if (currentSegment < points.length - 1) {
+        const start = points[currentSegment];
+        const end = points[currentSegment + 1];
+        const x = start.x + (end.x - start.x) * t;
+        const y = start.y + (end.y - start.y) * t;
+        ctx.lineTo(x, y);
 
-      const x = start.x + (end.x - start.x) * t;
-      const y = start.y + (end.y - start.y) * t;
+        // Draw moving red pen
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "gold";
+        ctx.fill();
+      } else {
+        ctx.stroke();
+      }
 
-      // Draw line segment
-      ctx.beginPath();
-      ctx.moveTo(start.x + (end.x - start.x) * (t - speed), start.y + (end.y - start.y) * (t - speed));
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      // Draw the red pen
-      ctx.beginPath();
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "gold";
-      ctx.fill();
-
-      // Move the pen
+      // Update movement
       t += speed * speedMultiplier;
       if (t >= 1) {
         t = 0;
         currentSegment++;
+        if (currentSegment >= points.length - 1) {
+          drawingDone = true;
+          fillCrown();
+          return;
+        }
       }
 
       requestAnimationFrame(drawFrame);
     }
 
-    // Fill the crown after drawing
+    // Fill the crown when done
     function fillCrown() {
       let fillProgress = 0;
       const fillSpeed = 0.02;
@@ -119,9 +128,7 @@
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-          ctx.lineTo(points[i].x, points[i].y);
-        }
+        for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
         ctx.closePath();
 
         const gradient = ctx.createLinearGradient(0, 150, 0, 350);
@@ -149,15 +156,14 @@
       animateFill();
     }
 
-    // Speed up button behavior
+    // Speed button logic
     speedBtn.addEventListener("click", () => {
-      if (drawingDone) return; // don’t change after drawing is done
+      if (drawingDone) return;
       speedMultiplier += 0.5;
-      if (speedMultiplier > 3) speedMultiplier = 0.5; // cycle back
+      if (speedMultiplier > 3) speedMultiplier = 0.5;
       speedBtn.textContent = `Speed Up (Current: ${speedMultiplier.toFixed(1)}x)`;
     });
 
-    // Start the drawing
     drawFrame();
   </script>
 </body>

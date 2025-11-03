@@ -1,1 +1,92 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drawing a Crown</title>
+  <style>
+    body {
+      background: #1b1b1b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+      font-family: sans-serif;
+    }
+    canvas {
+      background: #222;
+      border: 2px solid gold;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="500" height="400"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Crown path points
+    const points = [
+      { x: 50, y: 300 },
+      { x: 120, y: 150 },
+      { x: 170, y: 250 },
+      { x: 250, y: 100 },
+      { x: 330, y: 250 },
+      { x: 380, y: 150 },
+      { x: 450, y: 300 },
+      { x: 50, y: 300 }
+    ];
+
+    let progress = 0;
+    let currentIndex = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the crown path up to current progress
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i <= currentIndex; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+
+      ctx.strokeStyle = "gold";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Draw the moving object ("pen")
+      const start = points[currentIndex];
+      const end = points[currentIndex + 1];
+      if (end) {
+        const t = progress - currentIndex;
+        const x = start.x + (end.x - start.x) * t;
+        const y = start.y + (end.y - start.y) * t;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = "red";
+        ctx.fill();
+      }
+
+      progress += 0.01;
+      if (progress >= points.length - 1) progress = points.length - 1;
+
+      if (progress < points.length - 1) {
+        currentIndex = Math.floor(progress);
+        requestAnimationFrame(draw);
+      } else {
+        // Draw complete crown outline at the end
+        ctx.strokeStyle = "gold";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+    }
+
+    draw();
+  </script>
+</body>
+</html>

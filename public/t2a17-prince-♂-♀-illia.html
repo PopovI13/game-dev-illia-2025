@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crown Drawing Animation</title>
+  <title>Animated Crown Drawing</title>
   <style>
     body {
-      background: #1b1b1b;
+      background: #111;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -15,64 +15,64 @@
     }
 
     canvas {
-      background: #222;
+      background: #1e1e1e;
       border: 2px solid gold;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
     }
   </style>
 </head>
 <body>
-  <canvas id="canvas" width="500" height="400"></canvas>
+  <canvas id="canvas" width="600" height="450"></canvas>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
-    // Crown path points
+    // Crown shape points — now includes the base line
     const points = [
-      { x: 50, y: 300 },
-      { x: 120, y: 150 },
-      { x: 170, y: 250 },
-      { x: 250, y: 100 },
-      { x: 330, y: 250 },
-      { x: 380, y: 150 },
-      { x: 450, y: 300 },
+      { x: 100, y: 350 }, // left base
+      { x: 160, y: 180 }, // left spike
+      { x: 230, y: 300 }, // valley
+      { x: 300, y: 150 }, // middle spike
+      { x: 370, y: 300 }, // valley
+      { x: 440, y: 180 }, // right spike
+      { x: 500, y: 350 }, // right base
+      { x: 100, y: 350 }  // back to left base (draws base line)
     ];
 
-    // Draw state
     let currentSegment = 0;
-    let t = 0; // progress along segment [0..1]
-    const speed = 0.01; // animation speed
+    let t = 0;
+    const speed = 0.01; // smaller = slower
 
-    // Start with empty canvas
     ctx.lineWidth = 4;
     ctx.strokeStyle = "gold";
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    // For smooth drawing
     function drawFrame() {
-      if (currentSegment >= points.length - 1) return; // done drawing
+      // Stop when all lines are done
+      if (currentSegment >= points.length - 1) return;
 
       const start = points[currentSegment];
       const end = points[currentSegment + 1];
 
-      // Interpolate position of the moving pen
+      // Interpolate position for the moving pen
       const x = start.x + (end.x - start.x) * t;
       const y = start.y + (end.y - start.y) * t;
 
-      // Draw only the new line segment
+      // Draw the next line segment
       ctx.beginPath();
       ctx.moveTo(start.x + (end.x - start.x) * (t - speed), start.y + (end.y - start.y) * (t - speed));
       ctx.lineTo(x, y);
       ctx.stroke();
 
-      // Draw the moving object (pen)
+      // Draw the moving "pen"
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "gold";
+      ctx.fillStyle = "red";
       ctx.fill();
 
-      // Update progress
+      // Update animation progress
       t += speed;
       if (t >= 1) {
         t = 0;
@@ -82,7 +82,6 @@
       requestAnimationFrame(drawFrame);
     }
 
-    // Start drawing
     drawFrame();
   </script>
 </body>

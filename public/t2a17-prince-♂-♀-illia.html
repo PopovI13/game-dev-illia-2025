@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Animated Crown Drawing</title>
+  <title>Animated Crown Drawing with Fill</title>
   <style>
     body {
       background: #111;
@@ -17,7 +17,7 @@
     canvas {
       background: #1e1e1e;
       border: 2px solid gold;
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     }
   </style>
 </head>
@@ -28,7 +28,7 @@
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
-    // Crown shape points — now includes the base line
+    // Define the crown shape points (including bottom line)
     const points = [
       { x: 100, y: 350 }, // left base
       { x: 160, y: 180 }, // left spike
@@ -37,42 +37,45 @@
       { x: 370, y: 300 }, // valley
       { x: 440, y: 180 }, // right spike
       { x: 500, y: 350 }, // right base
-      { x: 100, y: 350 }  // back to left base (draws base line)
+      { x: 100, y: 350 }  // close the base
     ];
 
     let currentSegment = 0;
     let t = 0;
-    const speed = 0.01; // smaller = slower
+    const speed = 0.01;
+    let drawingDone = false;
 
     ctx.lineWidth = 4;
     ctx.strokeStyle = "gold";
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
+    // Draws the crown line by line
     function drawFrame() {
-      // Stop when all lines are done
-      if (currentSegment >= points.length - 1) return;
+      if (currentSegment >= points.length - 1) {
+        drawingDone = true;
+        fillCrown(); // Start fill when done
+        return;
+      }
 
       const start = points[currentSegment];
       const end = points[currentSegment + 1];
 
-      // Interpolate position for the moving pen
       const x = start.x + (end.x - start.x) * t;
       const y = start.y + (end.y - start.y) * t;
 
-      // Draw the next line segment
+      // Draw line segment
       ctx.beginPath();
       ctx.moveTo(start.x + (end.x - start.x) * (t - speed), start.y + (end.y - start.y) * (t - speed));
       ctx.lineTo(x, y);
       ctx.stroke();
 
-      // Draw the moving "pen"
+      // Draw red moving pen
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, Math.PI * 2);
       ctx.fillStyle = "gold";
       ctx.fill();
 
-      // Update animation progress
       t += speed;
       if (t >= 1) {
         t = 0;
@@ -82,6 +85,48 @@
       requestAnimationFrame(drawFrame);
     }
 
+    // Fill the crown once it’s fully drawn
+    function fillCrown() {
+      let fillProgress = 0;
+      const fillSpeed = 0.02;
+
+      function animateFill() {
+        // Draw a gradient fill that "grows"
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          ctx.lineTo(points[i].x, points[i].y);
+        }
+        ctx.closePath();
+
+        const gradient = ctx.createLinearGradient(0, 150, 0, 350);
+        gradient.addColorStop(0, "gold");
+        gradient.addColorStop(1, "#ffcc33");
+
+        ctx.fillStyle = gradient;
+        ctx.globalAlpha = fillProgress;
+        ctx.fill();
+        ctx.restore();
+
+        fillProgress += fillSpeed;
+        if (fillProgress < 1) {
+          requestAnimationFrame(animateFill);
+        } else {
+          // Final bright outline after fill
+          ctx.globalAlpha = 1;
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = "gold";
+          ctx.shadowColor = "rgba(255,215,0,0.6)";
+          ctx.shadowBlur = 15;
+          ctx.stroke();
+        }
+      }
+
+      animateFill();
+    }
+
+    // Start the drawing
     drawFrame();
   </script>
 </body>

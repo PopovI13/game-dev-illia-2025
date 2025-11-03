@@ -3,15 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Animated Crown Drawing with Fill</title>
+  <title>Crown Drawing with Speed Control</title>
   <style>
     body {
       background: #111;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      color: white;
+      font-family: sans-serif;
     }
 
     canvas {
@@ -19,30 +22,51 @@
       border: 2px solid gold;
       box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
     }
+
+    button {
+      margin-top: 20px;
+      background: gold;
+      color: #111;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #ffdf55;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
   <canvas id="canvas" width="600" height="450"></canvas>
+  <button id="speedBtn">Speed Up (Current: 1x)</button>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
+    const speedBtn = document.getElementById("speedBtn");
 
-    // Define the crown shape points (including bottom line)
+    // Crown shape points
     const points = [
-      { x: 100, y: 350 }, // left base
-      { x: 160, y: 180 }, // left spike
-      { x: 230, y: 300 }, // valley
-      { x: 300, y: 150 }, // middle spike
-      { x: 370, y: 300 }, // valley
-      { x: 440, y: 180 }, // right spike
-      { x: 500, y: 350 }, // right base
-      { x: 100, y: 350 }  // close the base
+      { x: 100, y: 350 },
+      { x: 160, y: 180 },
+      { x: 230, y: 300 },
+      { x: 300, y: 150 },
+      { x: 370, y: 300 },
+      { x: 440, y: 180 },
+      { x: 500, y: 350 },
+      { x: 100, y: 350 }
     ];
 
     let currentSegment = 0;
     let t = 0;
-    const speed = 0.01;
+    let speed = 0.01;
+    let speedMultiplier = 1;
     let drawingDone = false;
 
     ctx.lineWidth = 4;
@@ -50,11 +74,11 @@
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
 
-    // Draws the crown line by line
+    // Drawing the crown
     function drawFrame() {
       if (currentSegment >= points.length - 1) {
         drawingDone = true;
-        fillCrown(); // Start fill when done
+        fillCrown();
         return;
       }
 
@@ -70,13 +94,14 @@
       ctx.lineTo(x, y);
       ctx.stroke();
 
-      // Draw red moving pen
+      // Draw the red pen
       ctx.beginPath();
       ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = "gold";
+      ctx.fillStyle = "red";
       ctx.fill();
 
-      t += speed;
+      // Move the pen
+      t += speed * speedMultiplier;
       if (t >= 1) {
         t = 0;
         currentSegment++;
@@ -85,13 +110,12 @@
       requestAnimationFrame(drawFrame);
     }
 
-    // Fill the crown once it’s fully drawn
+    // Fill the crown after drawing
     function fillCrown() {
       let fillProgress = 0;
       const fillSpeed = 0.02;
 
       function animateFill() {
-        // Draw a gradient fill that "grows"
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
@@ -113,7 +137,6 @@
         if (fillProgress < 1) {
           requestAnimationFrame(animateFill);
         } else {
-          // Final bright outline after fill
           ctx.globalAlpha = 1;
           ctx.lineWidth = 5;
           ctx.strokeStyle = "gold";
@@ -125,6 +148,14 @@
 
       animateFill();
     }
+
+    // Speed up button behavior
+    speedBtn.addEventListener("click", () => {
+      if (drawingDone) return; // don’t change after drawing is done
+      speedMultiplier += 0.5;
+      if (speedMultiplier > 3) speedMultiplier = 0.5; // cycle back
+      speedBtn.textContent = `Speed Up (Current: ${speedMultiplier.toFixed(1)}x)`;
+    });
 
     // Start the drawing
     drawFrame();

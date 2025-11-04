@@ -6,118 +6,85 @@ use an LLM to make a one page html file shows all the types of javascript loops,
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>t2a18-loop-1page-illia.html</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f8ff;
-      margin: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    pre {
-      background: #ecf0f1;
-      padding: 10px;
-      border-left: 4px solid #3498db;
-      overflow-x: auto;
-    }
-    .example {
-      margin-bottom: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>t2a18-loop-1page-illia.html</title>
+<style>
+  body { font-family: Arial, sans-serif; font-size: 12px; margin: 20px; background: #fff; color: #000; }
+  h1 { text-align: center; margin-bottom: 10px; }
+  h2 { margin: 8px 0 4px; font-size: 14px; }
+  pre { background: #f4f4f4; padding: 6px; border-left: 3px solid #0077cc; font-size: 11px; overflow-x: auto; }
+  @media print {
+    body { background: #fff; color: #000; }
+    pre { background: #fff; border-left: 2px solid #000; }
+  }
+</style>
 </head>
 <body>
 
-  <h1>JavaScript Loop Examples — Illia</h1>
+<h1>JavaScript Loop Examples — Illia</h1>
 
-  <div class="example">
-    <h2>1. For Loop</h2>
-    <pre><code>
+<h2>1. For Loop</h2>
+<pre><code>
 for (let i = 0; i < 5; i++) {
   console.log("For Loop Count:", i);
 }
-    </code></pre>
-  </div>
+</code></pre>
 
-  <div class="example">
-    <h2>2. While Loop</h2>
-    <pre><code>
+<h2>2. While Loop</h2>
+<pre><code>
 let count = 0;
 while (count < 5) {
   console.log("While Loop Count:", count);
   count++;
 }
-    </code></pre>
-  </div>
+</code></pre>
 
-  <div class="example">
-    <h2>3. Do...While Loop</h2>
-    <pre><code>
+<h2>3. Do...While Loop</h2>
+<pre><code>
 let num = 0;
 do {
   console.log("Do...While Loop Number:", num);
   num++;
 } while (num < 5);
-    </code></pre>
-  </div>
+</code></pre>
 
-  <div class="example">
-    <h2>4. For...In Loop (Object)</h2>
-    <pre><code>
+<h2>4. For...In Loop (Object)</h2>
+<pre><code>
 const person = { name: "Illia", age: 17, city: "Toronto" };
 for (let key in person) {
   console.log(key + ": " + person[key]);
 }
-    </code></pre>
-  </div>
+</code></pre>
 
-  <div class="example">
-    <h2>5. For...Of Loop (Array)</h2>
-    <pre><code>
+<h2>5. For...Of Loop (Array)</h2>
+<pre><code>
 const colors = ["red", "green", "blue"];
 for (let color of colors) {
   console.log("Color:", color);
 }
-    </code></pre>
-  </div>
+</code></pre>
 
-  <script>
-    // Run all examples in console
-    console.log("=== For Loop ===");
-    for (let i = 0; i < 5; i++) {
-      console.log("For Loop Count:", i);
-    }
+<script>
+// === For Loop ===
+for (let i = 0; i < 5; i++) console.log("For Loop Count:", i);
 
-    console.log("=== While Loop ===");
-    let count = 0;
-    while (count < 5) {
-      console.log("While Loop Count:", count);
-      count++;
-    }
+// === While Loop ===
+let count = 0;
+while (count < 5) { console.log("While Loop Count:", count); count++; }
 
-    console.log("=== Do...While Loop ===");
-    let num = 0;
-    do {
-      console.log("Do...While Loop Number:", num);
-      num++;
-    } while (num < 5);
+// === Do...While Loop ===
+let num = 0;
+do { console.log("Do...While Loop Number:", num); num++; } while (num < 5);
 
-    console.log("=== For...In Loop ===");
-    const person = { name: "Illia", age: 17, city: "Toronto" };
-    for (let key in person) {
-      console.log(key + ": " + person[key]);
-    }
+// === For...In Loop ===
+const person = { name: "Illia", age: 17, city: "Toronto" };
+for (let key in person) console.log(key + ": " + person[key]);
 
-    console.log("=== For...Of Loop ===");
-    const colors = ["red", "green", "blue"];
-    for (let color of colors) {
-      console.log("Color:", color);
-    }
-  </script>
+// === For...Of Loop ===
+const colors = ["red", "green", "blue"];
+for (let color of colors) console.log("Color:", color);
+</script>
 
 </body>
 </html>

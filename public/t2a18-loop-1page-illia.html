@@ -9,12 +9,32 @@ use an LLM to make a one page html file shows all the types of javascript loops,
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>t2a18-loop-1page-illia.html</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    pre {
+      background: #ecf0f1;
+      padding: 10px;
+      border-left: 4px solid #3498db;
+      overflow-x: auto;
+    }
+    .example {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
 
   <h1>JavaScript Loop Examples — Illia</h1>
 
-  <div>
+  <div class="example">
     <h2>1. For Loop</h2>
     <pre><code>
 for (let i = 0; i < 5; i++) {
@@ -23,7 +43,7 @@ for (let i = 0; i < 5; i++) {
     </code></pre>
   </div>
 
-  <div>
+  <div class="example">
     <h2>2. While Loop</h2>
     <pre><code>
 let count = 0;
@@ -34,7 +54,7 @@ while (count < 5) {
     </code></pre>
   </div>
 
-  <div>
+  <div class="example">
     <h2>3. Do...While Loop</h2>
     <pre><code>
 let num = 0;
@@ -45,7 +65,7 @@ do {
     </code></pre>
   </div>
 
-  <div>
+  <div class="example">
     <h2>4. For...In Loop (Object)</h2>
     <pre><code>
 const person = { name: "Illia", age: 17, city: "Toronto" };
@@ -55,7 +75,7 @@ for (let key in person) {
     </code></pre>
   </div>
 
-  <div>
+  <div class="example">
     <h2>5. For...Of Loop (Array)</h2>
     <pre><code>
 const colors = ["red", "green", "blue"];

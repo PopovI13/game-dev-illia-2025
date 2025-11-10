@@ -11,12 +11,13 @@
 
       <input type="button" value="Reverse Text" onclick="reverseText()"><br>
 
-
+     <script>
     function reverseText() {
       const inputValue = document.getElementById('myNum01').value;
       const reversed = inputValue.split('').reverse().join('');
       document.getElementById('mySpan01').textContent = "Reversed: " + reversed;
     }
+     </script> 
 
 
 

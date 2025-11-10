@@ -32,6 +32,50 @@ answer.<br>
   </pre>
 
 <br><br><li> Put the chatGPT working code here. (sensibly, it does not need several tags that are not used)
+    <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Reverse String - JavaScript Practice</title>
+</head>
+<body>
+  <h2>🧩 Reverse String</h2>
+  <p><strong>Problem:</strong> Write a function that takes a string <code>s</code> and returns it reversed.</p>
+  <p><strong>Example:</strong> Input: <code>"hello"</code> → Output: <code>"olleh"</code></p>
+
+  <hr>
+
+  <label for="inputString">Enter a string:</label><br>
+  <input type="text" id="inputString" placeholder="Type something...">
+  <button onclick="reverseInput()">Reverse</button>
+
+  <h3>Output:</h3>
+  <pre id="output"></pre>
+
+  <script>
+    // Function to reverse a string manually (without using reverse())
+    function reverseString(s) {
+      let reversed = "";
+      for (let i = s.length - 1; i >= 0; i--) {
+        reversed += s[i];
+      }
+      return reversed;
+    }
+
+    // Function to handle user input and display result
+    function reverseInput() {
+      const input = document.getElementById("inputString").value;
+      if (input === "") {
+        document.getElementById("output").textContent = "Please enter a string.";
+        return;
+      }
+      const result = reverseString(input);
+      document.getElementById("output").textContent = result;
+    }
+  </script>
+</body>
+</html>
+
   
 </ol>
   

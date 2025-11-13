@@ -1,26 +1,91 @@
-<h1 align=centre>t2a20-manipulation-illia.html</h1>
+<h1 align="center">t2a20-manipulation-illia.html</h1>
 
-String, Array, Object manipulation methods<br>
+String, Array, Object manipulation methods<br><br>
 
-<input id="myNumo1" type=text value="This is a string"><br>
-<snan id="mySpan01">...</snan><br>
+<input id="myNum01" type="text" value="This is a string"><br>
+<span id="mySpan01">...</span><br><br>
 
-<input type=button value=".toUpperCase()" onclick="{
-  let myIn = document.getElemntById('myNum01').value
+<!-- String Manipulations -->
+<input type="button" value=".toUpperCase()" onclick="{
+  let myIn = document.getElementById('myNum01').value
   document.getElementById('mySpan01').innerHTML = myIn.toUpperCase()
 }"><br>
 
-<input type=button value=".split() makes and array" onclick="{
-  let myIn = document.getElemntById('myNum01').value
-  document.getElementById('mySpan01').innerHTML = myIn.split('')
+<input type="button" value=".toLowerCase()" onclick="{
+  let myIn = document.getElementById('myNum01').value
+  document.getElementById('mySpan01').innerHTML = myIn.toLowerCase()
 }"><br>
 
-<input type=button value="Object.keys() returns array" onclick="{
-  let myObject = {
-    first: 10,
-    second: 'Hello',
-    third: true
-  }
+<input type="button" value=".split(' ')" onclick="{
+  let myIn = document.getElementById('myNum01').value
+  document.getElementById('mySpan01').innerHTML = myIn.split(' ')
+}"><br>
+
+<input type="button" value=".slice(0,4)" onclick="{
+  let myIn = document.getElementById('myNum01').value
+  document.getElementById('mySpan01').innerHTML = myIn.slice(0,4)
+}"><br>
+
+<input type="button" value=".replace()" onclick="{
+  let myIn = document.getElementById('myNum01').value
+  document.getElementById('mySpan01').innerHTML = myIn.replace('string','text')
+}"><br><br>
+
+<!-- Array Manipulations -->
+<input type="button" value="Array .push()" onclick="{
+  let myArray = [1,2,3]
+  myArray.push(4)
+  document.getElementById('mySpan01').innerHTML = myArray
+}"><br>
+
+<input type="button" value="Array .pop()" onclick="{
+  let myArray = ['apple','banana','cherry']
+  myArray.pop()
+  document.getElementById('mySpan01').innerHTML = myArray
+}"><br>
+
+<input type="button" value="Array .shift()" onclick="{
+  let myArray = ['a','b','c']
+  myArray.shift()
+  document.getElementById('mySpan01').innerHTML = myArray
+}"><br>
+
+<input type="button" value="Array .concat()" onclick="{
+  let a1 = [1,2]
+  let a2 = [3,4]
+  document.getElementById('mySpan01').innerHTML = a1.concat(a2)
+}"><br>
+
+<input type="button" value="Array .join('-')" onclick="{
+  let myArray = ['red','green','blue']
+  document.getElementById('mySpan01').innerHTML = myArray.join('-')
+}"><br><br>
+
+<!-- Object Manipulations -->
+<input type="button" value="Object.keys()" onclick="{
+  let myObject = {first:10, second:'Hello', third:true}
   let keyArray = Object.keys(myObject)
   document.getElementById('mySpan01').innerHTML = keyArray
+}"><br>
+
+<input type="button" value="Object.values()" onclick="{
+  let myObject = {name:'Bob', age:25, job:'Dev'}
+  let valueArray = Object.values(myObject)
+  document.getElementById('mySpan01').innerHTML = valueArray
+}"><br>
+
+<input type="button" value="Object.entries()" onclick="{
+  let myObject = {x:1, y:2, z:3}
+  document.getElementById('mySpan01').innerHTML = Object.entries(myObject)
+}"><br>
+
+<input type="button" value="Access property" onclick="{
+  let car = {make:'Ford', model:'Mustang', year:2024}
+  document.getElementById('mySpan01').innerHTML = car.model
+}"><br>
+
+<input type="button" value="Add property" onclick="{
+  let student = {name:'Alice', grade:90}
+  student.class = 'Math'
+  document.getElementById('mySpan01').innerHTML = JSON.stringify(student)
 }"><br>

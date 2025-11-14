@@ -1,46 +1,49 @@
 <script>
 // global functions here
-function myHitOther(my1,my2){
-   left1   = parseInt(document.getElementById(my1).style.left)
-   right1  = left1 + parseInt(document.getElementById(my1).style.width)
-   top1    = parseInt(document.getElementById(my1).style.top)   
-   bottom1 = top1   + parseInt(document.getElementById(my1).style.height)
-   left2   = parseInt(document.getElementById(my2).style.left)
-   right2  = left2 + parseInt(document.getElementById(my2).style.width)
-   top2    = parseInt(document.getElementById(my2).style.top)   
-   bottom2 = top2   + parseInt(document.getElementById(my2).style.height)
-   if ((right1  >=  left2  ) &&      	   
-       (bottom1 >=  top2   ) &&
-       (left1   <=  right2 ) &&
-       (top1    <=  bottom2) ){
-       return true
+function myHitOther(my1, my2) {
+   let left1   = parseInt(document.getElementById(my1).style.left);
+   let right1  = left1 + parseInt(document.getElementById(my1).style.width);
+   let top1    = parseInt(document.getElementById(my1).style.top);
+   let bottom1 = top1 + parseInt(document.getElementById(my1).style.height);
+
+   let left2   = parseInt(document.getElementById(my2).style.left);
+   let right2  = left2 + parseInt(document.getElementById(my2).style.width);
+   let top2    = parseInt(document.getElementById(my2).style.top);
+   let bottom2 = top2 + parseInt(document.getElementById(my2).style.height);
+
+   if ((right1 >= left2) &&
+       (bottom1 >= top2) &&
+       (left1 <= right2) &&
+       (top1 <= bottom2)) {
+       return true;
    }
-  retunr false;
+   return false;   // ❗ fixed typo
 }
 
-
-function myCheckHit(){
-   if ( myHitOther('myImg01','myImg02') ){
-       alert('you lose')  
-       document.getElementById('myImg01').style.left = '20px'
-       location = 't2a13-keydown.html'  // go to your next level
+function myCheckHit() {
+   if (myHitOther('myImg01', 'myImg02')) {
+       alert('you lose');
+       document.getElementById('myImg01').style.left = '20px';
+       location = 't2a13-keydown.html';
    }
 }
 </script>
 
-<br><br><h2 aling=centre>t2a21-collision-illia.html</h2>
+<br><br><h2 align="center">t2a21-collision-illia.html</h2>
 
-<img id="myImg01" scr="myImage01.jpg" style="position:absolute; left:0px; top:0px; width:50px;
-  height:30px;">
+<img id="myImg01" src="myImage01.jpg"
+     style="position:absolute; left:0px; top:0px; width:50px; height:30px;">
 
-<img id="myImg02" scr="myImage02.jpg" scr="myImage02.jpg" style="position:absolute; left:100px;
-  top:0px; width:50px; height:30px;"><br>
+<img id="myImg02" src="myImage02.jpg"
+     style="position:absolute; left:100px; top:0px; width:50px; height:30px;"><br>
 
-<input type=button value="Move" onclick="{
-  document.getElemtById('myImg01').style.left =
-    parseInt(document.getElementById('myImg01').stule.left) + 10 + 'px';
+<input type="button" value="Move" onclick="{
+  document.getElementById('myImg01').style.left =
+    parseInt(document.getElementById('myImg01').style.left) + 10 + 'px';
   myCheckHit();
-}"><br>
+}">
+<br>
+
 
 
 

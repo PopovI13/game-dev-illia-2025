@@ -10,23 +10,30 @@
       const myDiv = document.getElementById('myDiv1');
       myDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 
-      // FOX API (data.image)
+      // FOX API
       if (data.image) {
         myDiv.innerHTML += `<img src="${data.image}" style="max-width: 100%;">`;
       } 
-      // DOG API (data.message)
+      // DOG API
       else if (data.message && typeof data.message === "string") {
         myDiv.innerHTML += `<img src="${data.message}" style="max-width: 100%;">`;
       } 
-      // CAT API (data[0].url)
+      // CAT API
       else if (Array.isArray(data) && data[0]?.url) {
         myDiv.innerHTML += `<img src="${data[0].url}" style="max-width: 100%;">`;
       }
-      // NASA APOD (data.url)
+      // NASA APOD
       else if (data.url && data.media_type === "image") {
         myDiv.innerHTML += `<h3>${data.title}</h3>`;
         myDiv.innerHTML += `<img src="${data.url}" style="max-width: 100%;">`;
         myDiv.innerHTML += `<p>${data.explanation}</p>`;
+      }
+      // RANDOM QUOTE API
+      else if (data.content && data.author) {
+        myDiv.innerHTML += `
+          <p style="font-size: 20px;"><b>"${data.content}"</b></p>
+          <p>— ${data.author}</p>
+        `;
       }
 
     } catch (error) {
@@ -42,6 +49,7 @@
   <option value="https://api.thecatapi.com/v1/images/search">Random Cat</option>
   <option value="https://v2.jokeapi.dev/joke/Any?format=json">Random Joke</option>
   <option value="https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY">NASA Photo of the Day</option>
+  <option value="https://api.quotable.io/random">Random Quote</option>
 </select>
 
 <br><br>

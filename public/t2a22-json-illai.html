@@ -1,26 +1,48 @@
-<h1 align="center">t2a22-json-illai.html</h1>
+<h1 align="center">t2a22-json-illia.html</h1>
 
 <script>
   async function fetchData(url){
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log(data);
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      console.log(data);
 
-    // Display JSON
-    const myJson = JSON.stringify(data, null, 2);
-    document.getElementById('myDiv1').innerHTML = `<pre>${myJson}</pre>`;
+      const myDiv = document.getElementById('myDiv1');
+      myDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 
-    // Display Image
-    document.getElementById('myDiv1').innerHTML += `
-      <img src="${data.image}" alt="Random Image"
-      style="max-width: 100%; height: auto;">
-    `;
-  } 
+      // FOX API (data.image)
+      if (data.image) {
+        myDiv.innerHTML += `<img src="${data.image}" style="max-width: 100%;">`;
+      } 
+      // DOG API (data.message)
+      else if (data.message && typeof data.message === "string") {
+        myDiv.innerHTML += `<img src="${data.message}" style="max-width: 100%;">`;
+      } 
+      // CAT API (data[0].url)
+      else if (Array.isArray(data) && data[0]?.url) {
+        myDiv.innerHTML += `<img src="${data[0].url}" style="max-width: 100%;">`;
+      }
+      // NASA APOD (data.url)
+      else if (data.url && data.media_type === "image") {
+        myDiv.innerHTML += `<h3>${data.title}</h3>`;
+        myDiv.innerHTML += `<img src="${data.url}" style="max-width: 100%;">`;
+        myDiv.innerHTML += `<p>${data.explanation}</p>`;
+      }
+
+    } catch (error) {
+      document.getElementById('myDiv1').innerHTML = "Error: " + error;
+    }
+  }
 </script>
 
 <select id="mySelect" size="1" onchange="fetchData(this.value)">
-  <option value="">-- select an option --</option>
-  <option value="https://randomfox.ca/floof/">randomfox</option>
-</select><br><br>
+  <option value="">-- Choose API --</option>
+  <option value="https://randomfox.ca/floof/">Random Fox</option>
+  <option value="https://dog.ceo/api/breeds/image/random">Random Dog</option>
+  <option value="https://api.thecatapi.com/v1/images/search">Random Cat</option>
+  <option value="https://v2.jokeapi.dev/joke/Any?format=json">Random Joke</option>
+  <option value="https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY">NASA Photo of the Day</option>
+</select>
 
+<br><br>
 <div id="myDiv1">...</div>

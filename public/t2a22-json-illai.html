@@ -1,11 +1,11 @@
 <h1 align="center">t2a22-json-illia.html</h1>
 
+
+
 <script>
   async function fetchData(url){
     try {
-      const response = await fetch(url, {
-        headers: { "Accept": "application/json" }
-      });
+      const response = await fetch(url);
       const data = await response.json();
       console.log(data);
 
@@ -13,30 +13,26 @@
       myDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 
 
-      // RANDOM QUOTE (Quotable)
-      if (data.content) {
-        myDiv.innerHTML += `
-          <p style="font-size: 22px;"><b>"${data.content}"</b></p>
-          <p>— ${data.author || "Unknown"}</p>
-        `;
+
+      // RANDOM MEME
+      if (data.url && data.title) {
+        myDiv.innerHTML += `<h3>${data.title}</h3>`;
+        myDiv.innerHTML += `<img src="${data.url}" style="max-width: 100%;">`;
+        myDiv.innerHTML += `<p>Author: ${data.author}</p>`;
+        myDiv.innerHTML += `<p><a href="${data.postLink}" target="_blank">View on Reddit</a></p>`;
       }
-
-
       // FOX API
       else if (data.image) {
         myDiv.innerHTML += `<img src="${data.image}" style="max-width: 100%;">`;
       } 
-
       // DOG API
       else if (data.message && typeof data.message === "string") {
         myDiv.innerHTML += `<img src="${data.message}" style="max-width: 100%;">`;
       } 
-
       // CAT API
       else if (Array.isArray(data) && data[0]?.url) {
         myDiv.innerHTML += `<img src="${data[0].url}" style="max-width: 100%;">`;
       }
-
       // NASA APOD
       else if (data.url && data.media_type === "image") {
         myDiv.innerHTML += `<h3>${data.title}</h3>`;
@@ -57,7 +53,7 @@
   <option value="https://api.thecatapi.com/v1/images/search">Random Cat</option>
   <option value="https://v2.jokeapi.dev/joke/Any?format=json">Random Joke</option>
   <option value="https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY">NASA Photo of the Day</option>
-  <option value="https://api.quotable.io/random">Random Quote</option>
+  <option value="https://meme-api.com/gimme">Random Meme</option>
 </select>
 
 <br><br>

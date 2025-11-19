@@ -3,37 +3,45 @@
 <script>
   async function fetchData(url){
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: { "Accept": "application/json" }
+      });
       const data = await response.json();
       console.log(data);
 
       const myDiv = document.getElementById('myDiv1');
       myDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
 
+
+      // RANDOM QUOTE (Quotable)
+      if (data.content) {
+        myDiv.innerHTML += `
+          <p style="font-size: 22px;"><b>"${data.content}"</b></p>
+          <p>— ${data.author || "Unknown"}</p>
+        `;
+      }
+
+
       // FOX API
-      if (data.image) {
+      else if (data.image) {
         myDiv.innerHTML += `<img src="${data.image}" style="max-width: 100%;">`;
       } 
+
       // DOG API
       else if (data.message && typeof data.message === "string") {
         myDiv.innerHTML += `<img src="${data.message}" style="max-width: 100%;">`;
       } 
+
       // CAT API
       else if (Array.isArray(data) && data[0]?.url) {
         myDiv.innerHTML += `<img src="${data[0].url}" style="max-width: 100%;">`;
       }
+
       // NASA APOD
       else if (data.url && data.media_type === "image") {
         myDiv.innerHTML += `<h3>${data.title}</h3>`;
         myDiv.innerHTML += `<img src="${data.url}" style="max-width: 100%;">`;
         myDiv.innerHTML += `<p>${data.explanation}</p>`;
-      }
-      // RANDOM QUOTE API
-      else if (data.content && data.author) {
-        myDiv.innerHTML += `
-          <p style="font-size: 20px;"><b>"${data.content}"</b></p>
-          <p>— ${data.author}</p>
-        `;
       }
 
     } catch (error) {

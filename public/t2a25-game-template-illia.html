@@ -1,69 +1,85 @@
+<!DOCTYPE html>
+<html>
 <h6> Version 0.0.1 </h6>
 
-<body id="myBody" style="background-repeat:repeat; background-size: 80%" background="myBackground01.jpg">
+<body id="myBody" style="background-repeat:repeat; background-size: 80%;" background="myBackground01.jpg">
 
 <h1 align=center>t2a25-game-template-fred.html</h1>
 <br><br><br><br>
 
 <script>
 
-   // global variables here
-   let myGlobalX = 0
-   let myClock
+// global variables
+let myGlobalX = 0;
+let myClock;
 
+// collision function
+function myHitOther(my1, my2) {
+   let obj1 = document.getElementById(my1);
+   let obj2 = document.getElementById(my2);
 
-   // global functions here
-function myHitOther(my1,my2){
-   left1   = parseInt(document.getElementById(my1).style.left)
-   right1  = left1 + parseInt(document.getElementById(my1).style.width)
-   top1    = parseInt(document.getElementById(my1).style.top)   
-   bottom1 = top1   + parseInt(document.getElementById(my1).style.height)
-   left2   = parseInt(document.getElementById(my2).style.left)
-   right2  = left2 + parseInt(document.getElementById(my2).style.width)
-   top2    = parseInt(document.getElementById(my2).style.top)   
-   bottom2 = top2   + parseInt(document.getElementById(my2).style.height)
-   if ((right1  >=  left2  ) &&      	   
-       (bottom1 >=  top2   ) &&
-       (left1   <=  right2 ) &&
-       (top1    <=  bottom2) ){
-       return true
+   let left1   = parseInt(obj1.style.left);
+   let right1  = left1 + parseInt(obj1.style.width);
+   let top1    = parseInt(obj1.style.top);
+   let bottom1 = top1 + parseInt(obj1.style.height);
+
+   let left2   = parseInt(obj2.style.left);
+   let right2  = left2 + parseInt(obj2.style.width);
+   let top2    = parseInt(obj2.style.top);
+   let bottom2 = top2 + parseInt(obj2.style.height);
+
+   if (right1 >= left2 &&
+       bottom1 >= top2 &&
+       left1 <= right2 &&
+       top1 <= bottom2) {
+       return true;
    }
+   return false;
 }
 
 
+// check all collisions
 function myCheckHit(){
-   if ( myHitOther('myImg01','myImg02') ){
-       alert('you lose')  
-       document.getElementById('myImg01').style.left = '20px'
-       location = 't2a13-keydown.html'  // go to your next level
+   if (myHitOther('myImg01','myImg02')) {
+       alert('you lose');
+       document.getElementById('myImg01').style.left = '20px';
+       location = 't2a13-keydown.html';
    }
 
-
-   // more if statements here like the above
-
-
-
-}  // end of myCheckHit()
-
+   // add more collision checks here if needed
+}
 
 </script>
 
-<img id="myImg01" style="position:absolute; width:100px; height:80px; top:0px; left:50px;"  src="myImage01.jpg">
-<img id="myImg02" style="position:absolute; width:100px; height:80px; top:0px; left:250px;" src="myImage02.jpg">
+<!-- Player Image -->
+<img id="myImg01" 
+     style="position:absolute; width:100px; height:80px; top:0px; left:50px;"  
+     src="myImage01.jpg">
 
-<input type=button value="Auto Background Left" onclick="{
-  clearInterval(myClock)
-  let myTemp = '100px 0px'
+<!-- Enemy Image -->
+<img id="myImg02" 
+     style="position:absolute; width:100px; height:80px; top:0px; left:250px;" 
+     src="myImage02.jpg">
+
+<!-- Auto Background Move Left -->
+<input type="button" value="Auto Background Left" onclick="{
+  clearInterval(myClock);
   myClock = setInterval(function(){
-      myGlobalX -= 5
-      myTemp =  myGlobalX + 'px 0px'
-      document.getElementById('myBody').style.backgroundPosition = myTemp
-  }, 100)
-    
+      myGlobalX -= 5;
+      document.getElementById('myBody').style.backgroundPosition = myGlobalX + 'px 0px';
+  }, 100);
 }">
 
+<!-- Move Player Right -->
+<input type="button" 
+       value="Image Right Fast Button" 
+       onTouchStart='{this.click(); event.preventDefault();}'
+       onclick="{
+          let obj = document.getElementById('myImg01');
+          obj.style.left = (parseInt(obj.style.left) + 10) + 'px';
+          myCheckHit();
+}">
 
-<input type=button value="Image Right Fast Button" onTouchStart="{this.click(); event.preventDefault();}" onclick="{
-  document.getElementById('myImg01').style.left = parseInt(document.getElementById('myImg01').style.left) + 10 + 'px'
-  myCheckHit()     // checks for all collisions
-}"><br><br>
+</body>
+</html>
+

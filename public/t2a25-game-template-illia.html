@@ -2,77 +2,83 @@
 <html>
 <h6> Version 0.0.1 </h6>
 
-<body id="myBody" style="background-repeat:repeat; background-size: 80%;" background="myBackground01.jpg">
+<body id="myBody" style="background-repeat:repeat; background-size:80%;" background="myBackground01.jpg">
 
-<h1 align=center>t2a25-game-template-fred.html</h1>
+<h1 align="center">t2a25-game-template-fred.html</h1>
 <br><br><br><br>
 
 <script>
-
-// global variables
+// ===== GLOBALS =====
 let myGlobalX = 0;
 let myClock;
 
-// collision function
-function myHitOther(my1, my2) {
-   let obj1 = document.getElementById(my1);
-   let obj2 = document.getElementById(my2);
 
-   let left1   = parseInt(obj1.style.left);
-   let right1  = left1 + parseInt(obj1.style.width);
-   let top1    = parseInt(obj1.style.top);
-   let bottom1 = top1 + parseInt(obj1.style.height);
+// ===== COLLISION FUNCTION =====
+function myHitOther(id1, id2) {
 
-   let left2   = parseInt(obj2.style.left);
-   let right2  = left2 + parseInt(obj2.style.width);
-   let top2    = parseInt(obj2.style.top);
-   let bottom2 = top2 + parseInt(obj2.style.height);
+    const A = document.getElementById(id1).style;
+    const B = document.getElementById(id2).style;
 
-   if (right1 >= left2 &&
-       bottom1 >= top2 &&
-       left1 <= right2 &&
-       top1 <= bottom2) {
-       return true;
-   }
-   return false;
+    const left1   = parseInt(A.left);
+    const right1  = left1 + parseInt(A.width);
+    const top1    = parseInt(A.top);
+    const bottom1 = top1 + parseInt(A.height);
+
+    const left2   = parseInt(B.left);
+    const right2  = left2 + parseInt(B.width);
+    const top2    = parseInt(B.top);
+    const bottom2 = top2 + parseInt(B.height);
+
+    return (
+        right1 >= left2 &&
+        bottom1 >= top2 &&
+        left1 <= right2 &&
+        top1 <= bottom2
+    );
 }
 
 
-// check all collisions
-function myCheckHit(){
-   if (myHitOther('myImg01','myImg02')) {
-       alert('you lose');
-       document.getElementById('myImg01').style.left = '20px';
-       location = 't2a13-keydown.html';
-   }
+// ===== CHECK FOR COLLISIONS =====
+function myCheckHit() {
 
-   // add more collision checks here if needed
+    if (myHitOther("myImg01", "myImg02")) {
+
+        alert("YOU LOSE!");
+
+        // reset player position
+        document.getElementById("myImg01").style.left = "20px";
+
+        // go to next level
+        location = "t2a13-keydown.html";
+    }
 }
-
 </script>
 
-<!-- Player Image -->
-<img id="myImg01" 
-     style="position:absolute; width:100px; height:80px; top:0px; left:50px;"  
+
+<!-- PLAYER -->
+<img id="myImg01"
+     style="position:absolute; width:100px; height:80px; top:0px; left:50px;"
      src="myImage01.jpg">
 
-<!-- Enemy Image -->
-<img id="myImg02" 
-     style="position:absolute; width:100px; height:80px; top:0px; left:250px;" 
+<!-- OBSTACLE -->
+<img id="myImg02"
+     style="position:absolute; width:100px; height:80px; top:0px; left:250px;"
      src="myImage02.jpg">
 
-<!-- Auto Background Move Left -->
+
+<!-- MOVE BACKGROUND -->
 <input type="button" value="Auto Background Left" onclick="{
-  clearInterval(myClock);
-  myClock = setInterval(function(){
-      myGlobalX -= 5;
-      document.getElementById('myBody').style.backgroundPosition = myGlobalX + 'px 0px';
-  }, 100);
+    clearInterval(myClock);
+    myClock = setInterval(function() {
+        myGlobalX -= 5;
+        document.getElementById('myBody').style.backgroundPosition = myGlobalX + 'px 0px';
+    }, 100);
 }">
 
-<!-- Move Player Right -->
-<input type="button" 
-       value="Image Right Fast Button" 
+
+<!-- MOVE PLAYER -->
+<input type="button"
+       value="Image Right Fast Button"
        onTouchStart='{this.click(); event.preventDefault();}'
        onclick="{
           let obj = document.getElementById('myImg01');
@@ -82,4 +88,3 @@ function myCheckHit(){
 
 </body>
 </html>
-

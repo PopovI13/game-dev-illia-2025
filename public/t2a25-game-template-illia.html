@@ -41,12 +41,12 @@ function myHitOther(id1, id2) {
 // ===== CHECK FOR COLLISIONS =====
 function myCheckHit() {
 
-    if (myHitOther("myImg01", "myImg02")) {
+    if (myHitOther("myImage01", "myImage02")) {
 
         alert("YOU LOSE!");
 
         // reset player position
-        document.getElementById("myImg01").style.left = "20px";
+        document.getElementById("myImage01").style.left = "20px";
 
         // go to next level
         location = "t2a13-keydown.html";
@@ -56,12 +56,12 @@ function myCheckHit() {
 
 
 <!-- PLAYER -->
-<img id="myImg01"
+<img id="myImage01"
      style="position:absolute; width:100px; height:80px; top:0px; left:50px;"
      src="myImage01.jpg">
 
 <!-- OBSTACLE -->
-<img id="myImg02"
+<img id="myImage02"
      style="position:absolute; width:100px; height:80px; top:0px; left:250px;"
      src="myImage02.jpg">
 
@@ -81,7 +81,7 @@ function myCheckHit() {
        value="Image Right Fast Button"
        onTouchStart='{this.click(); event.preventDefault();}'
        onclick="{
-          let obj = document.getElementById('myImg01');
+          let obj = document.getElementById('myImage01');
           obj.style.left = (parseInt(obj.style.left) + 10) + 'px';
           myCheckHit();
 }">

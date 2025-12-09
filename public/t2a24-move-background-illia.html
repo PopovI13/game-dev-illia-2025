@@ -1,30 +1,53 @@
-
 <body id="myBody" style="background-repeat:repeat; background-size: 80%" background="myBackground01.jpg">
 <h1 align=center>t2a24-move-background-fred.html</h1>
-  
+
 <script>
    let myGlobalX = 0
-   let myClock
+   let myClock     // background movement clock
+   let myImgClock  // image movement clock
 </script>
 
-<input id="myButton01" type=button value="background move left" onclick="{
-  myTemp = '100px 0px'
+<!-- MOVE BACKGROUND LEFT -->
+<input id="myButton01" type=button value="Background Move Left" onclick="{
   myGlobalX -= 5
-  myTemp =  myGlobalX + 'px 0px'
-  document.getElementById('myBody').style.backgroundPosition =myTemp
-
+  document.getElementById('myBody').style.backgroundPosition = myGlobalX + 'px 0px'
 }">
 
+<!-- AUTO MOVE BACKGROUND -->
 <input type=button value="Auto Background Left" onclick="{
   clearInterval(myClock)
   myClock = setInterval(function(){
-     document.getElementById('myButton01').click() 
+     document.getElementById('myButton01').click()
   }, 100)
-    
 }">
 
+<!-- NEW: STOP AUTO BACKGROUND MOVE -->
+<input type=button value="Stop Background Auto Move" onclick="{
+  clearInterval(myClock)
+}">
+
+<br><br>
+
+<!-- MOVE IMAGE RIGHT -->
 <input type=button value="Image Right" onclick="{
-  document.getElementById('myImage01').style.left = parseInt(document.getElementById('myImage01').style.left) + 10 + 'px'
-}"><br><br>
+  let img = document.getElementById('myImage01')
+  img.style.left = parseInt(img.style.left) + 10 + 'px'
+}">
+
+<!-- NEW: AUTO MOVE IMAGE RIGHT -->
+<input type=button value="Auto Image Right" onclick="{
+  clearInterval(myImgClock)
+  myImgClock = setInterval(function(){
+     let img = document.getElementById('myImage01')
+     img.style.left = parseInt(img.style.left) + 10 + 'px'
+  }, 100)
+}">
+
+<!-- OPTIONAL: STOP IMAGE AUTO MOVE -->
+<input type=button value="Stop Image Auto Move" onclick="{
+  clearInterval(myImgClock)
+}">
+
+<br><br>
 
 <img id="myImage01" style="position:relative; width:100px; height:80px; top:0px; left:0px;" src="myImage01.jpg">

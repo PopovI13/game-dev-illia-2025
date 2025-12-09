@@ -1,0 +1,49 @@
+<h1 align=center>t2a28-spy-fred.html</h1>
+
+<textarea id="myArea01" rows=4 cols=70>Hello how are you</textarea><br><br> 
+
+<!-- ENCRYPT BUTTON -->
+<input type=button value="Encrypt" onclick="{
+   let text = document.getElementById('myArea01').value.toLowerCase();
+   let result = '';
+
+   for (let i = 0; i < text.length; i++) {
+       let ch = text[i];
+
+       if (ch >= 'a' && ch <= 'z') {
+           let code = ch.charCodeAt(0) - 97; // get 0–25
+           code = (code + 1) % 26;           // shift +1
+           result += String.fromCharCode(code + 97);
+       } else {
+           result += ch; // keep spaces, punctuation
+       }
+   }
+
+   document.getElementById('myArea02').value = result;
+}">
+<br><br>
+
+<textarea id="myArea02" rows=4 cols=70></textarea><br><br>
+
+<!-- DECRYPT BUTTON -->
+<input type=button value="Decrypt" onclick="{
+   let text = document.getElementById('myArea02').value.toLowerCase();
+   let result = '';
+
+   for (let i = 0; i < text.length; i++) {
+       let ch = text[i];
+
+       if (ch >= 'a' && ch <= 'z') {
+           let code = ch.charCodeAt(0) - 97; // get 0–25
+           code = (code - 1 + 26) % 26;      // shift -1
+           result += String.fromCharCode(code + 97);
+       } else {
+           result += ch; // keep spaces
+       }
+   }
+
+   document.getElementById('myArea03').value = result;
+}">
+<br><br>
+
+<textarea id="myArea03" rows=4 cols=70></textarea><br><br>

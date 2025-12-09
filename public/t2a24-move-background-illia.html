@@ -3,8 +3,8 @@
 
 <script>
    let myGlobalX = 0
-   let myClock     // background movement clock
-   let myImgClock  // image movement clock
+   let myClock        // background auto movement
+   let myImgClock     // image auto movement
 </script>
 
 <!-- MOVE BACKGROUND LEFT -->
@@ -13,7 +13,7 @@
   document.getElementById('myBody').style.backgroundPosition = myGlobalX + 'px 0px'
 }">
 
-<!-- AUTO MOVE BACKGROUND -->
+<!-- AUTO BACKGROUND LEFT -->
 <input type=button value="Auto Background Left" onclick="{
   clearInterval(myClock)
   myClock = setInterval(function(){
@@ -21,20 +21,20 @@
   }, 100)
 }">
 
-<!-- NEW: STOP AUTO BACKGROUND MOVE -->
+<!-- STOP AUTO BACKGROUND -->
 <input type=button value="Stop Background Auto Move" onclick="{
   clearInterval(myClock)
 }">
 
 <br><br>
 
-<!-- MOVE IMAGE RIGHT -->
+<!-- MANUAL IMAGE RIGHT -->
 <input type=button value="Image Right" onclick="{
   let img = document.getElementById('myImage01')
   img.style.left = parseInt(img.style.left) + 10 + 'px'
 }">
 
-<!-- NEW: AUTO MOVE IMAGE RIGHT -->
+<!-- AUTO IMAGE RIGHT -->
 <input type=button value="Auto Image Right" onclick="{
   clearInterval(myImgClock)
   myImgClock = setInterval(function(){
@@ -43,11 +43,27 @@
   }, 100)
 }">
 
-<!-- OPTIONAL: STOP IMAGE AUTO MOVE -->
+<!-- STOP AUTO IMAGE -->
 <input type=button value="Stop Image Auto Move" onclick="{
   clearInterval(myImgClock)
 }">
 
+<br><br>
+
+<!-- NEW: MANUAL IMAGE LEFT -->
+<input type=button value="Image Left" onclick="{
+  let img = document.getElementById('myImage01')
+  img.style.left = parseInt(img.style.left) - 10 + 'px'
+}">
+
+<!-- NEW: AUTO IMAGE LEFT -->
+<input type=button value="Auto Image Left" onclick="{
+  clearInterval(myImgClock)
+  myImgClock = setInterval(function(){
+     let img = document.getElementById('myImage01')
+     img.style.left = parseInt(img.style.left) - 10 + 'px'
+  }, 100)
+}">
 <br><br>
 
 <img id="myImage01" style="position:relative; width:100px; height:80px; top:0px; left:0px;" src="myImage01.jpg">

@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Neon Ride: Cyber Highway</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b0c15;
+            font-family: 'Courier New', Courier, monospace;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none; /* Critical for mobile game feel */
+        }
+
+        #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 6; /* Fixed: Increased to 6 to sit above touch-controls (z-index 5) */
+        }
+
+        .hud-top {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            color: #fff;
+            text-shadow: 0 0 10px #00ffff;
+            font-size: 24px;
+            font-weight: bold;
+            pointer-events: auto; /* Allow clicking pause btn */
+        }
+
+        .score-box span { color: #ff00ff; }
+        .speed-box span { color: #00ffff; }
+
+        /* Power-up Status Area */
+        #powerup-status {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .status-item {
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            text-shadow: 0 0 5px black;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .status-item.active { opacity: 1; }
+
+        #login-screen, #start-screen, #game-over-screen, #shop-screen, #garage-screen, #pause-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+        }
+
+        /* Ensure login screen is on top initially */
+        #login-screen { z-index: 20; }
+        #pause-screen { z-index: 15; }
+
+        /* Shared Screen Content Styles */
+        #shop-content, #garage-content {
+            background: #1a1a2e;
+            padding: 25px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            max-width: 90%;
+            width: 500px;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar styling for lists */
+        #shop-content::-webkit-scrollbar, #garage-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        #shop-content::-webkit-scrollbar-track, #garage-content::-webkit-scrollbar-track {
+            background: #0b0c15; 
+        }
+        #shop-content::-webkit-scrollbar-thumb, #garage-content::-webkit-scrollbar-thumb {
+            background: #ff00ff; 
+            border-radius: 4px;
+        }
+
+        /* List Items */
+        .upgrade-item, .skin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            border-bottom: 1px dashed rgba(255, 0, 255, 0.5);
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+
+        .upgrade-item:last-child, .skin-item:last-child {
+            border-bottom: none;
+        }
+
+        .upgrade-info, .skin-info {
+            color: #fff;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upgrade-name, .skin-name {
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 4px;
+        }
+
+        .upgrade-level, .skin-cost {
+            font-size: 12px;
+            color: #ff00ff;
+        }
+
+        .upgrade-cost {
+            color: #ffdd00;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        /* Buttons */
+        .buy-btn {
+            background: #ff00ff;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+            transition: all 0.2s;
+            font-family: inherit;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: #ff44ff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+
+        .buy-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .equipped-label {
+            color: #00ff00;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        h1 {
+            font-size: clamp(40px, 8vw, 70px);
+            color: #ff00ff;
+            text-shadow: 4px 4px 0px #00ffff;
+            margin: 0 0 20px 0;
+            text-align: center;
+            text-transform: uppercase;
+            font-style: italic;
+            letter-spacing: 5px;
+        }
+
+        p {
+            color: #fff;
+            font-size: 18px;
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: none;
+            padding: 15px 40px;
+            font-size: 20px;
+            color: #fff;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+            transition: transform 0.1s;
+            pointer-events: auto;
+            margin: 10px;
+            min-width: 200px;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .controls-hint {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #aaa;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Inputs for Login */
+        #username-input {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #00ffff;
+            padding: 15px;
+            font-size: 24px;
+            color: #fff;
+            font-family: inherit;
+            text-align: center;
+            text-transform: uppercase;
+            outline: none;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+
+        /* Pause Button */
+        #pause-btn {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+        #pause-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* Mobile controls overlay */
+        #touch-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            pointer-events: auto;
+            z-index: 5;
+        }
+        .touch-zone {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container"></div>
+
+    <div id="ui-layer">
+        <div class="hud-top">
+            <div class="score-box">CREDITS: <span id="score-display">0</span></div>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <div class="speed-box">SPD: <span id="speed-display">0</span> KM/H</div>
+                <button id="pause-btn">II</button>
+            </div>
+        </div>
+        <div id="powerup-status">
+            <div id="shield-status" class="status-item" style="color: #0088ff">🔵 SHIELD ACTIVE</div>
+            <div id="magnet-status" class="status-item" style="color: #ffdd00">🟡 MAGNET: <span id="magnet-time">0</span>s</div>
+            <div id="turbo-status" class="status-item" style="color: #ff3300">🔥 TURBO: <span id="turbo-time">0</span>s</div>
+            <div id="ghost-status" class="status-item" style="color: #cc00ff">🌀 GHOST: <span id="ghost-time">0</span>s</div>
+        </div>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen">
+        <h1>NEON ID</h1>
+        <p>IDENTIFY YOURSELF PILOT</p>
+        <input type="text" id="username-input" placeholder="ENTER NAME" maxlength="12">
+        <button class="btn" id="login-btn">CONNECT</button>
+    </div>
+
+    <!-- START SCREEN -->
+    <div id="start-screen" class="hidden">
+        <h1>Neon Drift</h1>
+        <p>Welcome, <span id="player-name-display" style="color:#00ffff">PILOT</span></p>
+        <p>Drive through the infinite cyber highway. Collect Power-ups!</p>
+        <button class="btn" id="start-btn">IGNITE ENGINE</button>
+        <button class="btn" id="main-garage-btn" style="background: #333; border: 1px solid #00ffff; font-size: 16px;">GARAGE</button>
+        <button class="btn" id="logout-btn" style="background: #333; border: 1px solid #ff0055; font-size: 14px; padding: 10px 20px;">LOGOUT</button>
+        <div class="controls-hint">Desktop: Arrow Keys / A-D<br>Mobile: Tap Left/Right side</div>
+    </div>
+
+    <!-- PAUSE SCREEN -->
+    <div id="pause-screen" class="hidden">
+        <h1>PAUSED</h1>
+        <button class="btn" id="resume-btn">RESUME</button>
+        <button class="btn" id="quit-btn" style="background: #333;">QUIT RUN</button>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+        <h1>CRASHED</h1>
+        <p>System Failure. Run Terminated.</p>
+        <p style="font-size: 24px; color: #00ffff;">SCORE EARNED: <span id="final-score">0</span></p>
+        <p style="font-size: 18px; color: #fff;">HIGH SCORE: <span id="high-score-display">0</span></p>
+        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn" id="shop-btn">UPGRADES</button>
+                <button class="btn" id="garage-btn">GARAGE</button>
+            </div>
+            <button class="btn" id="restart-btn" style="background: linear-gradient(45deg, #00ffff, #ff00ff);">REBOOT SYSTEM</button>
+        </div>
+    </div>
+
+    <!-- UPGRADE SHOP -->
+    <div id="shop-screen" class="hidden">
+        <h1>SYSTEM UPGRADES</h1>
+        <div id="shop-content">
+            <div id="upgrades-list">
+                <!-- Upgrades generated via JS -->
+            </div>
+            <p style="text-align: right; margin-top: 20px; border-top: 1px solid #ff00ff; padding-top: 10px;">
+                <span style="color: #ffdd00;">CREDITS: <span id="shop-score-display">0</span></span>
+            </p>
+            <button class="btn" id="shop-close-btn" style="width: 100%; margin-top: 20px;">BACK</button>
+        </div>
+    </div>
+
+    <!-- GARAGE SCREEN -->
+    <div id="garage-screen" class="hidden">
+        <h1>CAR GARAGE</h1>
+        <div id="garage-content">
+            <div id="skins-list">
+                 <!-- Skins generated via JS -->
+            </div>
+
+            <p style="text-align:right; margin-top:20px; border-top:1px solid #ff00ff; padding-top:10px;">
+                <span style="color:#ffdd00;">CREDITS: <span id="garage-credits">0</span></span>
+            </p>
+
+            <button class="btn" id="garage-close-btn" style="width:100%; margin-top:20px;">
+                BACK
+            </button>
+        </div>
+    </div>
+
+    <!-- Invisible touch layer -->
+    <div id="touch-controls">
+        <div class="touch-zone" id="touch-left"></div>
+        <div class="touch-zone" id="touch-right"></div>
+    </div>
+
+    <!-- Three.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // --- GAME CONFIGURATION ---
+        const CONFIG = {
+            laneWidth: 4,
+            laneCount: 3, 
+            cameraHeight: 7,
+            cameraDistance: 12,
+            baseSpeed: 0.5,
+            maxSpeed: 1.8,
+            acceleration: 0.0005,
+            turnSpeed: 0.15,
+            fogDensity: 0.02,
+            distanceCreditRate: 0.1, // Credits per distance unit
+            colors: {
+                sky: 0x0b0c15,
+                grid: 0xff00ff,
+                ground: 0x1a1a2e,
+                carBody: 0xff0055,
+                carCabin: 0x111111,
+                obstacle: 0x00ffff,
+                coin: 0xffdd00,
+                shield: 0x0088ff,
+                magnet: 0xffdd00,
+                turbo: 0xff3300,
+                ghost: 0xcc00ff
+            },
+            UPGRADES: {
+                engine: { cost: 5000, value: 0.2, maxLevel: 5, name: "Engine Boost (Max Speed)" },
+                handling: { cost: 3000, value: 0.05, maxLevel: 5, name: "Handling (Turn Speed)" },
+                multiplier: { cost: 8000, value: 1, maxLevel: 5, name: "Credit Multiplier" },
+                grip: { cost: 6000, value: 0.15, maxLevel: 5, name: "Lane Grip (High Speed Stability)" }
+            }
+        };
+
+        const SKINS = {
+            default:   { name:"Cyber Pink",   color:0xff0055, cost:0 },
+            aqua:      { name:"Aqua Cyan",    color:0x00ffff, cost:2500 },
+            purple:    { name:"Neon Purple",  color:0xaa00ff, cost:5000 },
+            lime:      { name:"Lime Green",   color:0x22ff22, cost:7500 },
+            midnight:  { name:"Midnight Blue",color:0x0033ff, cost:10000 },
+            inferno:   { name:"Inferno Red",  color:0xff2200, cost:15000 },
+            ice:       { name:"Ice White",    color:0xffffff, cost:20000 },
+            gold:      { name:"Solar Gold",   color:0xffdd00, cost:50000 },
+            ultra:     { name:"Ultraviolet",  color:0xdd00ff, cost:75000 }
+        };
+
+        const POWERUPS = {
+            SHIELD: 'shield',
+            MAGNET: 'magnet',
+            TURBO: 'turbo',
+            GHOST: 'ghost'
+        };
+
+        // --- GLOBAL VARIABLES ---
+        let scene, camera, renderer, animationId;
+        let car, carMeshGroup, shieldMesh, rollingGround, sun;
+        let obstacles = [];
+        let coins = [];
+        let powerupItems = []; // Floating items to collect
+        
+        let score = 0; // Run score (Distance)
+        let credits = 0; // Persistent currency
+        let highScore = 0; 
+        let gameSpeed = CONFIG.baseSpeed;
+        let isGameRunning = false; 
+        let isPaused = false;
+        let currentUser = null;
+
+        // Persistent Data
+        let ownedSkins = ["default"];
+        let activeSkin = "default";
+        let upgradeLevels = { engine: 0, handling: 0, multiplier: 0, grip: 0 };
+        
+        // Calculated Stats
+        let currentMaxSpeed = CONFIG.maxSpeed;
+        let currentTurnSpeed = CONFIG.turnSpeed;
+        let currentCoinMultiplier = 1;
+        
+        // Powerup State
+        let activePowerups = {
+            shield: false,
+            magnet: 0, // timer
+            turbo: 0, // timer
+            ghost: 0 // timer
+        };
+
+        // Runtime helpers
+        let pendingDistanceCredits = 0;
+        let input = { left: false, right: false };
+
+        // DOM Elements
+        const scoreEl = document.getElementById('score-display');
+        const speedEl = document.getElementById('speed-display');
+        const finalScoreEl = document.getElementById('final-score');
+        const highScoreEl = document.getElementById('high-score-display');
+        const shopScoreEl = document.getElementById('shop-score-display');
+        const garageCreditsEl = document.getElementById('garage-credits');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        
+        const loginScreen = document.getElementById('login-screen');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const shopScreen = document.getElementById('shop-screen');
+        const garageScreen = document.getElementById('garage-screen');
+        const pauseScreen = document.getElementById('pause-screen');
+        
+        const upgradesListEl = document.getElementById('upgrades-list');
+        const skinsListEl = document.getElementById('skins-list');
+        const container = document.getElementById('game-container');
+        const usernameInput = document.getElementById('username-input');
+
+        // Powerup UI
+        const shieldStatus = document.getElementById('shield-status');
+        const magnetStatus = document.getElementById('magnet-status');
+        const turboStatus = document.getElementById('turbo-status');
+        const ghostStatus = document.getElementById('ghost-status');
+
+        // --- PERSISTENCE (MULTI-USER) ---
+        function getStorageKey(key) {
+            return `neonDrift_${currentUser}_${key}`;
+        }
+
+        function saveGameData() {
+            if(!currentUser) return;
+            function saveGameData() {
+    if(!currentUser) return;
+
+    db.collection("users").doc(currentUser).set({
+        highScore: highScore,
+        credits: credits,
+        upgrades: upgradeLevels,
+        skins: ownedSkins,
+        activeSkin: activeSkin
+    }, { merge: true });
+}
+
+            localStorage.setItem(getStorageKey('upgrades'), JSON.stringify(upgradeLevels));
+            localStorage.setItem(getStorageKey('skins'), JSON.stringify(ownedSkins));
+            localStorage.setItem(getStorageKey('activeSkin'), activeSkin);
+        }
+
+        function loadGameData() {
+            if(!currentUser) return;
+            highScore = parseInt(localStorage.getItem(getStorageKey('highScore'))) || 0;
+            credits = parseInt(localStorage.getItem(getStorageKey('credits'))) || 0;
+            
+            const savedUpgrades = localStorage.getItem(getStorageKey('upgrades'));
+            // Defaults including new grip upgrade if not found in old save
+            if (savedUpgrades) {
+                const parsed = JSON.parse(savedUpgrades);
+                upgradeLevels = { engine: 0, handling: 0, multiplier: 0, grip: 0, ...parsed };
+            } else {
+                upgradeLevels = { engine: 0, handling: 0, multiplier: 0, grip: 0 };
+            }
+
+            const savedSkins = localStorage.getItem(getStorageKey('skins'));
+            if (savedSkins) ownedSkins = JSON.parse(savedSkins);
+            else ownedSkins = ["default"];
+
+            const savedActiveSkin = localStorage.getItem(getStorageKey('activeSkin'));
+            if (savedActiveSkin) activeSkin = savedActiveSkin;
+            else activeSkin = "default";
+
+            scoreEl.innerText = Math.floor(credits);
+            highScoreEl.innerText = highScore;
+            
+            applyUpgrades();
+            applyCarSkin();
+        }
+
+        function handleLogin() {
+            const name = usernameInput.value.trim();
+            if (name.length > 0) {
+                currentUser = name;
+                playerNameDisplay.innerText = currentUser.toUpperCase();
+                loadGameData();
+                loginScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+            }
+        }
+
+        function handleLogout() {
+            let currentUser = null;
+
+// After auth.signInAnonymously()
+auth.signInAnonymously().then(user => {
+    currentUser = user.user.uid;
+    console.log("Logged in with ID:", currentUser);
+    loadGameData(); // load the saved data from Firestore
+});
+
+            saveGameData(); // Just in case
+            usernameInput.value = '';
+            showScreen('login-screen');
+        }
+
+        // --- UPGRADE LOGIC ---
+        function applyUpgrades() {
+            currentMaxSpeed = CONFIG.maxSpeed + (upgradeLevels.engine * CONFIG.UPGRADES.engine.value);
+            currentTurnSpeed = CONFIG.turnSpeed + (upgradeLevels.handling * CONFIG.UPGRADES.handling.value);
+            currentCoinMultiplier = 1 + (upgradeLevels.multiplier * CONFIG.UPGRADES.multiplier.value);
+        }
+        
+        function buyUpgrade(type) {
+            const up = CONFIG.UPGRADES[type];
+            const currentLevel = upgradeLevels[type];
+            if (currentLevel >= up.maxLevel) return false;
+            const cost = Math.floor(up.cost * Math.pow(1.5, currentLevel)); 
+            if (credits >= cost) {
+                credits -= cost;
+                upgradeLevels[type]++;
+                applyUpgrades();
+                saveGameData();
+                updateShopDisplay();
+                scoreEl.innerText = Math.floor(credits);
+                return true;
+            }
+            return false;
+        }
+
+        function updateShopDisplay() {
+            shopScoreEl.innerText = Math.floor(credits);
+            upgradesListEl.innerHTML = '';
+            Object.keys(CONFIG.UPGRADES).forEach(type => {
+                const up = CONFIG.UPGRADES[type];
+                const currentLevel = upgradeLevels[type];
+                const isMaxed = currentLevel >= up.maxLevel;
+                const cost = Math.floor(up.cost * Math.pow(1.5, currentLevel));
+                const levelDisplay = isMaxed ? 'MAX' : `LVL ${currentLevel}`;
+                const costDisplay = isMaxed ? 'DONE' : `${cost} CR`;
+                const canBuy = credits >= cost && !isMaxed;
+
+                const html = `
+                    <div class="upgrade-item">
+                        <div class="upgrade-info">
+                            <span class="upgrade-name">${up.name}</span>
+                            <span class="upgrade-level">${levelDisplay} / ${up.maxLevel}</span>
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <span class="upgrade-cost">${costDisplay}</span>
+                            <button class="buy-btn" onclick="buyUpgrade('${type}')" ${!canBuy ? 'disabled' : ''}>${isMaxed?'MAX':'BUY'}</button>
+                        </div>
+                    </div>`;
+                upgradesListEl.innerHTML += html;
+            });
+        }
+
+        // --- GARAGE LOGIC ---
+        function updateGarageDisplay() {
+            garageCreditsEl.textContent = Math.floor(credits);
+            skinsListEl.innerHTML = "";
+            Object.keys(SKINS).forEach(key => {
+                const skin = SKINS[key];
+                const owned = ownedSkins.includes(key);
+                const equipped = key === activeSkin;
+                const item = document.createElement("div");
+                item.className = "skin-item";
+                
+                let rightContent = '';
+                if (equipped) rightContent = `<span class="equipped-label">EQUIPPED</span>`;
+                else if (owned) rightContent = `<button class="buy-btn" onclick="equipSkin('${key}')">EQUIP</button>`;
+                else {
+                    const canBuy = credits >= skin.cost;
+                    rightContent = `
+                        <span class="upgrade-cost">${skin.cost} CR</span>
+                        <button class="buy-btn" onclick="buySkin('${key}')" ${!canBuy ? 'disabled' : ''}>BUY</button>
+                    `;
+                }
+
+                item.innerHTML = `
+                    <div class="skin-info">
+                        <span class="skin-name" style="color: #${skin.color.toString(16).padStart(6,'0')}">${skin.name}</span>
+                    </div>
+                    <div style="display: flex; align-items: center;">${rightContent}</div>
+                `;
+                skinsListEl.appendChild(item);
+            });
+        }
+
+        function buySkin(key) {
+            const skin = SKINS[key];
+            if (credits >= skin.cost && !ownedSkins.includes(key)) {
+                credits -= skin.cost;
+                ownedSkins.push(key);
+                activeSkin = key;
+                applyCarSkin();
+                saveGameData();
+                updateGarageDisplay();
+                scoreEl.innerText = Math.floor(credits);
+            }
+        }
+
+        function equipSkin(key) {
+            if (ownedSkins.includes(key)) {
+                activeSkin = key;
+                applyCarSkin();
+                saveGameData();
+                updateGarageDisplay();
+            }
+        }
+
+        function applyCarSkin() {
+            if (!carMeshGroup) return;
+            const skinData = SKINS[activeSkin];
+            carMeshGroup.traverse((child) => {
+                if (child.isMesh && child.userData.isBody) {
+                    child.material.color.setHex(skinData.color);
+                    child.material.emissive.setHex(skinData.color);
+                    child.material.emissive.multiplyScalar(0.2); 
+                }
+            });
+        }
+
+        // --- POWER-UP LOGIC ---
+        
+        function activatePowerup(type) {
+            switch(type) {
+                case POWERUPS.SHIELD:
+                    activePowerups.shield = true;
+                    if(shieldMesh) shieldMesh.visible = true;
+                    shieldStatus.classList.add('active');
+                    break;
+                case POWERUPS.MAGNET:
+                    activePowerups.magnet = 10.0; // 10 seconds
+                    break;
+                case POWERUPS.TURBO:
+                    activePowerups.turbo = 5.0; // 5 seconds
+                    break;
+                case POWERUPS.GHOST:
+                    activePowerups.ghost = 6.0; // 6 seconds
+                    break;
+            }
+        }
+
+        function updatePowerups(delta) {
+            // Magnet
+            if (activePowerups.magnet > 0) {
+                activePowerups.magnet -= delta;
+                magnetStatus.classList.add('active');
+                document.getElementById('magnet-time').innerText = Math.ceil(activePowerups.magnet);
+                if (activePowerups.magnet <= 0) magnetStatus.classList.remove('active');
+            }
+
+            // Turbo
+            if (activePowerups.turbo > 0) {
+                activePowerups.turbo -= delta;
+                turboStatus.classList.add('active');
+                document.getElementById('turbo-time').innerText = Math.ceil(activePowerups.turbo);
+                // Apply speed boost effect in game loop logic
+                if (activePowerups.turbo <= 0) turboStatus.classList.remove('active');
+            }
+
+            // Ghost
+            if (activePowerups.ghost > 0) {
+                activePowerups.ghost -= delta;
+                ghostStatus.classList.add('active');
+                document.getElementById('ghost-time').innerText = Math.ceil(activePowerups.ghost);
+                
+                // Visual effect: transparent car
+                carMeshGroup.traverse(c => {
+                    if (c.isMesh) {
+                        c.material.transparent = true;
+                        c.material.opacity = 0.4;
+                    }
+                });
+
+                if (activePowerups.ghost <= 0) {
+                    ghostStatus.classList.remove('active');
+                    // Reset opacity
+                    carMeshGroup.traverse(c => {
+                        if (c.isMesh) {
+                            c.material.transparent = false;
+                            c.material.opacity = 1.0;
+                        }
+                    });
+                }
+            }
+        }
+
+        // --- INIT ---
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(CONFIG.colors.sky);
+            scene.fog = new THREE.FogExp2(CONFIG.colors.sky, CONFIG.fogDensity);
+
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, CONFIG.cameraHeight, CONFIG.cameraDistance);
+            camera.lookAt(0, 0, -20);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(10, 20, 0);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            scene.add(dirLight);
+
+            createEnvironment();
+            createCar();
+            createSun();
+
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            
+            setupTouch();
+            setupButtons();
+            
+            // Wait for user login
+        }
+
+        function createSun() {
+            const geometry = new THREE.CircleGeometry(40, 32);
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    color1: { value: new THREE.Color(0xff00ff) },
+                    color2: { value: new THREE.Color(0xffff00) }
+                },
+                vertexShader: `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 color1;
+                    uniform vec3 color2;
+                    varying vec2 vUv;
+                    void main() {
+                        float stripe = step(0.1, mod(vUv.y * 10.0, 1.0));
+                        vec3 color = mix(color1, color2, vUv.y);
+                        if (vUv.y < 0.5 && stripe < 0.5) discard;
+                        gl_FragColor = vec4(color, 1.0);
+                    }
+                `,
+                transparent: true
+            });
+            sun = new THREE.Mesh(geometry, material);
+            sun.position.z = -200;
+            sun.position.y = 20;
+            scene.add(sun);
+        }
+
+        function createEnvironment() {
+            const planeGeometry = new THREE.PlaneGeometry(300, 300, 30, 30);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: CONFIG.colors.grid, 
+                wireframe: true,
+                transparent: true,
+                opacity: 0.2
+            });
+
+            rollingGround = new THREE.Mesh(planeGeometry, material);
+            rollingGround.rotation.x = -Math.PI / 2;
+            rollingGround.position.y = -2;
+            scene.add(rollingGround);
+
+            const solidPlane = new THREE.Mesh(
+                new THREE.PlaneGeometry(500, 500),
+                new THREE.MeshBasicMaterial({ color: CONFIG.colors.ground })
+            );
+            solidPlane.rotation.x = -Math.PI / 2;
+            solidPlane.position.y = -2.1;
+            scene.add(solidPlane);
+        }
+
+        function createCar() {
+            car = new THREE.Group();
+            carMeshGroup = new THREE.Group(); // Inner group for rotating/transparency
+            car.add(carMeshGroup);
+
+            const bodyGeom = new THREE.BoxGeometry(2.2, 0.8, 4.5);
+            const bodyMat = new THREE.MeshPhongMaterial({ 
+                color: CONFIG.colors.carBody,
+                shininess: 100,
+            });
+            const body = new THREE.Mesh(bodyGeom, bodyMat);
+            body.position.y = 0.4;
+            body.castShadow = true;
+            body.userData.isBody = true; 
+            carMeshGroup.add(body);
+
+            const cabinGeom = new THREE.BoxGeometry(1.8, 0.6, 2);
+            const cabinMat = new THREE.MeshPhongMaterial({ color: CONFIG.colors.carCabin });
+            const cabin = new THREE.Mesh(cabinGeom, cabinMat);
+            cabin.position.y = 1.0;
+            cabin.position.z = -0.2;
+            carMeshGroup.add(cabin);
+
+            // Wheels
+            const wheelGeom = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
+            const wheelMat = new THREE.MeshLambertMaterial({ color: 0x000000 });
+            const wheelPositions = [
+                { x: -1.2, z: 1.5 }, { x: 1.2, z: 1.5 },
+                { x: -1.2, z: -1.5 }, { x: 1.2, z: -1.5 }
+            ];
+            wheelPositions.forEach(pos => {
+                const wheel = new THREE.Mesh(wheelGeom, wheelMat);
+                wheel.rotation.z = Math.PI / 2;
+                wheel.position.set(pos.x, 0, pos.z);
+                carMeshGroup.add(wheel);
+            });
+
+            // Lights
+            const lightGeom = new THREE.BoxGeometry(0.4, 0.2, 0.1);
+            const lightMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const l1 = new THREE.Mesh(lightGeom, lightMat);
+            l1.position.set(-0.8, 0.6, 2.25);
+            carMeshGroup.add(l1);
+            const l2 = new THREE.Mesh(lightGeom, lightMat);
+            l2.position.set(0.8, 0.6, 2.25);
+            carMeshGroup.add(l2);
+
+            // SHIELD VISUAL (Hidden by default)
+            const shieldGeom = new THREE.SphereGeometry(3, 32, 32);
+            const shieldMat = new THREE.MeshBasicMaterial({
+                color: CONFIG.colors.shield,
+                transparent: true,
+                opacity: 0.3,
+                wireframe: true
+            });
+            shieldMesh = new THREE.Mesh(shieldGeom, shieldMat);
+            shieldMesh.visible = false;
+            car.add(shieldMesh);
+
+            scene.add(car);
+        }
+
+        // --- SPAWNING OBJECTS ---
+
+        function createObstacle(zPos) {
+            const lane = Math.floor(Math.random() * 3) - 1;
+            const xPos = lane * CONFIG.laneWidth;
+
+            const group = new THREE.Group();
+            group.position.set(xPos, 1.25, zPos);
+
+            const boxSize = 2.4;
+            const coreGeom = new THREE.BoxGeometry(boxSize * 0.9, boxSize * 0.9, boxSize * 0.9);
+            const coreMat = new THREE.MeshStandardMaterial({ 
+                color: 0x001133, roughness: 0.2, metalness: 0.8,
+                transparent: true, opacity: 0.85
+            });
+            const core = new THREE.Mesh(coreGeom, coreMat);
+            group.add(core);
+
+            const edgeGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(boxSize, boxSize, boxSize));
+            const edgeMat = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 2 });
+            const edges = new THREE.LineSegments(edgeGeom, edgeMat);
+            group.add(edges);
+
+            group.userData = { type: 'obstacle', lane: lane, hit: false };
+            scene.add(group);
+            obstacles.push(group);
+        }
+
+        function createCoin(zPos) {
+            const lane = Math.floor(Math.random() * 3) - 1;
+            const xPos = lane * CONFIG.laneWidth;
+            const geom = new THREE.OctahedronGeometry(0.6, 0);
+            const mat = new THREE.MeshBasicMaterial({ color: CONFIG.colors.coin });
+            const coin = new THREE.Mesh(geom, mat);
+            coin.position.set(xPos, 1.5, zPos);
+            coin.userData = { type: 'coin', active: true, lane: lane };
+            scene.add(coin);
+            coins.push(coin);
+        }
+
+        function createPowerup(zPos) {
+            const lane = Math.floor(Math.random() * 3) - 1;
+            const xPos = lane * CONFIG.laneWidth;
+            
+            // Random powerup
+            const types = [POWERUPS.SHIELD, POWERUPS.MAGNET, POWERUPS.TURBO, POWERUPS.GHOST];
+            const type = types[Math.floor(Math.random() * types.length)];
+            
+            let geom, color;
+            if (type === POWERUPS.SHIELD) {
+                geom = new THREE.SphereGeometry(0.8, 16, 16);
+                color = CONFIG.colors.shield;
+            } else if (type === POWERUPS.MAGNET) {
+                geom = new THREE.TorusGeometry(0.6, 0.2, 8, 16);
+                color = CONFIG.colors.magnet;
+            } else if (type === POWERUPS.TURBO) {
+                geom = new THREE.ConeGeometry(0.6, 1.5, 16);
+                color = CONFIG.colors.turbo;
+            } else { // Ghost
+                geom = new THREE.IcosahedronGeometry(0.8, 0);
+                color = CONFIG.colors.ghost;
+            }
+
+            const mat = new THREE.MeshBasicMaterial({ color: color, wireframe: true });
+            const mesh = new THREE.Mesh(geom, mat);
+            mesh.position.set(xPos, 1.5, zPos);
+            mesh.userData = { type: 'powerup', powerupType: type, active: true };
+            
+            scene.add(mesh);
+            powerupItems.push(mesh);
+        }
+
+        // --- GAMEPLAY CONTROL ---
+        function startGame() {
+            showScreen(null);
+            isGameRunning = true;
+            isPaused = false;
+            gameSpeed = CONFIG.baseSpeed;
+            score = 0;
+            pendingDistanceCredits = 0;
+            scoreEl.innerText = Math.floor(credits); 
+            
+            car.position.set(0, 0, 0);
+            car.rotation.set(0, 0, 0);
+            camera.position.set(0, CONFIG.cameraHeight, CONFIG.cameraDistance);
+
+            obstacles.forEach(o => scene.remove(o)); obstacles = [];
+            coins.forEach(c => scene.remove(c)); coins = [];
+            powerupItems.forEach(p => scene.remove(p)); powerupItems = [];
+            
+            // Reset Powerups
+            activePowerups = { shield: false, magnet: 0, turbo: 0, ghost: 0 };
+            shieldStatus.classList.remove('active');
+            magnetStatus.classList.remove('active');
+            turboStatus.classList.remove('active');
+            ghostStatus.classList.remove('active');
+            if(shieldMesh) shieldMesh.visible = false;
+            // Reset opacity
+            if(carMeshGroup) carMeshGroup.traverse(c => {
+                if(c.isMesh) { c.material.transparent = false; c.material.opacity = 1; }
+            });
+
+            lastTime = performance.now();
+        }
+
+        function togglePause() {
+            if(!isGameRunning) return;
+            isPaused = !isPaused;
+            if(isPaused) showScreen('pause-screen');
+            else {
+                showScreen(null);
+                lastTime = performance.now(); // Prevent huge delta jump
+            }
+        }
+
+        function quitGame() {
+            isPaused = false;
+            isGameRunning = false;
+            saveGameData();
+            showScreen('start-screen');
+        }
+
+        function crash() {
+            isGameRunning = false;
+            if (score > highScore) highScore = Math.floor(score);
+            saveGameData();
+            finalScoreEl.innerText = Math.floor(score);
+            highScoreEl.innerText = highScore;
+            showScreen('game-over-screen');
+        }
+
+        function showScreen(screenId) {
+            [loginScreen, startScreen, gameOverScreen, shopScreen, garageScreen, pauseScreen].forEach(s => s.classList.add('hidden'));
+            if(screenId) document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        // --- LOOP ---
+        let lastTime = 0;
+        let spawnTimer = 0;
+
+        function gameLoop(time) {
+            requestAnimationFrame(gameLoop);
+            
+            if (isPaused) return;
+
+            const delta = (time - lastTime) / 1000; // Seconds
+            lastTime = time;
+
+            if (!isGameRunning) {
+                // Menu Idle
+                rollingGround.position.z += 0.2;
+                if (rollingGround.position.z > 10) rollingGround.position.z = 0;
+                car.position.y = Math.sin(time * 0.003) * 0.1;
+                renderer.render(scene, camera);
+                return;
+            }
+
+            updatePowerups(delta);
+
+            // Turbo Logic
+            let effectiveSpeed = gameSpeed;
+            let effectiveMultiplier = currentCoinMultiplier;
+            if (activePowerups.turbo > 0) {
+                effectiveSpeed *= 1.8; // Almost double speed
+                effectiveMultiplier *= 2; // Double points
+            }
+
+            // Speed Increase
+            if (gameSpeed < currentMaxSpeed) {
+                gameSpeed += CONFIG.acceleration * (delta * 60);
+            }
+            speedEl.innerText = Math.floor(effectiveSpeed * 100);
+
+            // Controls with "Lane Grip" Upgrade Calculation
+            // Lane Grip increases handling responsiveness specifically at higher speeds
+            let effectiveTurnSpeed = currentTurnSpeed;
+            if (upgradeLevels.grip > 0 && gameSpeed > 1.0) {
+                // Grip bonus kicks in at speeds > 1.0
+                // Scaling bonus: 15% per level, scaled by how fast we are going
+                const speedFactor = (gameSpeed - 1.0) / (CONFIG.maxSpeed - 1.0); // 0 to 1 range approx
+                const bonus = (upgradeLevels.grip * CONFIG.UPGRADES.grip.value) * speedFactor;
+                effectiveTurnSpeed += bonus; 
+            }
+
+            if (input.left) {
+                car.position.x -= effectiveTurnSpeed * (delta * 60);
+                carMeshGroup.rotation.z = 0.1; carMeshGroup.rotation.y = 0.1; 
+            } else if (input.right) {
+                car.position.x += effectiveTurnSpeed * (delta * 60);
+                carMeshGroup.rotation.z = -0.1; carMeshGroup.rotation.y = -0.1;
+            } else {
+                carMeshGroup.rotation.z *= 0.9; carMeshGroup.rotation.y *= 0.9;
+            }
+            // Clamp X
+            const maxOffset = (CONFIG.laneWidth * CONFIG.laneCount) / 2;
+            car.position.x = Math.max(-maxOffset, Math.min(maxOffset, car.position.x));
+            // Camera X Follow
+            camera.position.x += (car.position.x * 0.5 - camera.position.x) * 0.1;
+
+            // Move Forward
+            const moveStep = effectiveSpeed * (delta * 60);
+            car.position.z -= moveStep;
+            camera.position.z = car.position.z + CONFIG.cameraDistance;
+
+            score += moveStep;
+
+            // Distance Credits
+            pendingDistanceCredits += moveStep * CONFIG.distanceCreditRate * effectiveMultiplier;
+            if (pendingDistanceCredits >= 1) {
+                const earned = Math.floor(pendingDistanceCredits);
+                credits += earned;
+                pendingDistanceCredits -= earned;
+                scoreEl.innerText = Math.floor(credits);
+            }
+
+            // Endless Ground
+            const gridSize = 10;
+            const snapZ = Math.floor(camera.position.z / gridSize) * gridSize;
+            rollingGround.position.z = snapZ - 50; 
+            sun.position.z = camera.position.z - 200;
+            sun.position.x = camera.position.x * 0.5;
+
+            // --- SPAWNING ---
+            spawnTimer -= moveStep;
+            if (spawnTimer <= 0) {
+                spawnTimer = 40 + Math.random() * 20; 
+                const r = Math.random();
+                if (r > 0.85) {
+                    createPowerup(car.position.z - 150);
+                } else if (r > 0.3) {
+                    createObstacle(car.position.z - 150); 
+                } else {
+                    createCoin(car.position.z - 150);
+                }
+            }
+
+            // --- COLLISION ---
+            const carBox = new THREE.Box3().setFromObject(carMeshGroup);
+            carBox.expandByScalar(-0.5);
+
+            // Obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                obs.rotation.x += 0.01; obs.rotation.y += 0.02;
+                if (obs.position.z > camera.position.z + 10) { scene.remove(obs); obstacles.splice(i, 1); continue; }
+
+                if (!obs.userData.hit) {
+                    const obsBox = new THREE.Box3().setFromObject(obs);
+                    obsBox.expandByScalar(-0.2); 
+                    if (carBox.intersectsBox(obsBox)) {
+                        // Check protections
+                        if (activePowerups.ghost > 0) {
+                            // Ghost pass through - do nothing
+                        } else if (activePowerups.shield) {
+                            // Pop shield
+                            activePowerups.shield = false;
+                            shieldMesh.visible = false;
+                            shieldStatus.classList.remove('active');
+                            obs.userData.hit = true;
+                            // Visual feedback for shield pop?
+                            scene.remove(obs); // Destroy obstacle
+                            obstacles.splice(i, 1);
+                        } else {
+                            obs.userData.hit = true;
+                            crash();
+                        }
+                    }
+                }
+            }
+
+            // Coins
+            for (let i = coins.length - 1; i >= 0; i--) {
+                const coin = coins[i];
+                coin.rotation.y += 0.05;
+                if (coin.position.z > camera.position.z + 10) { scene.remove(coin); coins.splice(i, 1); continue; }
+
+                if (coin.userData.active) {
+                    // MAGNET LOGIC
+                    if (activePowerups.magnet > 0) {
+                        const dist = coin.position.distanceTo(car.position);
+                        if (dist < 30) { // Magnet range
+                            // Lerp towards car
+                            coin.position.lerp(car.position, 0.1);
+                        }
+                    }
+
+                    const dx = Math.abs(car.position.x - coin.position.x);
+                    const dz = Math.abs(car.position.z - coin.position.z);
+                    if (dx < 2.0 && dz < 2.0) {
+                        coin.userData.active = false;
+                        scene.remove(coin);
+                        coins.splice(i, 1);
+                        const gain = 100 * effectiveMultiplier;
+                        credits += gain;
+                        scoreEl.innerText = Math.floor(credits);
+                    }
+                }
+            }
+
+            // Powerups
+            for (let i = powerupItems.length - 1; i >= 0; i--) {
+                const p = powerupItems[i];
+                p.rotation.y += 0.05; p.rotation.z += 0.05;
+                if (p.position.z > camera.position.z + 10) { scene.remove(p); powerupItems.splice(i, 1); continue; }
+                
+                if (p.userData.active) {
+                    const dx = Math.abs(car.position.x - p.position.x);
+                    const dz = Math.abs(car.position.z - p.position.z);
+                    if (dx < 2.0 && dz < 2.0) {
+                        p.userData.active = false;
+                        activatePowerup(p.userData.powerupType);
+                        scene.remove(p);
+                        powerupItems.splice(i, 1);
+                    }
+                }
+            }
+
+            if(shieldMesh && activePowerups.shield) {
+                shieldMesh.rotation.y -= 0.02;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- INPUT HANDLING ---
+        function onWindowResize() {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        function onKeyDown(e) {
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') input.left = true;
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') input.right = true;
+            if (e.key === 'Escape') togglePause();
+        }
+        function onKeyUp(e) {
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') input.left = false;
+            if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') input.right = false;
+        }
+        function setupTouch() {
+            const l = document.getElementById('touch-left');
+            const r = document.getElementById('touch-right');
+            const bind = (el, dir) => {
+                el.addEventListener('touchstart', (e) => { e.preventDefault(); input[dir] = true; }, {passive:false});
+                el.addEventListener('touchend', (e) => { e.preventDefault(); input[dir] = false; }, {passive:false});
+                el.addEventListener('mousedown', () => input[dir] = true);
+                el.addEventListener('mouseup', () => input[dir] = false);
+            };
+            bind(l, 'left'); bind(r, 'right');
+        }
+        function setupButtons() {
+            document.getElementById('login-btn').onclick = handleLogin;
+            document.getElementById('logout-btn').onclick = handleLogout;
+            
+            document.getElementById('start-btn').onclick = startGame;
+            document.getElementById('restart-btn').onclick = startGame;
+            document.getElementById('shop-btn').onclick = () => { showScreen('shop-screen'); updateShopDisplay(); };
+            document.getElementById('shop-close-btn').onclick = () => { if(isGameRunning) showScreen(null); else showScreen('game-over-screen'); };
+            
+            const openGarage = () => { showScreen('garage-screen'); updateGarageDisplay(); };
+            document.getElementById('main-garage-btn').onclick = openGarage;
+            document.getElementById('garage-btn').onclick = openGarage;
+            document.getElementById('garage-close-btn').onclick = () => { if (score > 0) showScreen('game-over-screen'); else showScreen('start-screen'); };
+
+            // Pause buttons
+            document.getElementById('pause-btn').onclick = togglePause;
+            document.getElementById('resume-btn').onclick = togglePause;
+            document.getElementById('quit-btn').onclick = quitGame;
+        }
+
+        init();
+        
+        // Initial animation start if needed, but init handles it.
+        gameLoop(performance.now());
+    </script>
+</body>
+</html>

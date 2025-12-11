@@ -9,16 +9,14 @@
 
    for (let i = 0; i < text.length; i++) {
        let ch = text[i];
-
        if (ch >= 'a' && ch <= 'z') {
-           let code = ch.charCodeAt(0) - 97; // get 0–25
-           code = (code + 1) % 26;           // shift +1
+           let code = ch.charCodeAt(0) - 97;
+           code = (code + 1) % 26;
            result += String.fromCharCode(code + 97);
        } else {
-           result += ch; // keep spaces, punctuation
+           result += ch;
        }
    }
-
    document.getElementById('myArea02').value = result;
 }">
 <br><br>
@@ -32,18 +30,54 @@
 
    for (let i = 0; i < text.length; i++) {
        let ch = text[i];
-
        if (ch >= 'a' && ch <= 'z') {
-           let code = ch.charCodeAt(0) - 97; // get 0–25
-           code = (code - 1 + 26) % 26;      // shift -1
+           let code = ch.charCodeAt(0) - 97;
+           code = (code - 1 + 26) % 26;
            result += String.fromCharCode(code + 97);
        } else {
-           result += ch; // keep spaces
+           result += ch;
        }
    }
-
    document.getElementById('myArea03').value = result;
 }">
 <br><br>
 
 <textarea id="myArea03" rows=4 cols=70></textarea><br><br>
+
+
+<!-- NEW BUTTONS BELOW -->
+
+<!-- Reverse Text -->
+<input type=button value="Reverse Text" onclick="{
+   let txt = document.getElementById('myArea01').value;
+   document.getElementById('myArea02').value = txt.split('').reverse().join('');
+}">
+
+<!-- Remove Spaces -->
+<input type=button value="Remove Spaces" onclick="{
+   let txt = document.getElementById('myArea01').value;
+   document.getElementById('myArea02').value = txt.replace(/ /g, '');
+}">
+
+<!-- UPPERCASE -->
+<input type=button value="UPPERCASE" onclick="{
+   let txt = document.getElementById('myArea01').value;
+   document.getElementById('myArea02').value = txt.toUpperCase();
+}">
+
+<!-- lowercase -->
+<input type=button value="lowercase" onclick="{
+   let txt = document.getElementById('myArea01').value;
+   document.getElementById('myArea02').value = txt.toLowerCase();
+}">
+
+<!-- Shuffle Letters -->
+<input type=button value="Shuffle Letters" onclick="{
+   let txt = document.getElementById('myArea01').value.split('');
+   for (let i = txt.length - 1; i > 0; i--) {
+       let j = Math.floor(Math.random() * (i + 1));
+       [txt[i], txt[j]] = [txt[j], txt[i]];
+   }
+   document.getElementById('myArea02').value = txt.join('');
+}">
+<br><br>

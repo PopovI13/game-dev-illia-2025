@@ -95,15 +95,22 @@ function myHitOther(id1, id2) {
     );
 }
 
-// ===== CHECK FOR COLLISION =====
+
+
+// ===== CHECK FOR COLLISIONS =====
 function myCheckHit() {
-    if (myHitOther("car1", "sun1")) {
-        alert("YOU WIN!");
-        document.getElementById("car1").style.left = "50px";
-        document.getElementById("sun1").style.left = "250px";
+
+    if (myHitOther("car1.png", "sun1.png")) {
+
+        alert("YOU LOSE!");
+
+        // reset player position
+        document.getElementById("car1.png").style.left = "20px";
+
+        // go to next level
+        location = "t2-Final-Project-illia.html";
     }
 }
-
 // ===== SUN AI =====
 function moveSun() {
 

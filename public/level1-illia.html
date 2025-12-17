@@ -46,7 +46,7 @@
     ">
 
     <input type="button" value="Move Right" onclick="
-        let obj = document.getElementById('car1');
+        let obj = document.getElementById('car1.png');
         let newX = parseInt(obj.style.left) + 10;
         obj.style.left = newX + 'px';
         myCheckHit();
@@ -56,11 +56,11 @@
 <!-- ===== GAME AREA ===== -->
 <div id="gameArea">
 
-<img id="car1"
+<img id="car1.png"
      src="car1.png"
      style="position:absolute; width:100px; height:80px; top:200px; left:50px;">
 
-<img id="sun1"
+<img id="sun1.png"
      src="sun1.png"
      style="position:absolute; width:100px; height:80px; top:200px; left:250px;">
 
@@ -73,7 +73,6 @@ let myClock;
 
 // ===== COLLISION FUNCTION =====
 function myHitOther(id1, id2) {
-
     const A = document.getElementById(id1).style;
     const B = document.getElementById(id2).style;
 
@@ -95,16 +94,12 @@ function myHitOther(id1, id2) {
     );
 }
 
-
-
 // ===== CHECK FOR WIN =====
 function myCheckHit() {
-
     if (myHitOther("car1.png", "sun1.png")) {
-
         alert("YOU WIN!");
 
-        // optional: reset positions
+        // reset positions
         document.getElementById("car1.png").style.left = "50px";
         document.getElementById("sun1.png").style.left = "250px";
 
@@ -114,30 +109,9 @@ function myCheckHit() {
 }
 
 // ===== SUN AI =====
-function moveSun() {
-
-    let car = document.getElementById("car1");
-    let sun = document.getElementById("sun1");
-
-    let carX = parseInt(car.style.left);
-    let sunX = parseInt(sun.style.left);
-
-    let minDistance = 120;
-    let maxDistance = 300;
-    let speed = 3;
-
-    let distance = sunX - carX;
-
-    if (distance < minDistance) {
-        sun.style.left = (sunX + speed) + "px";
-    }
-
-    if (distance > maxDistance) {
-        sun.style.left = (carX + maxDistance) + "px";
-    }
-}
-
-setInterval(moveSun, 50);
+// Sun is now static, so we comment out the AI
+// function moveSun() { ... }
+// setInterval(moveSun, 50);
 </script>
 
 </body>

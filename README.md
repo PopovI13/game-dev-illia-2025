@@ -609,7 +609,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 
 
 
-<details open><summary>December 2025 Journal Entries</summary>
+<details><summary>December 2025 Journal Entries</summary>
 
 ---
 
@@ -764,7 +764,7 @@ Note: If you have a link to an assignment that has not been marked, put "open" a
 
 
 
-<details ><summary>January 2026 Journal Entries</summary>
+<details open><summary>January 2026 Journal Entries</summary>
 
 ---
 
